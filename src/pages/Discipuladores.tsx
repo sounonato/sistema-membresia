@@ -1,0 +1,151 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Plus, UserCheck, Phone, BookOpen } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { supabase } from '@/lib/supabase'
+import { Avatar } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog } from '@/components/ui/dialog'
+import { Card, CardContent } from '@/components/ui/card'
+import { formatPhone } from '@/lib/utils'
+import type { Discipulador } from '@/types'
+
+const schema = z.object({
+  nome: z.string().min(2, 'Nome obrigatório'),
+  telefone: z.string().min(10, 'Telefone inválido'),
+  email: z.string().email().optional().or(z.literal('')),
+})
+
+type FormData = z.infer<typeof schema>
+
+async function fetchDiscipuladores() {
+  const { data } = await supabase
+    .from('discipuladores')
+    .select('*, grupos:grupos_discipulado(id, status)')
+    .order('nome')
+  return (data ?? []) as (Discipulador & { grupos: { id: string; status: string }[] })[]
+}
+
+export default function Discipuladores() {
+  const [showDialog, setShowDialog] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { data: discipuladores = [], isLoading } = useQuery({
+    queryKey: ['discipuladores-full'],
+    queryFn: fetchDiscipuladores,
+  })
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  })
+
+  const create = useMutation({
+    mutationFn: async (data: FormData) => {
+      const { error } = await supabase.from('discipuladores').insert({
+        ...data,
+        email: data.email || null,
+        ativo: true,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] })
+      queryClient.invalidateQueries({ queryKey: ['discipuladores'] })
+      setShowDialog(false)
+      reset()
+    },
+  })
+
+  const toggleAtivo = useMutation({
+    mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
+      await supabase.from('discipuladores').update({ ativo: !ativo }).eq('id', id)
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] }),
+  })
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Discipuladores</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{discipuladores.filter(d => d.ativo).length} ativos</p>
+        </div>
+        <Button onClick={() => setShowDialog(true)}>
+          <Plus size={16} />
+          Novo Discipulador
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-gray-100 animate-pulse rounded-xl" />)}
+        </div>
+      ) : discipuladores.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+          <UserCheck size={40} className="text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500 font-medium">Nenhum discipulador cadastrado</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {discipuladores.map((d) => {
+            const gruposAtivos = d.grupos?.filter((g) => g.status === 'ativo').length ?? 0
+            return (
+              <Card key={d.id} className="p-5">
+                <CardContent className="p-0">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar name={d.nome} size="lg" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 truncate">{d.nome}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <Badge variant={d.ativo ? 'success' : 'default'}>
+                          {d.ativo ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                        <Badge variant="info">
+                          <BookOpen size={10} className="mr-1" />
+                          {gruposAtivos} grupos
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Phone size={12} className="text-gray-400" />
+                      {formatPhone(d.telefone)}
+                    </div>
+                    {d.email && (
+                      <p className="text-xs text-gray-400 pl-5">{d.email}</p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
+                    className="mt-3 text-xs text-gray-400 hover:text-red-400 transition-colors"
+                  >
+                    {d.ativo ? 'Desativar' : 'Reativar'}
+                  </button>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog} title="Novo Discipulador">
+        <form onSubmit={handleSubmit((data) => create.mutate(data))} className="space-y-4">
+          <Input label="Nome completo" required error={errors.nome?.message} {...register('nome')} />
+          <Input label="Telefone" required error={errors.telefone?.message} {...register('telefone')} />
+          <Input label="E-mail" type="email" error={errors.email?.message} {...register('email')} />
+          <div className="flex gap-3 justify-end pt-2">
+            <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
+            <Button type="submit" loading={create.isPending}>Cadastrar</Button>
+          </div>
+        </form>
+      </Dialog>
+    </div>
+  )
+}
