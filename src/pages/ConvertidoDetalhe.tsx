@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft, Phone, Mail, MapPin, Calendar, Edit, BookOpen,
-  Church, Baby, Briefcase, Heart, Users, Trash2
+  Church, Baby, Briefcase, Heart, Users, Trash2, Pencil
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Avatar } from '@/components/ui/avatar'
@@ -131,6 +131,10 @@ export default function ConvertidoDetalhe() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
+            <Button size="sm" variant="outline" onClick={() => navigate(`/convertidos/${id}/editar`)}>
+              <Pencil size={13} />
+              Editar
+            </Button>
             <Button size="sm" variant="outline" onClick={() => {
               setNovoStatus(convertido.status)
               setShowStatusDialog(true)

@@ -8,6 +8,7 @@ import Dashboard from '@/pages/Dashboard'
 import Convertidos from '@/pages/Convertidos'
 import NovoConvertido from '@/pages/NovoConvertido'
 import ConvertidoDetalhe from '@/pages/ConvertidoDetalhe'
+import EditarConvertido from '@/pages/EditarConvertido'
 import Discipulado from '@/pages/Discipulado'
 import GrupoDetalhe from '@/pages/GrupoDetalhe'
 import Discipuladores from '@/pages/Discipuladores'
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/convertidos" element={<PrivateRoute><Convertidos /></PrivateRoute>} />
             <Route path="/convertidos/novo" element={<LiderRoute><NovoConvertido /></LiderRoute>} />
             <Route path="/convertidos/:id" element={<PrivateRoute><ConvertidoDetalhe /></PrivateRoute>} />
+            <Route path="/convertidos/:id/editar" element={<LiderRoute><EditarConvertido /></LiderRoute>} />
             <Route path="/discipulado" element={<PrivateRoute><Discipulado /></PrivateRoute>} />
             <Route path="/discipulado/:id" element={<PrivateRoute><GrupoDetalhe /></PrivateRoute>} />
             <Route path="/discipuladores" element={<LiderRoute><Discipuladores /></LiderRoute>} />
