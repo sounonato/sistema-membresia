@@ -4,8 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowLeft, Save, User, MapPin, Heart, Church } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/contexts/AuthContext'
+import { createConvertido } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -50,7 +49,6 @@ function SectionTitle({ icon: Icon, label }: { icon: React.ElementType; label: s
 
 export default function NovoConvertido() {
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState('')
 
@@ -74,19 +72,17 @@ export default function NovoConvertido() {
     setSaving(true)
     setServerError('')
     try {
-      const { error } = await supabase.from('novos_convertidos').insert({
+      await createConvertido({
         ...data,
         email: data.email || null,
         estado_civil: data.estado_civil || null,
         como_conheceu: data.como_conheceu || null,
         qtd_filhos: data.tem_filhos ? (data.qtd_filhos ?? 0) : 0,
-        criado_por: user?.id ?? null,
         status: 'ativo',
       })
-      if (error) throw error
       navigate('/convertidos')
-    } catch (err) {
-      setServerError('Erro ao salvar. Tente novamente.')
+    } catch (err: any) {
+      setServerError(err.message ?? 'Erro ao salvar. Tente novamente.')
       setSaving(false)
     }
   }

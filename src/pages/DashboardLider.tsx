@@ -10,26 +10,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { ConversoesMesChart } from '@/components/charts/ConversoesMesChart'
 import { GeneroChart } from '@/components/charts/GeneroChart'
 import { FaixaEtariaChart } from '@/components/charts/FaixaEtariaChart'
+import { getDashboardStats } from '@/lib/api'
 import type { NovoConvertido } from '@/types'
-
-async function fetchStats() {
-  const now = new Date()
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-
-  const [totalRes, mesRes, discipuladoRes, gruposRes] = await Promise.all([
-    supabase.from('novos_convertidos').select('id', { count: 'exact', head: true }),
-    supabase.from('novos_convertidos').select('id', { count: 'exact', head: true }).gte('criado_em', firstDayOfMonth),
-    supabase.from('novos_convertidos').select('id', { count: 'exact', head: true }).eq('status', 'em_discipulado'),
-    supabase.from('grupos_discipulado').select('id', { count: 'exact', head: true }).eq('status', 'ativo'),
-  ])
-
-  return {
-    total: totalRes.count ?? 0,
-    mes: mesRes.count ?? 0,
-    em_discipulado: discipuladoRes.count ?? 0,
-    grupos: gruposRes.count ?? 0,
-  }
-}
 
 async function fetchRecentes() {
   const { data } = await supabase
@@ -42,7 +24,7 @@ async function fetchRecentes() {
 
 export default function DashboardLider() {
   const { profile } = useAuth()
-  const { data: stats, isLoading: statsLoading } = useQuery({ queryKey: ['stats'], queryFn: fetchStats })
+  const { data: stats, isLoading: statsLoading } = useQuery({ queryKey: ['stats'], queryFn: getDashboardStats })
   const { data: recentes } = useQuery({ queryKey: ['recentes'], queryFn: fetchRecentes })
 
   const hora = new Date().getHours()

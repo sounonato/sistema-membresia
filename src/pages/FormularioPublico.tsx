@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CheckCircle2, Church, Heart, MapPin, User } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { submitFormularioPublico } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
@@ -71,7 +71,7 @@ export default function FormularioPublico() {
     setSaving(true)
     setErro('')
     try {
-      const { error } = await supabase.from('novos_convertidos').insert({
+      await submitFormularioPublico({
         ...data,
         email: data.email || null,
         estado_civil: data.estado_civil || null,
@@ -79,12 +79,10 @@ export default function FormularioPublico() {
         qtd_filhos: data.tem_filhos ? (data.qtd_filhos ?? 0) : 0,
         data_conversao: new Date().toISOString().split('T')[0],
         status: 'ativo',
-        criado_por: null,
       })
-      if (error) throw error
       setEnviado(true)
-    } catch {
-      setErro('Erro ao enviar. Tente novamente.')
+    } catch (err: any) {
+      setErro(err.message ?? 'Erro ao enviar. Tente novamente.')
       setSaving(false)
     }
   }
