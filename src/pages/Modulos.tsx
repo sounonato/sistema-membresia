@@ -131,12 +131,14 @@ export default function Modulos() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => openEdit(m)}
+                  aria-label="Editar módulo"
                   className="p-2 rounded-lg text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
                 >
                   <Edit size={14} />
                 </button>
                 <button
                   onClick={() => remove.mutate(m.id)}
+                  aria-label="Excluir módulo"
                   className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 size={14} />

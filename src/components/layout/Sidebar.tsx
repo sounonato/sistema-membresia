@@ -72,6 +72,7 @@ export function Sidebar() {
               onClick={signOut}
               className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
               title="Sair"
+              aria-label="Sair"
             >
               <LogOut size={15} />
             </button>

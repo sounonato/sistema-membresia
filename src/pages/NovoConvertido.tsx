@@ -95,6 +95,7 @@ export default function NovoConvertido() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
+          aria-label="Voltar"
           className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
         >
           <ArrowLeft size={18} />
