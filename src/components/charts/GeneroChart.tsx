@@ -2,48 +2,50 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recha
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
+const CATEGORIAS = ['masculino', 'feminino', 'jovem', 'adolescente'] as const
+
 const CORES: Record<string, string> = {
   masculino: '#3b82f6',
   feminino: '#ec4899',
-  outro: '#a3a3a3',
-  'Não informado': '#d4d4d4',
+  jovem: '#f59e0b',
+  adolescente: '#10b981',
 }
 
 const LABELS: Record<string, string> = {
   masculino: 'Masculino',
   feminino: 'Feminino',
-  outro: 'Outro',
+  jovem: 'Jovem',
+  adolescente: 'Adolescente',
 }
 
-async function fetchGeneroDistribuicao() {
+async function fetchDistribuicao() {
   const { data } = await supabase.from('novos_convertidos').select('genero')
 
   const counts: Record<string, number> = {
     masculino: 0,
     feminino: 0,
-    outro: 0,
-    'Não informado': 0,
+    jovem: 0,
+    adolescente: 0,
   }
 
   for (const row of data ?? []) {
     const g = row.genero as string | null
     if (g && g in counts) counts[g]++
-    else counts['Não informado']++
   }
 
-  return Object.entries(counts)
-    .filter(([, v]) => v > 0)
-    .map(([key, value]) => ({
-      name: LABELS[key] ?? key,
-      value,
-      color: CORES[key] ?? '#d4d4d4',
+  return CATEGORIAS
+    .filter((key) => counts[key] > 0)
+    .map((key) => ({
+      name: LABELS[key],
+      value: counts[key],
+      color: CORES[key],
     }))
 }
 
 export function GeneroChart() {
   const { data = [] } = useQuery({
     queryKey: ['chart-genero'],
-    queryFn: fetchGeneroDistribuicao,
+    queryFn: fetchDistribuicao,
     staleTime: 1000 * 60 * 5,
   })
 
@@ -51,7 +53,7 @@ export function GeneroChart() {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Distribuição por Gênero</h3>
+      <h3 className="text-sm font-semibold text-gray-900 mb-4">Distribuição por Categoria</h3>
       {total === 0 ? (
         <p className="text-sm text-gray-400 text-center py-12">Sem dados</p>
       ) : (

@@ -12,7 +12,7 @@ export interface Usuario {
 export type StatusConvertido = 'ativo' | 'em_discipulado' | 'encerrado' | 'inativo'
 export type EstadoCivil = 'solteiro' | 'casado' | 'divorciado' | 'viuvo' | 'uniao_estavel'
 export type ComoConheceu = 'amigo' | 'familiar' | 'redes_sociais' | 'evento' | 'culto' | 'outro'
-export type Genero = 'masculino' | 'feminino' | 'outro'
+export type Genero = 'masculino' | 'feminino' | 'jovem' | 'adolescente'
 
 export interface NovoConvertido {
   id: string

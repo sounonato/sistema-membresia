@@ -151,12 +151,13 @@ export default function NovoConvertido() {
               {...register('estado_civil')}
             />
             <Select
-              label="Gênero"
+              label="Categoria"
               placeholder="Selecionar..."
               options={[
                 { value: 'masculino', label: 'Masculino' },
                 { value: 'feminino', label: 'Feminino' },
-                { value: 'outro', label: 'Outro / Prefiro não informar' },
+                { value: 'jovem', label: 'Jovem' },
+                { value: 'adolescente', label: 'Adolescente' },
               ]}
               {...register('genero')}
             />
