@@ -44,3 +44,23 @@ export async function submitFormularioPublico(data: Record<string, unknown>) {
   }
   return res.json()
 }
+
+export async function createUser(data: {
+  email: string
+  password: string
+  nome: string
+  perfil: string
+  discipulador_id?: string
+}) {
+  const headers = await authHeaders()
+  const res = await fetch(`${FUNCTIONS_URL}/create-user`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error ?? 'Erro ao criar usuário')
+  }
+  return res.json()
+}

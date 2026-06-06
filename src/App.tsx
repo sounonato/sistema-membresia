@@ -12,6 +12,7 @@ import Discipulado from '@/pages/Discipulado'
 import GrupoDetalhe from '@/pages/GrupoDetalhe'
 import Discipuladores from '@/pages/Discipuladores'
 import Modulos from '@/pages/Modulos'
+import GerenciarUsuarios from '@/pages/GerenciarUsuarios'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="/discipulado/:id" element={<PrivateRoute><GrupoDetalhe /></PrivateRoute>} />
             <Route path="/discipuladores" element={<LiderRoute><Discipuladores /></LiderRoute>} />
             <Route path="/modulos" element={<LiderRoute><Modulos /></LiderRoute>} />
+            <Route path="/usuarios" element={<LiderRoute><GerenciarUsuarios /></LiderRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

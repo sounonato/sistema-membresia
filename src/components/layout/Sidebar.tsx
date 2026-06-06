@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, BookOpen, UserCheck,
-  GraduationCap, LogOut, Church,
+  GraduationCap, LogOut, Church, KeyRound,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
@@ -13,6 +13,7 @@ const NAV_LIDER = [
   { to: '/discipulado', icon: BookOpen, label: 'Discipulado' },
   { to: '/discipuladores', icon: UserCheck, label: 'Discipuladores' },
   { to: '/modulos', icon: GraduationCap, label: 'Módulos' },
+  { to: '/usuarios', icon: KeyRound, label: 'Usuários' },
 ]
 
 const NAV_DISCIPULADOR = [
