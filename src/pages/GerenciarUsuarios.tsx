@@ -147,12 +147,43 @@ export default function GerenciarUsuarios() {
         description="Crie um login para um líder ou discipulador acessar o sistema."
       >
         <div className="space-y-4">
-          <Input
-            label="Nome completo"
-            placeholder="Nome do usuário"
-            value={form.nome}
-            onChange={(e) => setForm(f => ({ ...f, nome: e.target.value }))}
+          <Select
+            label="Perfil de acesso"
+            value={form.perfil}
+            onChange={(e) => setForm(f => ({ ...f, perfil: e.target.value, discipulador_id: '', nome: '' }))}
+            options={PERFIS}
           />
+
+          {/* Discipulador: seleciona da lista e nome preenche automático */}
+          {form.perfil === 'discipulador' && semLogin.length > 0 ? (
+            <Select
+              label="Selecionar discipulador"
+              placeholder="Escolha o discipulador..."
+              value={form.discipulador_id}
+              onChange={(e) => {
+                const disc = semLogin.find((d: any) => d.id === e.target.value) as any
+                setForm(f => ({ ...f, discipulador_id: e.target.value, nome: disc?.nome ?? '' }))
+              }}
+              options={semLogin.map((d: any) => ({ value: d.id, label: d.nome }))}
+            />
+          ) : (
+            /* Líder/Pastor/Admin: digita o nome manualmente */
+            <Input
+              label="Nome completo"
+              placeholder="Nome do usuário"
+              value={form.nome}
+              onChange={(e) => setForm(f => ({ ...f, nome: e.target.value }))}
+            />
+          )}
+
+          {/* Nome preenchido automaticamente (somente leitura) */}
+          {form.perfil === 'discipulador' && form.nome && (
+            <div className="px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl">
+              <p className="text-xs text-stone-400 mb-0.5">Nome</p>
+              <p className="text-sm font-medium text-stone-900">{form.nome}</p>
+            </div>
+          )}
+
           <Input
             label="E-mail"
             type="email"
@@ -177,21 +208,7 @@ export default function GerenciarUsuarios() {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          <Select
-            label="Perfil de acesso"
-            value={form.perfil}
-            onChange={(e) => setForm(f => ({ ...f, perfil: e.target.value }))}
-            options={PERFIS}
-          />
-          {form.perfil === 'discipulador' && semLogin.length > 0 && (
-            <Select
-              label="Vincular a um discipulador (opcional)"
-              placeholder="Selecionar discipulador..."
-              value={form.discipulador_id}
-              onChange={(e) => setForm(f => ({ ...f, discipulador_id: e.target.value }))}
-              options={semLogin.map((d: any) => ({ value: d.id, label: d.nome }))}
-            />
-          )}
+
           {serverError && (
             <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">
               {serverError}
