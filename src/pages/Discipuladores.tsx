@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, UserCheck, Phone, BookOpen, Trash2 } from 'lucide-react'
+import { Plus, UserCheck, Phone, BookOpen, Trash2, Pencil } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -32,7 +32,9 @@ async function fetchDiscipuladores() {
 
 export default function Discipuladores() {
   const [showDialog, setShowDialog] = useState(false)
+  const [editTarget, setEditTarget] = useState<(Discipulador & { grupos: { id: string; status: string }[] }) | null>(null)
   const [discError, setDiscError] = useState('')
+  const [editError, setEditError] = useState('')
   const [toggleError, setToggleError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; nome: string } | null>(null)
   const queryClient = useQueryClient()
@@ -43,6 +45,10 @@ export default function Discipuladores() {
   })
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  })
+
+  const { register: registerEdit, handleSubmit: handleSubmitEdit, reset: resetEdit, formState: { errors: errorsEdit } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
@@ -63,6 +69,24 @@ export default function Discipuladores() {
       setDiscError('')
     },
     onError: (err: any) => setDiscError(err.message ?? 'Erro ao criar discipulador'),
+  })
+
+  const updateDiscipulador = useMutation({
+    mutationFn: async (data: FormData) => {
+      const { error } = await supabase.from('discipuladores').update({
+        nome: data.nome,
+        telefone: data.telefone,
+        email: data.email || null,
+      }).eq('id', editTarget!.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] })
+      queryClient.invalidateQueries({ queryKey: ['discipuladores'] })
+      setEditTarget(null)
+      setEditError('')
+    },
+    onError: (err: any) => setEditError(err.message ?? 'Erro ao atualizar discipulador'),
   })
 
   const deleteDiscipulador = useMutation({
@@ -158,13 +182,22 @@ export default function Discipuladores() {
                     >
                       {d.ativo ? 'Desativar' : 'Reativar'}
                     </button>
-                    <button
-                      onClick={() => setDeleteTarget({ id: d.id, nome: d.nome })}
-                      className="text-xs text-stone-400 hover:text-red-600 transition-colors font-medium flex items-center gap-1"
-                    >
-                      <Trash2 size={11} />
-                      Excluir
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => { setEditTarget(d); resetEdit({ nome: d.nome, telefone: d.telefone, email: d.email ?? '' }) }}
+                        className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium flex items-center gap-1"
+                      >
+                        <Pencil size={11} />
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget({ id: d.id, nome: d.nome })}
+                        className="text-xs text-stone-400 hover:text-red-600 transition-colors font-medium flex items-center gap-1"
+                      >
+                        <Trash2 size={11} />
+                        Excluir
+                      </button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -172,6 +205,24 @@ export default function Discipuladores() {
           })}
         </div>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog
+        open={!!editTarget}
+        onOpenChange={(open) => { if (!open) { setEditTarget(null); setEditError('') } }}
+        title="Editar Discipulador"
+      >
+        <form onSubmit={handleSubmitEdit((data) => updateDiscipulador.mutate(data))} className="space-y-4">
+          {editError && <p className="text-sm text-red-500 bg-red-50 rounded-xl px-3 py-2">{editError}</p>}
+          <Input label="Nome completo" required error={errorsEdit.nome?.message} {...registerEdit('nome')} />
+          <Input label="Telefone" required error={errorsEdit.telefone?.message} {...registerEdit('telefone')} />
+          <Input label="E-mail" type="email" error={errorsEdit.email?.message} {...registerEdit('email')} />
+          <div className="flex gap-3 justify-end pt-2">
+            <Button type="button" variant="outline" onClick={() => { setEditTarget(null); setEditError('') }}>Cancelar</Button>
+            <Button type="submit" loading={updateDiscipulador.isPending}>Salvar</Button>
+          </div>
+        </form>
+      </Dialog>
 
       {/* Delete Dialog */}
       <Dialog
