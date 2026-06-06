@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft, Phone, Mail, MapPin, Calendar, Edit, BookOpen,
-  Church, Baby, Briefcase, Heart, Users
+  Church, Baby, Briefcase, Heart, Users, Trash2
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Avatar } from '@/components/ui/avatar'
@@ -52,6 +52,7 @@ export default function ConvertidoDetalhe() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [showStatusDialog, setShowStatusDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [novoStatus, setNovoStatus] = useState<StatusConvertido>('ativo')
 
   const { data: convertido, isLoading } = useQuery({
@@ -64,6 +65,17 @@ export default function ConvertidoDetalhe() {
     queryKey: ['grupos-convertido', id],
     queryFn: () => fetchGruposDoConvertido(id!),
     enabled: !!id,
+  })
+
+  const deleteConvertido = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('novos_convertidos').delete().eq('id', id!)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['convertidos'] })
+      navigate('/convertidos')
+    },
   })
 
   const updateStatus = useMutation({
@@ -125,6 +137,10 @@ export default function ConvertidoDetalhe() {
             }}>
               <Edit size={13} />
               Status
+            </Button>
+            <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => setShowDeleteDialog(true)}>
+              <Trash2 size={13} />
+              Excluir
             </Button>
           </div>
         </CardContent>
@@ -227,6 +243,26 @@ export default function ConvertidoDetalhe() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Dialog */}
+      <Dialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Excluir Convertido"
+        description={`Tem certeza que deseja excluir "${convertido.nome}"? Esta ação não pode ser desfeita.`}
+      >
+        <div className="flex gap-3 justify-end pt-1">
+          <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancelar</Button>
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => deleteConvertido.mutate()}
+            loading={deleteConvertido.isPending}
+          >
+            <Trash2 size={14} />
+            Excluir permanentemente
+          </Button>
+        </div>
+      </Dialog>
 
       {/* Status Dialog */}
       <Dialog

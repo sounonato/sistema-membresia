@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, UserCheck, Phone, BookOpen } from 'lucide-react'
+import { Plus, UserCheck, Phone, BookOpen, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -34,6 +34,7 @@ export default function Discipuladores() {
   const [showDialog, setShowDialog] = useState(false)
   const [discError, setDiscError] = useState('')
   const [toggleError, setToggleError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; nome: string } | null>(null)
   const queryClient = useQueryClient()
 
   const { data: discipuladores = [], isLoading } = useQuery({
@@ -62,6 +63,19 @@ export default function Discipuladores() {
       setDiscError('')
     },
     onError: (err: any) => setDiscError(err.message ?? 'Erro ao criar discipulador'),
+  })
+
+  const deleteDiscipulador = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('discipuladores').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] })
+      queryClient.invalidateQueries({ queryKey: ['discipuladores'] })
+      setDeleteTarget(null)
+    },
+    onError: (err: any) => setToggleError(err.message ?? 'Erro ao excluir discipulador'),
   })
 
   const toggleAtivo = useMutation({
@@ -137,18 +151,47 @@ export default function Discipuladores() {
                     )}
                   </div>
 
-                  <button
-                    onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
-                    className="mt-3 text-xs text-stone-400 hover:text-red-600 transition-colors font-medium"
-                  >
-                    {d.ativo ? 'Desativar' : 'Reativar'}
-                  </button>
+                  <div className="flex items-center justify-between mt-3">
+                    <button
+                      onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
+                      className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium"
+                    >
+                      {d.ativo ? 'Desativar' : 'Reativar'}
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget({ id: d.id, nome: d.nome })}
+                      className="text-xs text-stone-400 hover:text-red-600 transition-colors font-medium flex items-center gap-1"
+                    >
+                      <Trash2 size={11} />
+                      Excluir
+                    </button>
+                  </div>
                 </CardContent>
               </Card>
             )
           })}
         </div>
       )}
+
+      {/* Delete Dialog */}
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Excluir Discipulador"
+        description={`Tem certeza que deseja excluir "${deleteTarget?.nome}"? Esta ação não pode ser desfeita e removerá todos os dados vinculados.`}
+      >
+        <div className="flex gap-3 justify-end pt-1">
+          <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => deleteTarget && deleteDiscipulador.mutate(deleteTarget.id)}
+            loading={deleteDiscipulador.isPending}
+          >
+            <Trash2 size={14} />
+            Excluir permanentemente
+          </Button>
+        </div>
+      </Dialog>
 
       <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) setDiscError('') }} title="Novo Discipulador">
         <form onSubmit={handleSubmit((data) => create.mutate(data))} className="space-y-4">
