@@ -60,6 +60,7 @@ export default function GrupoDetalhe() {
   const [convertidoSelecionado, setConvertidoSelecionado] = useState('')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
   const [membroError, setMembroError] = useState('')
+  const [aulaError, setAulaError] = useState('')
 
   const { data: grupo, isLoading } = useQuery({
     queryKey: ['grupo', id],
@@ -114,6 +115,7 @@ export default function GrupoDetalhe() {
 
   const toggleAula = useMutation({
     mutationFn: async ({ numeroAula, statusAtual }: { numeroAula: number; statusAtual: StatusAula }) => {
+      setAulaError('')
       const novoStatus: StatusAula = statusAtual === 'realizada' ? 'pendente' : 'realizada'
       const existing = progresso.find((p) => p.numero_aula === numeroAula)
       if (existing) {
@@ -131,11 +133,11 @@ export default function GrupoDetalhe() {
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['progresso', id] }),
-    onError: () => console.error('Erro ao atualizar aula'),
+    onError: (err: any) => setAulaError(err.message ?? 'Erro ao atualizar aula'),
   })
 
-  if (isLoading) return <div className="animate-pulse h-64 bg-gray-100 rounded-xl" />
-  if (!grupo) return <p className="text-gray-500">Grupo não encontrado.</p>
+  if (isLoading) return <div className="animate-pulse h-64 bg-stone-100 border border-stone-200 rounded-2xl" />
+  if (!grupo) return <p className="text-stone-50">Grupo não encontrado.</p>
 
   const { variant, label } = statusGrupoBadge(grupo.status)
   const totalAulas = grupo.modulo?.total_aulas ?? 0
@@ -146,10 +148,10 @@ export default function GrupoDetalhe() {
     <div className="space-y-5 max-w-2xl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} aria-label="Voltar" className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+        <button onClick={() => navigate(-1)} aria-label="Voltar" className="p-2 rounded-xl text-stone-500 hover:bg-stone-100 transition-colors">
           <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold text-gray-900">Grupo de Discipulado</h1>
+        <h1 className="text-2xl font-serif font-bold text-stone-900">Grupo de Discipulado</h1>
       </div>
 
       {/* Info do grupo */}
@@ -157,41 +159,41 @@ export default function GrupoDetalhe() {
         <CardContent className="p-5">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">{grupo.nome}</h2>
-              <p className="text-sm text-gray-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
+              <h2 className="text-2xl font-serif font-bold text-stone-900">{grupo.nome}</h2>
+              <p className="text-sm text-stone-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
             </div>
             <Badge variant={variant}>{label}</Badge>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-stone-600">
               <Avatar name={grupo.discipulador?.nome ?? '?'} size="sm" />
               <div>
-                <p className="text-xs text-gray-400">Discipulador</p>
-                <p className="font-medium">{grupo.discipulador?.nome}</p>
+                <p className="text-xs text-stone-400">Discipulador</p>
+                <p className="font-semibold text-stone-800">{grupo.discipulador?.nome}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Calendar size={14} className="text-gray-400" />
+            <div className="flex items-center gap-2 text-stone-600">
+              <Calendar size={14} className="text-stone-400" />
               <div>
-                <p className="text-xs text-gray-400">Início</p>
-                <p className="font-medium">{formatDate(grupo.data_inicio)}</p>
+                <p className="text-xs text-stone-400">Início</p>
+                <p className="font-semibold text-stone-800">{formatDate(grupo.data_inicio)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Users size={14} className="text-gray-400" />
+            <div className="flex items-center gap-2 text-stone-600">
+              <Users size={14} className="text-stone-400" />
               <div>
-                <p className="text-xs text-gray-400">Tipo</p>
-                <p className="font-medium capitalize">{grupo.tipo}</p>
+                <p className="text-xs text-stone-400">Tipo</p>
+                <p className="font-semibold text-stone-800 capitalize">{grupo.tipo}</p>
               </div>
             </div>
           </div>
 
           {totalAulas > 0 && (
             <div className="mt-4">
-              <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+              <div className="flex justify-between text-xs text-stone-500 mb-1.5">
                 <span>Progresso das aulas</span>
-                <span className="font-medium text-primary-600">{realizadas}/{totalAulas} realizadas</span>
+                <span className="font-medium text-amber-700">{realizadas}/{totalAulas} realizadas</span>
               </div>
               <Progress value={realizadas} max={totalAulas} color={realizadas === totalAulas ? 'green' : 'primary'} />
             </div>
@@ -203,7 +205,7 @@ export default function GrupoDetalhe() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-gray-700">
+            <CardTitle className="flex items-center gap-2 text-stone-700">
               <Users size={15} />
               Membros ({membros.length})
             </CardTitle>
@@ -215,23 +217,23 @@ export default function GrupoDetalhe() {
         </CardHeader>
         <CardContent className="space-y-2">
           {membros.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">Nenhum membro no grupo</p>
+            <p className="text-sm text-stone-400 text-center py-4">Nenhum membro no grupo</p>
           ) : (
             membros.map((m: any) => {
               const c = m.convertido as NovoConvertido
               const { variant: sv, label: sl } = statusConvertidoBadge(c.status)
               return (
-                <div key={m.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50">
+                <div key={m.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-stone-50/70 border border-transparent hover:shadow-[0_1px_4px_rgba(28,25,23,0.06)] transition-all">
                   <Avatar name={c.nome} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{c.nome}</p>
-                    <p className="text-xs text-gray-400">Desde {formatDate(m.data_entrada)}</p>
+                    <p className="text-sm font-medium text-stone-900 truncate">{c.nome}</p>
+                    <p className="text-xs text-stone-400">Desde {formatDate(m.data_entrada)}</p>
                   </div>
                   <Badge variant={sv}>{sl}</Badge>
                   <button
                     onClick={() => setConfirmRemoveId(m.id)}
                     aria-label="Remover membro"
-                    className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
+                    className="p-1.5 rounded text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -246,21 +248,26 @@ export default function GrupoDetalhe() {
       {totalAulas > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-700">
+            <CardTitle className="flex items-center gap-2 text-stone-700">
               <BookOpen size={15} />
               Aulas — {grupo.modulo?.nome}
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {aulaError && (
+              <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5 mb-4">
+                {aulaError}
+              </p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {aulasArray.map((num) => {
                 const p = progresso.find((pr) => pr.numero_aula === num)
                 const status = p?.status ?? 'pendente'
                 const icon =
-                  status === 'realizada' ? <CheckCircle2 size={18} className="text-green-500" /> :
-                  status === 'cancelada' ? <XCircle size={18} className="text-red-400" /> :
-                  <Circle size={18} className="text-gray-300" />
-
+                  status === 'realizada' ? <CheckCircle2 size={18} className="text-emerald-600" /> :
+                  status === 'cancelada' ? <XCircle size={18} className="text-red-500" /> :
+                  <Circle size={18} className="text-stone-300" />
+ 
                 return (
                   <button
                     key={num}
@@ -268,17 +275,17 @@ export default function GrupoDetalhe() {
                     disabled={grupo.status === 'encerrado'}
                     className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
                       status === 'realizada'
-                        ? 'border-green-200 bg-green-50'
-                        : 'border-gray-100 hover:border-primary-200 hover:bg-gray-50'
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                        : 'border-stone-100 hover:border-amber-200 hover:bg-stone-50'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {icon}
                     <div className="flex-1">
-                      <p className={`text-sm font-medium ${status === 'realizada' ? 'text-green-700' : 'text-gray-700'}`}>
+                      <p className={`text-sm font-medium ${status === 'realizada' ? 'text-emerald-800' : 'text-stone-700'}`}>
                         Aula {num}
                       </p>
                       {p?.data_realizada && (
-                        <p className="text-xs text-gray-400">{formatDate(p.data_realizada)}</p>
+                        <p className="text-xs text-stone-400">{formatDate(p.data_realizada)}</p>
                       )}
                     </div>
                   </button>
@@ -287,9 +294,9 @@ export default function GrupoDetalhe() {
             </div>
 
             {realizadas === totalAulas && (
-              <div className="mt-4 p-3 bg-green-50 rounded-xl border border-green-200 text-center">
-                <p className="text-sm font-semibold text-green-700">🎉 Módulo concluído!</p>
-                <p className="text-xs text-green-600 mt-0.5">Todas as aulas foram realizadas.</p>
+              <div className="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-center">
+                <p className="text-sm font-semibold text-emerald-800">🎉 Módulo concluído!</p>
+                <p className="text-xs text-emerald-700 mt-0.5">Todas as aulas foram realizadas.</p>
               </div>
             )}
           </CardContent>
@@ -336,7 +343,7 @@ export default function GrupoDetalhe() {
           <Button variant="outline" onClick={() => setConfirmRemoveId(null)}>Cancelar</Button>
           <Button
             variant="outline"
-            className="text-red-600 border-red-300 hover:bg-red-50"
+            className="text-red-700 border-red-200 hover:bg-red-50 bg-white"
             loading={removeMembro.isPending}
             onClick={() => { removeMembro.mutate(confirmRemoveId!); setConfirmRemoveId(null) }}
           >

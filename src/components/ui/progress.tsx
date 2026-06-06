@@ -9,8 +9,8 @@ interface ProgressProps {
 }
 
 const colors = {
-  primary: 'bg-primary-600',
-  green: 'bg-green-500',
+  primary: 'bg-amber-700',
+  green: 'bg-emerald-600',
   amber: 'bg-amber-500',
 }
 
@@ -18,14 +18,14 @@ export function Progress({ value, max = 100, className, showLabel, color = 'prim
   const pct = Math.round((value / max) * 100)
   return (
     <div className={cn('flex items-center gap-3', className)}>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
         <div
           className={cn('h-full rounded-full transition-all', colors[color])}
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
       {showLabel && (
-        <span className="text-xs font-medium text-gray-500 w-10 text-right">
+        <span className="text-xs font-medium text-stone-500 w-10 text-right">
           {value}/{max}
         </span>
       )}

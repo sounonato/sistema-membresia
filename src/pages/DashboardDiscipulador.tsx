@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { BookOpen, Users, CheckSquare, Phone, MessageSquare, Calendar, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
-import { StatCard } from '@/components/ui/card'
+import { Card, StatCard } from '@/components/ui/card'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -173,7 +173,9 @@ export default function DashboardDiscipulador() {
   if (loadingDisc || loadingGrupos) {
     return (
       <div className="space-y-4">
-        {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-xl" />)}
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-24 bg-stone-100 animate-pulse rounded-2xl border border-stone-200" />
+        ))}
       </div>
     )
   }
@@ -181,9 +183,9 @@ export default function DashboardDiscipulador() {
   if (!discipulador) {
     return (
       <div className="text-center py-16">
-        <BookOpen size={48} className="text-gray-300 mx-auto mb-4" />
-        <p className="text-gray-500 font-medium">Você ainda não está cadastrado como discipulador.</p>
-        <p className="text-sm text-gray-400 mt-1">Peça ao líder para vincular seu usuário a um discipulador.</p>
+        <BookOpen size={48} className="text-stone-300 mx-auto mb-4" />
+        <p className="text-stone-500 font-medium">Você ainda não está cadastrado como discipulador.</p>
+        <p className="text-sm text-stone-400 mt-1">Peça ao líder para vincular seu usuário a um discipulador.</p>
       </div>
     )
   }
@@ -192,26 +194,26 @@ export default function DashboardDiscipulador() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-3xl font-serif font-bold text-stone-900">
           {saudacao}, {profile?.nome?.split(' ')[0]} 👋
         </h1>
-        <p className="text-sm text-gray-500 mt-0.5">Seu painel de discipulado</p>
+        <p className="text-sm text-stone-500 mt-1">Seu painel de discipulado</p>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-3 gap-4">
-        <StatCard title="Grupos Ativos" value={grupos.length} icon={<BookOpen size={20} />} color="purple" />
-        <StatCard title="Convertidos" value={totalMembros} icon={<Users size={20} />} color="blue" />
-        <StatCard title="Aulas Realizadas" value={aulasRealizadas} icon={<CheckSquare size={20} />} color="green" />
+        <StatCard title="Grupos Ativos" value={grupos.length} icon={<BookOpen size={20} />} />
+        <StatCard title="Convertidos" value={totalMembros} icon={<Users size={20} />} />
+        <StatCard title="Aulas Realizadas" value={aulasRealizadas} icon={<CheckSquare size={20} />} />
       </div>
 
       {/* Grupos */}
       {grupos.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <BookOpen size={40} className="text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Nenhum grupo ativo atribuído a você</p>
-          <p className="text-sm text-gray-400 mt-1">O líder vai designar seus grupos em breve.</p>
-        </div>
+        <Card className="p-10 text-center">
+          <BookOpen size={40} className="text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500 font-medium">Nenhum grupo ativo atribuído a você</p>
+          <p className="text-sm text-stone-400 mt-1">O líder vai designar seus grupos em breve.</p>
+        </Card>
       ) : (
         <div className="space-y-5">
           {grupos.map((grupo: any) => {
@@ -220,49 +222,49 @@ export default function DashboardDiscipulador() {
             const totalAulas = grupo.modulo?.total_aulas ?? 0
 
             return (
-              <div key={grupo.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <Card key={grupo.id} className="overflow-hidden">
                 {/* Header do grupo */}
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="p-4 border-b border-stone-100 flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-gray-900">{grupo.nome}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
+                    <h3 className="font-serif text-lg font-semibold text-stone-900">{grupo.nome}</h3>
+                    <p className="text-xs text-stone-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
                   </div>
                   {totalAulas > 0 && (
                     <div className="text-right">
-                      <p className="text-sm font-bold text-primary-600">{realizadas}/{totalAulas}</p>
-                      <p className="text-xs text-gray-400">aulas</p>
+                      <p className="text-sm font-bold text-amber-700">{realizadas}/{totalAulas}</p>
+                      <p className="text-xs text-stone-400">aulas</p>
                     </div>
                   )}
                 </div>
 
                 {totalAulas > 0 && (
-                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                  <div className="px-4 py-2 bg-stone-50 border-b border-stone-100">
                     <Progress value={realizadas} max={totalAulas} color={realizadas === totalAulas ? 'green' : 'primary'} />
                   </div>
                 )}
 
                 {/* Membros */}
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-stone-100">
                   {membrosAtivos.length === 0 ? (
-                    <p className="text-sm text-gray-400 text-center py-4">Nenhum membro ativo</p>
+                    <p className="text-sm text-stone-400 text-center py-4">Nenhum membro ativo</p>
                   ) : (
                     membrosAtivos.map((m: any) => {
                       const c = m.convertido
                       const ultimo = ultimoAcomp(c.id)
                       return (
-                        <div key={m.id} className="flex items-center gap-3 px-4 py-3">
+                        <div key={m.id} className="flex items-center gap-3 px-4 py-3 hover:bg-stone-50/50 transition-colors">
                           <Avatar name={c.nome} size="md" src={c.foto_url} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{c.nome}</p>
+                            <p className="text-sm font-medium text-stone-900 truncate">{c.nome}</p>
                             {ultimo ? (
                               <div className="flex items-center gap-1 mt-0.5">
-                                <span className="text-gray-400">{TIPO_ICONS[ultimo.tipo_contato]}</span>
-                                <p className="text-xs text-gray-400">
+                                <span className="text-stone-400">{TIPO_ICONS[ultimo.tipo_contato]}</span>
+                                <p className="text-xs text-stone-400">
                                   Último contato {formatRelative(ultimo.data_contato)}
                                 </p>
                               </div>
                             ) : (
-                              <p className="text-xs text-amber-500 mt-0.5">Sem registro de contato</p>
+                              <p className="text-xs text-amber-600 font-medium mt-0.5">Sem registro de contato</p>
                             )}
                           </div>
                           <Button
@@ -285,15 +287,15 @@ export default function DashboardDiscipulador() {
                 </div>
 
                 {/* Footer com link para aulas */}
-                <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">
+                <div className="px-4 py-2.5 bg-stone-50 border-t border-stone-100">
                   <Link
                     to={`/discipulado/${grupo.id}`}
-                    className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                    className="text-xs text-amber-700 hover:text-amber-800 font-medium"
                   >
                     Gerenciar aulas do grupo →
                   </Link>
                 </div>
-              </div>
+              </Card>
             )
           })}
         </div>

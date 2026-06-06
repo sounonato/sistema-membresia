@@ -33,6 +33,7 @@ async function fetchDiscipuladores() {
 export default function Discipuladores() {
   const [showDialog, setShowDialog] = useState(false)
   const [discError, setDiscError] = useState('')
+  const [toggleError, setToggleError] = useState('')
   const queryClient = useQueryClient()
 
   const { data: discipuladores = [], isLoading } = useQuery({
@@ -65,18 +66,20 @@ export default function Discipuladores() {
 
   const toggleAtivo = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      await supabase.from('discipuladores').update({ ativo: !ativo }).eq('id', id)
+      setToggleError('')
+      const { error } = await supabase.from('discipuladores').update({ ativo: !ativo }).eq('id', id)
+      if (error) throw error
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] }),
-    onError: () => console.error('Erro ao atualizar discipulador'),
+    onError: (err: any) => setToggleError(err.message ?? 'Erro ao atualizar discipulador'),
   })
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Discipuladores</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{discipuladores.filter(d => d.ativo).length} ativos</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Discipuladores</h1>
+          <p className="text-sm text-stone-500 mt-1">{discipuladores.filter(d => d.ativo).length} ativos</p>
         </div>
         <Button onClick={() => setShowDialog(true)}>
           <Plus size={16} />
@@ -84,26 +87,34 @@ export default function Discipuladores() {
         </Button>
       </div>
 
+      {toggleError && (
+        <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">
+          {toggleError}
+        </p>
+      )}
+
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-gray-100 animate-pulse rounded-xl" />)}
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-28 bg-stone-100 animate-pulse rounded-2xl border border-stone-200" />
+          ))}
         </div>
       ) : discipuladores.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <UserCheck size={40} className="text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Nenhum discipulador cadastrado</p>
-        </div>
+        <Card className="p-10 text-center">
+          <UserCheck size={40} className="text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500 font-medium">Nenhum discipulador cadastrado</p>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {discipuladores.map((d) => {
             const gruposAtivos = d.grupos?.filter((g) => g.status === 'ativo').length ?? 0
             return (
-              <Card key={d.id} className="p-5">
+              <Card key={d.id} className="p-5 hover:border-amber-300 transition-all">
                 <CardContent className="p-0">
                   <div className="flex items-center gap-3 mb-3">
                     <Avatar name={d.nome} size="lg" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 truncate">{d.nome}</p>
+                      <p className="font-serif text-lg font-bold text-stone-900 truncate">{d.nome}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <Badge variant={d.ativo ? 'success' : 'default'}>
                           {d.ativo ? 'Ativo' : 'Inativo'}
@@ -116,19 +127,19 @@ export default function Discipuladores() {
                     </div>
                   </div>
 
-                  <div className="space-y-1 text-sm text-gray-600">
+                  <div className="space-y-1 text-sm text-stone-600">
                     <div className="flex items-center gap-2">
-                      <Phone size={12} className="text-gray-400" />
+                      <Phone size={12} className="text-stone-400" />
                       {formatPhone(d.telefone)}
                     </div>
                     {d.email && (
-                      <p className="text-xs text-gray-400 pl-5">{d.email}</p>
+                      <p className="text-xs text-stone-400 pl-5">{d.email}</p>
                     )}
                   </div>
 
                   <button
                     onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
-                    className="mt-3 text-xs text-gray-400 hover:text-red-400 transition-colors"
+                    className="mt-3 text-xs text-stone-400 hover:text-red-600 transition-colors font-medium"
                   >
                     {d.ativo ? 'Desativar' : 'Reativar'}
                   </button>

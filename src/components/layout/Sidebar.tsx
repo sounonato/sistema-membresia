@@ -25,15 +25,15 @@ export function Sidebar() {
   const nav = isLider ? NAV_LIDER : NAV_DISCIPULADOR
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen fixed left-0 top-0 bottom-0 z-30">
+    <aside className="hidden lg:flex flex-col w-64 bg-stone-50 border-r border-stone-200 min-h-screen fixed left-0 top-0 bottom-0 z-30">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-        <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-stone-200">
+        <div className="w-9 h-9 bg-amber-700 rounded-xl flex items-center justify-center">
           <Church size={18} className="text-white" />
         </div>
         <div>
-          <p className="text-sm font-bold text-gray-900">Membresia</p>
-          <p className="text-xs text-gray-400">Sistema da Igreja</p>
+          <p className="text-sm font-serif font-bold text-stone-900">Membresia</p>
+          <p className="text-xs text-stone-400">Sistema da Igreja</p>
         </div>
       </div>
 
@@ -46,10 +46,10 @@ export function Sidebar() {
             end={to === '/'}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                'flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all',
                 isActive
-                  ? 'bg-primary-50 text-primary-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                  ? 'bg-amber-50 text-amber-800 font-semibold border-l-2 border-amber-600 rounded-r-xl pl-2.5'
+                  : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 rounded-xl',
               )
             }
           >
@@ -61,16 +61,16 @@ export function Sidebar() {
 
       {/* User */}
       {profile && (
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-stone-200">
           <div className="flex items-center gap-3 px-3 py-2">
             <Avatar name={profile.nome} size="sm" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{profile.nome}</p>
-              <p className="text-xs text-gray-400 capitalize">{profile.perfil}</p>
+              <p className="text-sm font-medium text-stone-900 truncate">{profile.nome}</p>
+              <p className="text-xs text-stone-400 capitalize">{profile.perfil}</p>
             </div>
             <button
               onClick={signOut}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+              className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
               title="Sair"
               aria-label="Sair"
             >

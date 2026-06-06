@@ -20,7 +20,7 @@ export function BottomNav() {
   const { isLider } = useAuth()
   const nav = isLider ? NAV_LIDER : NAV_DISCIPULADOR
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30 safe-area-pb">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 z-30 safe-area-pb">
       <div className="flex">
         {nav.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -29,13 +29,13 @@ export function BottomNav() {
             end={to === '/'}
             className={({ isActive }) =>
               cn(
-                'flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors',
-                isActive ? 'text-primary-600' : 'text-gray-400',
+                'flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors min-w-0',
+                isActive ? 'text-amber-700' : 'text-stone-400',
               )
             }
           >
-            <Icon size={20} />
-            {label}
+            <Icon size={20} className="flex-shrink-0" />
+            <span className="truncate w-full text-center px-0.5">{label}</span>
           </NavLink>
         ))}
       </div>

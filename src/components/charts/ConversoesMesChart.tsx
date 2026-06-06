@@ -9,6 +9,8 @@ import {
 } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { Card } from '@/components/ui/card'
+import { CHART_COLORS } from '@/lib/chartColors'
 
 async function fetchConversoesPorMes() {
   // Busca convertidos dos últimos 6 meses
@@ -54,20 +56,20 @@ export function ConversoesMesChart() {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Conversões por Mês</h3>
+    <Card className="p-5">
+      <h3 className="text-base font-serif font-semibold text-stone-900 mb-4">Conversões por Mês</h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="mes" tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
+          <XAxis dataKey="mes" tick={{ fontSize: 12, fill: '#A8A29E' }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 12, fill: '#A8A29E' }} axisLine={false} tickLine={false} allowDecimals={false} />
           <Tooltip
-            contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
+            contentStyle={{ borderRadius: 12, border: '1px solid #E8E2D9', fontSize: 13, color: '#1C1917' }}
             formatter={(v) => [v, 'Conversões']}
           />
-          <Bar dataKey="total" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="total" fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Card>
   )
 }

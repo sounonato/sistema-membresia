@@ -111,8 +111,8 @@ export default function Discipulado() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Discipulado</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{grupos.length} grupos cadastrados</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Discipulado</h1>
+          <p className="text-sm text-stone-500 mt-1">{grupos.length} grupos cadastrados</p>
         </div>
         {isLider && (
           <Button onClick={() => setShowDialog(true)}>
@@ -123,7 +123,7 @@ export default function Discipulado() {
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         {[
           { value: '', label: 'Todos' },
           { value: 'ativo', label: 'Ativos' },
@@ -133,10 +133,10 @@ export default function Discipulado() {
           <button
             key={opt.value}
             onClick={() => setStatusFilter(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
               statusFilter === opt.value
-                ? 'bg-primary-600 text-white'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'
+                ? 'bg-amber-700 text-white shadow-sm'
+                : 'bg-white text-stone-600 border border-stone-200 hover:border-amber-300 hover:text-stone-900'
             }`}
           >
             {opt.label}
@@ -148,15 +148,15 @@ export default function Discipulado() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-40 bg-gray-100 animate-pulse rounded-xl" />
+            <div key={i} className="h-40 bg-stone-100 animate-pulse rounded-2xl border border-stone-200" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <BookOpen size={40} className="text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Nenhum grupo encontrado</p>
-          <p className="text-sm text-gray-400 mt-1">Crie o primeiro grupo de discipulado</p>
-        </div>
+        <Card className="p-10 text-center">
+          <BookOpen size={40} className="text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500 font-medium">Nenhum grupo encontrado</p>
+          <p className="text-sm text-stone-400 mt-1">Crie o primeiro grupo de discipulado</p>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map((grupo) => {
@@ -167,38 +167,42 @@ export default function Discipulado() {
 
             return (
               <Link key={grupo.id} to={`/discipulado/${grupo.id}`}>
-                <Card className="p-5 hover:border-primary-200 hover:shadow-md transition-all cursor-pointer h-full">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">{grupo.nome}</h3>
-                      <p className="text-xs text-gray-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
+                <Card className="p-5 hover:border-amber-300 transition-all cursor-pointer h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-start justify-between mb-3 gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-serif text-lg font-bold text-stone-900 truncate">{grupo.nome}</h3>
+                        <p className="text-xs text-stone-500 mt-0.5">{grupo.modulo?.nome ?? 'Módulo não definido'}</p>
+                      </div>
+                      <Badge variant={variant}>{label}</Badge>
                     </div>
-                    <Badge variant={variant}>{label}</Badge>
-                  </div>
 
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar name={grupo.discipulador?.nome ?? '?'} size="sm" />
-                    <div>
-                      <p className="text-xs text-gray-500">Discipulador</p>
-                      <p className="text-sm font-medium text-gray-800">{grupo.discipulador?.nome ?? '—'}</p>
+                    <div className="flex items-center gap-3 mb-3">
+                      <Avatar name={grupo.discipulador?.nome ?? '?'} size="sm" />
+                      <div>
+                        <p className="text-xs text-stone-400">Discipulador</p>
+                        <p className="text-sm font-semibold text-stone-800">{grupo.discipulador?.nome ?? '—'}</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                    <span className="flex items-center gap-1">
-                      <Users size={12} />
-                      {membrosAtivos} {grupo.tipo === 'individual' ? 'pessoa' : 'pessoas'}
-                    </span>
-                    <span>
-                      {totalAulas > 0 ? `${realizadas}/${totalAulas} aulas` : 'Aulas não definidas'}
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-stone-500 mb-2">
+                      <span className="flex items-center gap-1">
+                        <Users size={12} />
+                        {membrosAtivos} {grupo.tipo === 'individual' ? 'pessoa' : 'pessoas'}
+                      </span>
+                      <span className="font-medium text-amber-700">
+                        {totalAulas > 0 ? `${realizadas}/${totalAulas} aulas` : 'Aulas não definidas'}
+                      </span>
+                    </div>
+
+                    {totalAulas > 0 && (
+                      <Progress value={realizadas} max={totalAulas} color={realizadas === totalAulas ? 'green' : 'primary'} />
+                    )}
+
+                    <p className="text-xs text-stone-400 mt-3">Início: {formatDate(grupo.data_inicio)}</p>
                   </div>
-
-                  {totalAulas > 0 && (
-                    <Progress value={realizadas} max={totalAulas} color={realizadas === totalAulas ? 'green' : 'primary'} />
-                  )}
-
-                  <p className="text-xs text-gray-400 mt-2">Início: {formatDate(grupo.data_inicio)}</p>
                 </Card>
               </Link>
             )

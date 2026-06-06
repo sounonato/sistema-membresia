@@ -36,7 +36,7 @@ type FormData = z.infer<typeof schema>
 function SectionTitle({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-primary-700 text-sm">
+      <CardTitle className="flex items-center gap-2 text-amber-700 text-sm">
         <Icon size={15} />
         {label}
       </CardTitle>
@@ -89,31 +89,31 @@ export default function FormularioPublico() {
 
   if (enviado) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-white flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <CheckCircle2 size={40} className="text-green-500" />
+          <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+            <CheckCircle2 size={40} className="text-emerald-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bem-vindo(a)! 🎉</h1>
-          <p className="text-gray-500 leading-relaxed">
+          <h1 className="text-3xl font-serif font-bold text-stone-900 mb-2">Bem-vindo(a)! 🎉</h1>
+          <p className="text-stone-500 leading-relaxed text-sm">
             Seus dados foram registrados com sucesso. Nossa equipe entrará em contato em breve para acompanhar sua caminhada na fé.
           </p>
-          <p className="text-sm text-gray-400 mt-6">Que Deus abençoe você!</p>
+          <p className="text-xs text-stone-400 mt-6">Que Deus abençoe você!</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-white py-8 px-4">
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary-200">
-            <Church size={26} className="text-white" />
+          <div className="w-14 h-14 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+            <Church size={26} className="text-amber-700" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Bem-vindo(a)!</h1>
-          <p className="text-sm text-gray-500 mt-1">Preencha seus dados para começarmos sua jornada</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Bem-vindo(a)!</h1>
+          <p className="text-sm text-stone-500 mt-1">Preencha seus dados para começarmos sua jornada</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -140,7 +140,7 @@ export default function FormularioPublico() {
                 {...register('estado_civil')}
               />
               <Select
-                label="Categoria"
+                label="Gênero / Faixa etária"
                 placeholder="Selecionar..."
                 options={[
                   { value: 'masculino', label: 'Masculino' },
@@ -151,9 +151,9 @@ export default function FormularioPublico() {
                 {...register('genero')}
               />
               <Input label="Profissão" placeholder="Sua profissão" {...register('profissao')} />
-              <div className="flex items-center gap-2.5 col-span-1">
-                <input type="checkbox" id="tem_filhos" {...register('tem_filhos')} className="w-4 h-4 accent-primary-600" />
-                <label htmlFor="tem_filhos" className="text-sm font-medium text-gray-700">Tem filhos?</label>
+              <div className="flex items-center gap-2.5 col-span-1 py-2">
+                <input type="checkbox" id="tem_filhos" {...register('tem_filhos')} className="w-4 h-4 accent-amber-700 rounded" />
+                <label htmlFor="tem_filhos" className="text-sm font-medium text-stone-700 cursor-pointer">Tem filhos?</label>
               </div>
               {temFilhos && (
                 <Input label="Quantidade de filhos" type="number" min={1} {...register('qtd_filhos')} />
@@ -192,17 +192,17 @@ export default function FormularioPublico() {
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                  <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-primary-600" />
-                  <span className="text-sm text-gray-700">Sou batizado(a)</span>
+                <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                  <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-amber-700 rounded" />
+                  <span className="text-sm text-stone-700">Sou batizado(a)</span>
                 </label>
-                <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                  <input type="checkbox" {...register('quer_batismo')} className="w-4 h-4 accent-primary-600" />
-                  <span className="text-sm text-gray-700">Quero me batizar</span>
+                <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                  <input type="checkbox" {...register('quer_batismo')} className="w-4 h-4 accent-amber-700 rounded" />
+                  <span className="text-sm text-stone-700">Quero me batizar</span>
                 </label>
-                <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                  <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-primary-600" />
-                  <span className="text-sm text-gray-700">Frequentava outra igreja</span>
+                <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                  <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-amber-700 rounded" />
+                  <span className="text-sm text-stone-700">Frequentava outra igreja</span>
                 </label>
               </div>
 
@@ -219,7 +219,7 @@ export default function FormularioPublico() {
           </Card>
 
           {erro && (
-            <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5 text-center">
+            <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5 text-center">
               {erro}
             </p>
           )}
@@ -228,7 +228,7 @@ export default function FormularioPublico() {
             Enviar meus dados ✨
           </Button>
 
-          <p className="text-xs text-gray-400 text-center pb-4">
+          <p className="text-xs text-stone-400 text-center pb-4">
             Seus dados são sigilosos e serão usados apenas pela equipe pastoral.
           </p>
         </form>

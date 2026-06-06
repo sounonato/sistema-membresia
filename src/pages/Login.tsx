@@ -26,19 +26,19 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-white flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-200">
-            <Church size={32} className="text-white" />
+          <div className="w-16 h-16 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Church size={32} className="text-amber-700" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Sistema Membresia</h1>
-          <p className="text-sm text-gray-500 mt-1">Acompanhamento de novos convertidos</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Membresia</h1>
+          <p className="text-sm text-stone-500 mt-1">Acompanhamento de novos convertidos</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-100 shadow-lg p-8 space-y-4">
           <Input
             label="E-mail"
             type="email"

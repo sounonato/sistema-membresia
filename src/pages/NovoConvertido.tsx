@@ -39,7 +39,7 @@ type FormData = z.infer<typeof schema>
 function SectionTitle({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-primary-700">
+      <CardTitle className="flex items-center gap-2 text-amber-700">
         <Icon size={16} />
         {label}
       </CardTitle>
@@ -96,13 +96,13 @@ export default function NovoConvertido() {
         <button
           onClick={() => navigate(-1)}
           aria-label="Voltar"
-          className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-xl text-stone-500 hover:bg-stone-100 transition-colors"
         >
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Novo Convertido</h1>
-          <p className="text-sm text-gray-500">Preencha os dados do novo membro</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Novo Convertido</h1>
+          <p className="text-sm text-stone-500">Preencha os dados do novo membro</p>
         </div>
       </div>
 
@@ -152,7 +152,7 @@ export default function NovoConvertido() {
               {...register('estado_civil')}
             />
             <Select
-              label="Categoria"
+              label="Gênero / Faixa etária"
               placeholder="Selecionar..."
               options={[
                 { value: 'masculino', label: 'Masculino' },
@@ -164,8 +164,8 @@ export default function NovoConvertido() {
             />
             <Input label="Profissão" placeholder="Contador, professor..." {...register('profissao')} />
             <div className="flex items-center gap-3 pt-2">
-              <input type="checkbox" id="tem_filhos" {...register('tem_filhos')} className="w-4 h-4 accent-primary-600" />
-              <label htmlFor="tem_filhos" className="text-sm font-medium text-gray-700">Tem filhos?</label>
+              <input type="checkbox" id="tem_filhos" {...register('tem_filhos')} className="w-4 h-4 accent-amber-700 rounded" />
+              <label htmlFor="tem_filhos" className="text-sm font-medium text-stone-700 cursor-pointer">Tem filhos?</label>
             </div>
             {temFilhos && (
               <Input
@@ -222,17 +222,17 @@ export default function NovoConvertido() {
           <SectionTitle icon={Church} label="Informações de Fé" />
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-primary-600" />
-                <span className="text-sm font-medium text-gray-700">É batizado?</span>
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-amber-700 rounded" />
+                <span className="text-sm font-medium text-stone-700">É batizado?</span>
               </label>
-              <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                <input type="checkbox" {...register('quer_batismo')} className="w-4 h-4 accent-primary-600" />
-                <span className="text-sm font-medium text-gray-700">Quer se batizar?</span>
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                <input type="checkbox" {...register('quer_batismo')} className="w-4 h-4 accent-amber-700 rounded" />
+                <span className="text-sm font-medium text-stone-700">Quer se batizar?</span>
               </label>
-              <label className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-primary-300 transition-colors">
-                <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-primary-600" />
-                <span className="text-sm font-medium text-gray-700">Frequentava igreja?</span>
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-amber-700 rounded" />
+                <span className="text-sm font-medium text-stone-700">Frequentava igreja?</span>
               </label>
             </div>
             {jaFrequentava && (
@@ -251,7 +251,7 @@ export default function NovoConvertido() {
         </Card>
 
         {serverError && (
-          <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5">
+          <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">
             {serverError}
           </p>
         )}

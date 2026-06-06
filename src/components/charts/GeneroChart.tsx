@@ -1,14 +1,16 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { Card } from '@/components/ui/card'
+import { CHART_COLORS } from '@/lib/chartColors'
 
 const CATEGORIAS = ['masculino', 'feminino', 'jovem', 'adolescente'] as const
 
 const CORES: Record<string, string> = {
-  masculino: '#3b82f6',
-  feminino: '#ec4899',
-  jovem: '#f59e0b',
-  adolescente: '#10b981',
+  masculino: CHART_COLORS.primary,
+  feminino: CHART_COLORS.secondary,
+  jovem: CHART_COLORS.tertiary,
+  adolescente: CHART_COLORS.quaternary,
 }
 
 const LABELS: Record<string, string> = {
@@ -52,10 +54,10 @@ export function GeneroChart() {
   const total = data.reduce((s, d) => s + d.value, 0)
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Distribuição por Categoria</h3>
+    <Card className="p-5">
+      <h3 className="text-base font-serif font-semibold text-stone-900 mb-4">Distribuição por Gênero / Faixa</h3>
       {total === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-12">Sem dados</p>
+        <p className="text-sm text-stone-400 text-center py-12">Sem dados</p>
       ) : (
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
@@ -73,17 +75,17 @@ export function GeneroChart() {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
+              contentStyle={{ borderRadius: 12, border: '1px solid #E8E2D9', fontSize: 13, color: '#1C1917' }}
               formatter={(v) => [`${v} pessoas`, '']}
             />
             <Legend
               iconType="circle"
               iconSize={8}
-              formatter={(value) => <span style={{ fontSize: 12, color: '#6b7280' }}>{value}</span>}
+              formatter={(value) => <span style={{ fontSize: 12, color: '#78716C' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
       )}
-    </div>
+    </Card>
   )
 }

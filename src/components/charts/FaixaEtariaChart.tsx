@@ -10,6 +10,8 @@ import {
 } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { Card } from '@/components/ui/card'
+import { CHART_SERIES } from '@/lib/chartColors'
 
 const FAIXAS = [
   { label: '< 18', min: 0, max: 17 },
@@ -19,8 +21,6 @@ const FAIXAS = [
   { label: '46–60', min: 46, max: 60 },
   { label: '> 60', min: 61, max: 999 },
 ]
-
-const CORES = ['#818cf8', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95', '#3730a3']
 
 async function fetchFaixaEtaria() {
   const { data } = await supabase
@@ -52,24 +52,24 @@ export function FaixaEtariaChart() {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Faixa Etária</h3>
+    <Card className="p-5">
+      <h3 className="text-base font-serif font-semibold text-stone-900 mb-4">Faixa Etária</h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
+          <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#A8A29E' }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 12, fill: '#A8A29E' }} axisLine={false} tickLine={false} allowDecimals={false} />
           <Tooltip
-            contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
+            contentStyle={{ borderRadius: 12, border: '1px solid #E8E2D9', fontSize: 13, color: '#1C1917' }}
             formatter={(v) => [v, 'Pessoas']}
           />
           <Bar dataKey="total" radius={[4, 4, 0, 0]}>
             {data.map((_, i) => (
-              <Cell key={i} fill={CORES[i % CORES.length]} />
+              <Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Card>
   )
 }

@@ -88,8 +88,8 @@ export default function Modulos() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Módulos de Discipulado</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{modulos.filter(m => m.ativo).length} módulos ativos</p>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Módulos de Discipulado</h1>
+          <p className="text-sm text-stone-500 mt-1">{modulos.filter(m => m.ativo).length} módulos ativos</p>
         </div>
         <Button onClick={openCreate}>
           <Plus size={16} />
@@ -99,24 +99,24 @@ export default function Modulos() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-xl" />)}
+          {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-stone-100 animate-pulse rounded-2xl border border-stone-200" />)}
         </div>
       ) : modulos.filter(m => m.ativo).length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <GraduationCap size={40} className="text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Nenhum módulo cadastrado</p>
-          <p className="text-sm text-gray-400 mt-1">Crie módulos de ensino para o discipulado</p>
+        <div className="bg-white rounded-2xl border border-stone-200 p-10 text-center shadow-[0_1px_4px_rgba(28,25,23,0.06)]">
+          <GraduationCap size={40} className="text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500 font-medium">Nenhum módulo cadastrado</p>
+          <p className="text-sm text-stone-400 mt-1">Crie módulos de ensino para o discipulado</p>
         </div>
       ) : (
         <div className="space-y-3">
           {modulos.filter(m => m.ativo).map((m, idx) => (
-            <div key={m.id} className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
-              <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-primary-700 font-bold text-sm">{idx + 1}</span>
+            <div key={m.id} className="bg-white rounded-2xl border border-stone-200 p-5 flex items-center gap-4 shadow-[0_1px_4px_rgba(28,25,23,0.06)] hover:shadow-[0_4px_16px_rgba(28,25,23,0.10)] transition-all">
+              <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0 border border-amber-200">
+                <span className="text-amber-800 font-bold text-sm">{idx + 1}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-gray-900">{m.nome}</h3>
+                  <h3 className="font-serif text-lg font-semibold text-stone-900">{m.nome}</h3>
                   <Badge variant="purple">
                     <BookOpen size={10} className="mr-1" />
                     {m.total_aulas} aulas
@@ -126,21 +126,21 @@ export default function Modulos() {
                   </Badge>
                 </div>
                 {m.descricao && (
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{m.descricao}</p>
+                  <p className="text-sm text-stone-500 mt-1 line-clamp-2">{m.descricao}</p>
                 )}
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => openEdit(m)}
                   aria-label="Editar módulo"
-                  className="p-2 rounded-lg text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                  className="p-2 rounded-lg text-stone-400 hover:text-amber-700 hover:bg-amber-50 transition-colors"
                 >
                   <Edit size={14} />
                 </button>
                 <button
                   onClick={() => setConfirmDeleteId(m.id)}
                   aria-label="Excluir módulo"
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -161,7 +161,7 @@ export default function Modulos() {
           <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>Cancelar</Button>
           <Button
             variant="outline"
-            className="text-red-600 border-red-300 hover:bg-red-50"
+            className="text-red-700 border-red-200 hover:bg-red-50 bg-white"
             loading={remove.isPending}
             onClick={() => { remove.mutate(confirmDeleteId!); setConfirmDeleteId(null) }}
           >

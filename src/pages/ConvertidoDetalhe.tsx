@@ -38,10 +38,10 @@ function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
   if (!value) return null
   return (
     <div className="flex items-start gap-3">
-      <Icon size={15} className="text-gray-400 mt-0.5 flex-shrink-0" />
+      <Icon size={15} className="text-stone-400 mt-0.5 flex-shrink-0" />
       <div>
-        <p className="text-xs text-gray-400">{label}</p>
-        <p className="text-sm text-gray-800 font-medium">{value}</p>
+        <p className="text-xs text-stone-400">{label}</p>
+        <p className="text-sm text-stone-900 font-medium">{value}</p>
       </div>
     </div>
   )
@@ -78,13 +78,15 @@ export default function ConvertidoDetalhe() {
   })
 
   if (isLoading) {
-    return <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-gray-200 rounded-lg w-48" />
-      <div className="h-48 bg-gray-200 rounded-xl" />
-    </div>
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 bg-stone-100 border border-stone-200 rounded-lg w-48" />
+        <div className="h-48 bg-stone-100 border border-stone-200 rounded-2xl" />
+      </div>
+    )
   }
 
-  if (!convertido) return <p className="text-gray-500">Convertido não encontrado.</p>
+  if (!convertido) return <p className="text-stone-500">Convertido não encontrado.</p>
 
   const { variant, label } = statusConvertidoBadge(convertido.status)
 
@@ -95,10 +97,10 @@ export default function ConvertidoDetalhe() {
     <div className="space-y-5 max-w-2xl">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} aria-label="Voltar" className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+        <button onClick={() => navigate(-1)} aria-label="Voltar" className="p-2 rounded-xl text-stone-500 hover:bg-stone-100 transition-colors">
           <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold text-gray-900">Perfil do Convertido</h1>
+        <h1 className="text-2xl font-serif font-bold text-stone-900">Perfil do Convertido</h1>
       </div>
 
       {/* Profile Card */}
@@ -106,8 +108,8 @@ export default function ConvertidoDetalhe() {
         <CardContent className="flex items-center gap-4 p-5">
           <Avatar name={convertido.nome} size="xl" src={convertido.foto_url} />
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900">{convertido.nome}</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h2 className="text-2xl font-serif font-bold text-stone-900">{convertido.nome}</h2>
+            <p className="text-sm text-stone-500 mt-0.5">
               Convertido em {formatDate(convertido.data_conversao)}
             </p>
             <div className="flex items-center gap-2 mt-2">
@@ -131,7 +133,7 @@ export default function ConvertidoDetalhe() {
       {/* Contato */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-700">
+          <CardTitle className="flex items-center gap-2 text-stone-700">
             <Phone size={15} />
             Contato
           </CardTitle>
@@ -146,7 +148,7 @@ export default function ConvertidoDetalhe() {
       {/* Informações pessoais */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-700">
+          <CardTitle className="flex items-center gap-2 text-stone-700">
             <Heart size={15} />
             Informações Pessoais
           </CardTitle>
@@ -167,7 +169,7 @@ export default function ConvertidoDetalhe() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-gray-700">
+            <CardTitle className="flex items-center gap-2 text-stone-700">
               <BookOpen size={15} />
               Discipulado
             </CardTitle>
@@ -181,7 +183,7 @@ export default function ConvertidoDetalhe() {
         </CardHeader>
         <CardContent>
           {grupos.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-sm text-stone-400 text-center py-4">
               Não está em nenhum grupo de discipulado ainda.
             </p>
           ) : (
@@ -194,19 +196,19 @@ export default function ConvertidoDetalhe() {
                   <Link
                     key={gm.id}
                     to={`/discipulado/${grupo.id}`}
-                    className="flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl border border-stone-100 hover:border-amber-200 hover:bg-amber-50 transition-colors"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{grupo.nome}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-sm font-medium text-stone-900">{grupo.nome}</p>
+                      <p className="text-xs text-stone-500 mt-0.5">
                         Discipulador: {grupo.discipulador?.nome} · {grupo.modulo?.nome ?? 'Módulo não definido'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-primary-600">
+                      <p className="text-sm font-semibold text-amber-700">
                         {realizadas}/{total > 0 ? total : '—'}
                       </p>
-                      <p className="text-xs text-gray-400">aulas</p>
+                      <p className="text-xs text-stone-400">aulas</p>
                     </div>
                   </Link>
                 )
@@ -221,7 +223,7 @@ export default function ConvertidoDetalhe() {
         <Card>
           <CardHeader><CardTitle>Observações</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 leading-relaxed">{convertido.observacoes}</p>
+            <p className="text-sm text-stone-600 leading-relaxed">{convertido.observacoes}</p>
           </CardContent>
         </Card>
       )}
@@ -251,7 +253,7 @@ export default function ConvertidoDetalhe() {
               onClick={() => updateStatus.mutate(novoStatus)}
               loading={updateStatus.isPending}
             >
-              Salvar
+              Alterar Status
             </Button>
           </div>
         </div>
