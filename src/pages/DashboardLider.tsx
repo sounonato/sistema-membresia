@@ -42,7 +42,7 @@ async function fetchRecentes() {
 
 export default function DashboardLider() {
   const { profile } = useAuth()
-  const { data: stats } = useQuery({ queryKey: ['stats'], queryFn: fetchStats })
+  const { data: stats, isLoading: statsLoading } = useQuery({ queryKey: ['stats'], queryFn: fetchStats })
   const { data: recentes } = useQuery({ queryKey: ['recentes'], queryFn: fetchRecentes })
 
   const hora = new Date().getHours()
@@ -59,12 +59,20 @@ export default function DashboardLider() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Convertidos" value={stats?.total ?? '—'} icon={<Users size={20} />} color="blue" />
-        <StatCard title="Este Mês" value={stats?.mes ?? '—'} icon={<TrendingUp size={20} />} color="green" sub="novos convertidos" />
-        <StatCard title="Em Discipulado" value={stats?.em_discipulado ?? '—'} icon={<BookOpen size={20} />} color="purple" />
-        <StatCard title="Grupos Ativos" value={stats?.grupos ?? '—'} icon={<UserCheck size={20} />} color="orange" />
-      </div>
+      {statsLoading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-xl" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard title="Total Convertidos" value={stats?.total ?? '—'} icon={<Users size={20} />} color="blue" />
+          <StatCard title="Este Mês" value={stats?.mes ?? '—'} icon={<TrendingUp size={20} />} color="green" sub="novos convertidos" />
+          <StatCard title="Em Discipulado" value={stats?.em_discipulado ?? '—'} icon={<BookOpen size={20} />} color="purple" />
+          <StatCard title="Grupos Ativos" value={stats?.grupos ?? '—'} icon={<UserCheck size={20} />} color="orange" />
+        </div>
+      )}
 
       {/* Gráficos */}
       <div>
@@ -92,7 +100,7 @@ export default function DashboardLider() {
         </div>
 
         {!recentes?.length ? (
-          <div className="p-8 text-center">
+          <div className="p-12 text-center">
             <Award size={36} className="text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-500">Nenhum convertido cadastrado ainda.</p>
             <Link to="/convertidos/novo" className="text-sm text-primary-600 font-medium mt-2 block">
