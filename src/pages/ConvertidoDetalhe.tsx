@@ -218,10 +218,10 @@ export default function ConvertidoDetalhe() {
         </CardContent>
       </Card>
 
-      {/* Observações */}
+      {/* Pedido de oração */}
       {convertido.observacoes && (
         <Card>
-          <CardHeader><CardTitle>Observações</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Pedido de oração</CardTitle></CardHeader>
           <CardContent>
             <p className="text-sm text-stone-600 leading-relaxed">{convertido.observacoes}</p>
           </CardContent>

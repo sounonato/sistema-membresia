@@ -33,7 +33,7 @@ export default function Login() {
           <div className="w-16 h-16 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Church size={32} className="text-amber-700" />
           </div>
-          <h1 className="text-3xl font-serif font-bold text-stone-900">Membresia</h1>
+          <h1 className="text-3xl font-serif font-bold text-stone-900">A Jornada do Discípulo</h1>
           <p className="text-sm text-stone-500 mt-1">Acompanhamento de novos convertidos</p>
         </div>
 

@@ -31,6 +31,7 @@ const schema = z.object({
   quer_batismo: z.boolean(),
   ja_frequentava_igreja: z.boolean(),
   igreja_anterior: z.string().optional(),
+  ja_fez_discipulado: z.boolean(),
   observacoes: z.string().optional(),
 })
 
@@ -62,6 +63,7 @@ export default function NovoConvertido() {
       batizado: false,
       quer_batismo: false,
       ja_frequentava_igreja: false,
+      ja_fez_discipulado: false,
     },
   })
 
@@ -221,7 +223,7 @@ export default function NovoConvertido() {
         <Card>
           <SectionTitle icon={Church} label="Informações de Fé" />
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
                 <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-amber-700 rounded" />
                 <span className="text-sm font-medium text-stone-700">É batizado?</span>
@@ -234,6 +236,10 @@ export default function NovoConvertido() {
                 <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-amber-700 rounded" />
                 <span className="text-sm font-medium text-stone-700">Frequentava igreja?</span>
               </label>
+              <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                <input type="checkbox" {...register('ja_fez_discipulado')} className="w-4 h-4 accent-amber-700 rounded" />
+                <span className="text-sm font-medium text-stone-700">Já fez discipulado?</span>
+              </label>
             </div>
             {jaFrequentava && (
               <Input
@@ -243,8 +249,8 @@ export default function NovoConvertido() {
               />
             )}
             <Textarea
-              label="Observações"
-              placeholder="Informações adicionais relevantes..."
+              label="Pedido de oração (opcional)"
+              placeholder="Deixe aqui seu pedido de oração..."
               {...register('observacoes')}
             />
           </CardContent>

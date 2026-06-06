@@ -126,9 +126,9 @@ export default function Discipulado() {
       <div className="flex gap-2 flex-wrap">
         {[
           { value: '', label: 'Todos' },
-          { value: 'ativo', label: 'Ativos' },
-          { value: 'encerrado', label: 'Encerrados' },
-          { value: 'pausado', label: 'Pausados' },
+          { value: 'ativo', label: 'Em andamento' },
+          { value: 'encerrado', label: 'Concluídos' },
+          { value: 'pausado', label: 'Descontinuado' },
         ].map((opt) => (
           <button
             key={opt.value}

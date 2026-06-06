@@ -32,6 +32,7 @@ export interface NovoConvertido {
   batizado: boolean
   quer_batismo: boolean
   ja_frequentava_igreja: boolean
+  ja_fez_discipulado: boolean
   igreja_anterior: string | null
   genero: Genero | null
   observacoes: string | null

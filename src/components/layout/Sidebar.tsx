@@ -32,8 +32,8 @@ export function Sidebar() {
           <Church size={18} className="text-white" />
         </div>
         <div>
-          <p className="text-sm font-serif font-bold text-stone-900">Membresia</p>
-          <p className="text-xs text-stone-400">Sistema da Igreja</p>
+          <p className="text-sm font-serif font-bold text-stone-900">A Jornada do</p>
+          <p className="text-xs font-semibold text-amber-700">Discípulo</p>
         </div>
       </div>
 

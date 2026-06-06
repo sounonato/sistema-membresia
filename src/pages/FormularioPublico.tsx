@@ -28,6 +28,7 @@ const schema = z.object({
   quer_batismo: z.boolean(),
   ja_frequentava_igreja: z.boolean(),
   igreja_anterior: z.string().optional(),
+  ja_fez_discipulado: z.boolean(),
   observacoes: z.string().optional(),
 })
 
@@ -58,6 +59,7 @@ export default function FormularioPublico() {
       batizado: false,
       quer_batismo: false,
       ja_frequentava_igreja: false,
+      ja_fez_discipulado: false,
       cidade: 'Fortaleza',
     } as any,
   })
@@ -191,7 +193,7 @@ export default function FormularioPublico() {
                 {...register('como_conheceu')}
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
                   <input type="checkbox" {...register('batizado')} className="w-4 h-4 accent-amber-700 rounded" />
                   <span className="text-sm text-stone-700">Sou batizado(a)</span>
@@ -204,6 +206,10 @@ export default function FormularioPublico() {
                   <input type="checkbox" {...register('ja_frequentava_igreja')} className="w-4 h-4 accent-amber-700 rounded" />
                   <span className="text-sm text-stone-700">Frequentava outra igreja</span>
                 </label>
+                <label className="flex items-center gap-2.5 p-3 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-300 hover:bg-amber-50/10 transition-colors">
+                  <input type="checkbox" {...register('ja_fez_discipulado')} className="w-4 h-4 accent-amber-700 rounded" />
+                  <span className="text-sm text-stone-700">Já fiz discipulado</span>
+                </label>
               </div>
 
               {jaFrequentava && (
@@ -211,8 +217,8 @@ export default function FormularioPublico() {
               )}
 
               <Textarea
-                label="Conta um pouquinho sobre você (opcional)"
-                placeholder="Como foi sua experiência, o que te trouxe até aqui..."
+                label="Pedido de oração (opcional)"
+                placeholder="Deixe aqui seu pedido de oração..."
                 {...register('observacoes')}
               />
             </CardContent>
