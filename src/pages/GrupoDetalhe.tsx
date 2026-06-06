@@ -58,6 +58,7 @@ export default function GrupoDetalhe() {
   const queryClient = useQueryClient()
   const [showAddMembro, setShowAddMembro] = useState(false)
   const [convertidoSelecionado, setConvertidoSelecionado] = useState('')
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
 
   const { data: grupo, isLoading } = useQuery({
     queryKey: ['grupo', id],
@@ -224,7 +225,7 @@ export default function GrupoDetalhe() {
                   </div>
                   <Badge variant={sv}>{sl}</Badge>
                   <button
-                    onClick={() => removeMembro.mutate(m.id)}
+                    onClick={() => setConfirmRemoveId(m.id)}
                     aria-label="Remover membro"
                     className="p-1 rounded text-gray-300 hover:text-red-400 transition-colors"
                   >
@@ -316,6 +317,26 @@ export default function GrupoDetalhe() {
               Adicionar
             </Button>
           </div>
+        </div>
+      </Dialog>
+
+      {/* Dialog: Confirmar remoção de membro */}
+      <Dialog
+        open={confirmRemoveId !== null}
+        onOpenChange={() => setConfirmRemoveId(null)}
+        title="Remover membro"
+        description="Tem certeza que deseja remover este membro do grupo? Essa ação não pode ser desfeita."
+      >
+        <div className="flex gap-3 justify-end">
+          <Button variant="outline" onClick={() => setConfirmRemoveId(null)}>Cancelar</Button>
+          <Button
+            variant="outline"
+            className="text-red-600 border-red-300 hover:bg-red-50"
+            loading={removeMembro.isPending}
+            onClick={() => { removeMembro.mutate(confirmRemoveId!); setConfirmRemoveId(null) }}
+          >
+            Remover
+          </Button>
         </div>
       </Dialog>
     </div>

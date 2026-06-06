@@ -32,6 +32,7 @@ async function fetchModulos() {
 export default function Modulos() {
   const [showDialog, setShowDialog] = useState(false)
   const [editing, setEditing] = useState<ModuloDiscipulado | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const queryClient = useQueryClient()
 
   const { data: modulos = [], isLoading } = useQuery({
@@ -137,7 +138,7 @@ export default function Modulos() {
                   <Edit size={14} />
                 </button>
                 <button
-                  onClick={() => remove.mutate(m.id)}
+                  onClick={() => setConfirmDeleteId(m.id)}
                   aria-label="Excluir módulo"
                   className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                 >
@@ -148,6 +149,26 @@ export default function Modulos() {
           ))}
         </div>
       )}
+
+      {/* Dialog: Confirmar desativação de módulo */}
+      <Dialog
+        open={confirmDeleteId !== null}
+        onOpenChange={() => setConfirmDeleteId(null)}
+        title="Desativar módulo"
+        description="O módulo será desativado e não aparecerá em novos grupos. Grupos existentes não são afetados."
+      >
+        <div className="flex gap-3 justify-end">
+          <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>Cancelar</Button>
+          <Button
+            variant="outline"
+            className="text-red-600 border-red-300 hover:bg-red-50"
+            loading={remove.isPending}
+            onClick={() => { remove.mutate(confirmDeleteId!); setConfirmDeleteId(null) }}
+          >
+            Desativar
+          </Button>
+        </div>
+      </Dialog>
 
       <Dialog
         open={showDialog}
