@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { BookOpen, Users, CheckSquare, Phone, MessageSquare, Calendar, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -285,12 +286,12 @@ export default function DashboardDiscipulador() {
 
                 {/* Footer com link para aulas */}
                 <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">
-                  <a
-                    href={`/discipulado/${grupo.id}`}
+                  <Link
+                    to={`/discipulado/${grupo.id}`}
                     className="text-xs text-primary-600 hover:text-primary-700 font-medium"
                   >
                     Gerenciar aulas do grupo →
-                  </a>
+                  </Link>
                 </div>
               </div>
             )
