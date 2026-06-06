@@ -19,14 +19,26 @@ const queryClient = new QueryClient({
   },
 })
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  if (loading) return (
+function Spinner() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
     </div>
   )
+}
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
+  return <AppShell>{children}</AppShell>
+}
+
+function LiderRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading, isLider } = useAuth()
+  if (loading) return <Spinner />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isLider) return <Navigate to="/" replace />
   return <AppShell>{children}</AppShell>
 }
 
@@ -40,12 +52,12 @@ export default function App() {
             <Route path="/formulario" element={<FormularioPublico />} />
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/convertidos" element={<PrivateRoute><Convertidos /></PrivateRoute>} />
-            <Route path="/convertidos/novo" element={<PrivateRoute><NovoConvertido /></PrivateRoute>} />
+            <Route path="/convertidos/novo" element={<LiderRoute><NovoConvertido /></LiderRoute>} />
             <Route path="/convertidos/:id" element={<PrivateRoute><ConvertidoDetalhe /></PrivateRoute>} />
             <Route path="/discipulado" element={<PrivateRoute><Discipulado /></PrivateRoute>} />
             <Route path="/discipulado/:id" element={<PrivateRoute><GrupoDetalhe /></PrivateRoute>} />
-            <Route path="/discipuladores" element={<PrivateRoute><Discipuladores /></PrivateRoute>} />
-            <Route path="/modulos" element={<PrivateRoute><Modulos /></PrivateRoute>} />
+            <Route path="/discipuladores" element={<LiderRoute><Discipuladores /></LiderRoute>} />
+            <Route path="/modulos" element={<LiderRoute><Modulos /></LiderRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

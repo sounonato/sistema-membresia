@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
 import { Card } from '@/components/ui/card'
 import { Badge, statusGrupoBadge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -28,11 +29,17 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-async function fetchGrupos() {
-  const { data } = await supabase
+async function fetchGrupos(discipuladorIdFilter?: string | null) {
+  let query = supabase
     .from('grupos_discipulado')
     .select('*, discipulador:discipuladores(*), modulo:modulos_discipulado(*), membros:grupo_membros(id, status), progresso:progresso_aulas(*)')
     .order('criado_em', { ascending: false })
+
+  if (discipuladorIdFilter) {
+    query = query.eq('discipulador_id', discipuladorIdFilter)
+  }
+
+  const { data } = await query
   return (data ?? []) as GrupoDiscipulado[]
 }
 
@@ -47,11 +54,29 @@ async function fetchModulos() {
 }
 
 export default function Discipulado() {
+  const { isLider, isDiscipulador, user } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
   const queryClient = useQueryClient()
 
-  const { data: grupos = [], isLoading } = useQuery({ queryKey: ['grupos'], queryFn: fetchGrupos })
+  // Para discipulador, buscar seu próprio registro antes de carregar grupos
+  const { data: meuDiscipulador } = useQuery({
+    queryKey: ['meu-discipulador-disc', user?.id],
+    queryFn: async () => {
+      if (!user) return null
+      const { data } = await supabase.from('discipuladores').select('id').eq('usuario_id', user.id).single()
+      return data as { id: string } | null
+    },
+    enabled: !!user && isDiscipulador,
+  })
+
+  const discipuladorIdFilter = isDiscipulador ? (meuDiscipulador?.id ?? null) : null
+
+  const { data: grupos = [], isLoading } = useQuery({
+    queryKey: ['grupos', discipuladorIdFilter],
+    queryFn: () => fetchGrupos(discipuladorIdFilter),
+    enabled: isLider || (isDiscipulador && meuDiscipulador !== undefined),
+  })
   const { data: discipuladores = [] } = useQuery({ queryKey: ['discipuladores'], queryFn: fetchDiscipuladores })
   const { data: modulos = [] } = useQuery({ queryKey: ['modulos'], queryFn: fetchModulos })
 
@@ -86,10 +111,12 @@ export default function Discipulado() {
           <h1 className="text-2xl font-bold text-gray-900">Discipulado</h1>
           <p className="text-sm text-gray-500 mt-0.5">{grupos.length} grupos cadastrados</p>
         </div>
-        <Button onClick={() => setShowDialog(true)}>
-          <Plus size={16} />
-          Novo Grupo
-        </Button>
+        {isLider && (
+          <Button onClick={() => setShowDialog(true)}>
+            <Plus size={16} />
+            Novo Grupo
+          </Button>
+        )}
       </div>
 
       {/* Filter */}

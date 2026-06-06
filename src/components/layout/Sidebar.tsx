@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Avatar } from '@/components/ui/avatar'
 
-const nav = [
+const NAV_LIDER = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/convertidos', icon: Users, label: 'Convertidos' },
   { to: '/discipulado', icon: BookOpen, label: 'Discipulado' },
@@ -15,8 +15,14 @@ const nav = [
   { to: '/modulos', icon: GraduationCap, label: 'Módulos' },
 ]
 
+const NAV_DISCIPULADOR = [
+  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/discipulado', icon: BookOpen, label: 'Meus Grupos' },
+]
+
 export function Sidebar() {
-  const { profile, signOut } = useAuth()
+  const { profile, signOut, isLider } = useAuth()
+  const nav = isLider ? NAV_LIDER : NAV_DISCIPULADOR
 
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen fixed left-0 top-0 bottom-0 z-30">

@@ -19,6 +19,7 @@ const schema = z.object({
   bairro: z.string().optional(),
   cidade: z.string().optional(),
   estado_civil: z.string().optional(),
+  genero: z.string().optional(),
   tem_filhos: z.boolean(),
   qtd_filhos: z.coerce.number().min(0).optional(),
   profissao: z.string().optional(),
@@ -137,6 +138,16 @@ export default function FormularioPublico() {
                   { value: 'uniao_estavel', label: 'União Estável' },
                 ]}
                 {...register('estado_civil')}
+              />
+              <Select
+                label="Gênero"
+                placeholder="Selecionar..."
+                options={[
+                  { value: 'masculino', label: 'Masculino' },
+                  { value: 'feminino', label: 'Feminino' },
+                  { value: 'outro', label: 'Outro / Prefiro não informar' },
+                ]}
+                {...register('genero')}
               />
               <Input label="Profissão" placeholder="Sua profissão" {...register('profissao')} />
               <div className="flex items-center gap-2.5 col-span-1">

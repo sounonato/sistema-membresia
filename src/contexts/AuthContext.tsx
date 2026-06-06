@@ -12,6 +12,8 @@ interface AuthContextValue {
   signOut: () => Promise<void>
   isAdmin: boolean
   isPastor: boolean
+  isLider: boolean         // admin | pastor | lider — acesso total
+  isDiscipulador: boolean  // apenas discipulador — acesso restrito
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -68,6 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn, signOut,
       isAdmin: profile?.perfil === 'admin',
       isPastor: profile?.perfil === 'pastor' || profile?.perfil === 'admin',
+      isLider: ['admin', 'pastor', 'lider'].includes(profile?.perfil ?? ''),
+      isDiscipulador: profile?.perfil === 'discipulador',
     }}>
       {children}
     </AuthContext.Provider>

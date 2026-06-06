@@ -12,6 +12,7 @@ export interface Usuario {
 export type StatusConvertido = 'ativo' | 'em_discipulado' | 'encerrado' | 'inativo'
 export type EstadoCivil = 'solteiro' | 'casado' | 'divorciado' | 'viuvo' | 'uniao_estavel'
 export type ComoConheceu = 'amigo' | 'familiar' | 'redes_sociais' | 'evento' | 'culto' | 'outro'
+export type Genero = 'masculino' | 'feminino' | 'outro'
 
 export interface NovoConvertido {
   id: string
@@ -32,6 +33,7 @@ export interface NovoConvertido {
   quer_batismo: boolean
   ja_frequentava_igreja: boolean
   igreja_anterior: string | null
+  genero: Genero | null
   observacoes: string | null
   foto_url: string | null
   status: StatusConvertido
@@ -110,4 +112,17 @@ export interface DashboardStats {
   grupos_ativos: number
   aulas_realizadas_mes: number
   taxa_conclusao: number
+}
+
+export type TipoContato = 'presencial' | 'telefone' | 'mensagem' | 'outro'
+
+export interface Acompanhamento {
+  id: string
+  convertido_id: string
+  grupo_id: string | null
+  discipulador_id: string
+  data_contato: string
+  tipo_contato: TipoContato
+  observacao: string | null
+  criado_em: string
 }
