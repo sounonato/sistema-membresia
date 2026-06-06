@@ -57,6 +57,7 @@ export default function Discipulado() {
   const { isLider, isDiscipulador, user } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
+  const [grupoError, setGrupoError] = useState('')
   const queryClient = useQueryClient()
 
   // Para discipulador, buscar seu próprio registro antes de carregar grupos
@@ -98,7 +99,9 @@ export default function Discipulado() {
       queryClient.invalidateQueries({ queryKey: ['grupos'] })
       setShowDialog(false)
       reset()
+      setGrupoError('')
     },
+    onError: (err: any) => setGrupoError(err.message ?? 'Erro ao criar grupo'),
   })
 
   const filtered = statusFilter ? grupos.filter((g) => g.status === statusFilter) : grupos
@@ -206,11 +209,12 @@ export default function Discipulado() {
       {/* Dialog: Novo Grupo */}
       <Dialog
         open={showDialog}
-        onOpenChange={setShowDialog}
+        onOpenChange={(open) => { setShowDialog(open); if (!open) setGrupoError('') }}
         title="Novo Grupo de Discipulado"
         description="Preencha as informações do grupo"
       >
         <form onSubmit={handleSubmit((data) => createGrupo.mutate(data))} className="space-y-4">
+          {grupoError && <p className="text-sm text-red-500">{grupoError}</p>}
           <Input label="Nome do grupo" placeholder="Ex: Grupo da Manhã" error={errors.nome?.message} required {...register('nome')} />
           <Select
             label="Discipulador"

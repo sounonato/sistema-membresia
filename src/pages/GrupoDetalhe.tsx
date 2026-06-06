@@ -59,6 +59,7 @@ export default function GrupoDetalhe() {
   const [showAddMembro, setShowAddMembro] = useState(false)
   const [convertidoSelecionado, setConvertidoSelecionado] = useState('')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
+  const [membroError, setMembroError] = useState('')
 
   const { data: grupo, isLoading } = useQuery({
     queryKey: ['grupo', id],
@@ -99,7 +100,9 @@ export default function GrupoDetalhe() {
       queryClient.invalidateQueries({ queryKey: ['convertidos'] })
       setShowAddMembro(false)
       setConvertidoSelecionado('')
+      setMembroError('')
     },
+    onError: (err: any) => setMembroError(err.message ?? 'Erro ao adicionar membro'),
   })
 
   const removeMembro = useMutation({
@@ -128,6 +131,7 @@ export default function GrupoDetalhe() {
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['progresso', id] }),
+    onError: () => console.error('Erro ao atualizar aula'),
   })
 
   if (isLoading) return <div className="animate-pulse h-64 bg-gray-100 rounded-xl" />
@@ -295,11 +299,12 @@ export default function GrupoDetalhe() {
       {/* Dialog: Adicionar membro */}
       <Dialog
         open={showAddMembro}
-        onOpenChange={setShowAddMembro}
+        onOpenChange={(open) => { setShowAddMembro(open); if (!open) setMembroError('') }}
         title="Adicionar Membro"
         description="Selecione um convertido para adicionar ao grupo"
       >
         <div className="space-y-4">
+          {membroError && <p className="text-sm text-red-500">{membroError}</p>}
           <Select
             label="Convertido"
             value={convertidoSelecionado}

@@ -32,6 +32,7 @@ async function fetchDiscipuladores() {
 
 export default function Discipuladores() {
   const [showDialog, setShowDialog] = useState(false)
+  const [discError, setDiscError] = useState('')
   const queryClient = useQueryClient()
 
   const { data: discipuladores = [], isLoading } = useQuery({
@@ -57,7 +58,9 @@ export default function Discipuladores() {
       queryClient.invalidateQueries({ queryKey: ['discipuladores'] })
       setShowDialog(false)
       reset()
+      setDiscError('')
     },
+    onError: (err: any) => setDiscError(err.message ?? 'Erro ao criar discipulador'),
   })
 
   const toggleAtivo = useMutation({
@@ -65,6 +68,7 @@ export default function Discipuladores() {
       await supabase.from('discipuladores').update({ ativo: !ativo }).eq('id', id)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discipuladores-full'] }),
+    onError: () => console.error('Erro ao atualizar discipulador'),
   })
 
   return (
@@ -135,8 +139,9 @@ export default function Discipuladores() {
         </div>
       )}
 
-      <Dialog open={showDialog} onOpenChange={setShowDialog} title="Novo Discipulador">
+      <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) setDiscError('') }} title="Novo Discipulador">
         <form onSubmit={handleSubmit((data) => create.mutate(data))} className="space-y-4">
+          {discError && <p className="text-sm text-red-500">{discError}</p>}
           <Input label="Nome completo" required error={errors.nome?.message} {...register('nome')} />
           <Input label="Telefone" required error={errors.telefone?.message} {...register('telefone')} />
           <Input label="E-mail" type="email" error={errors.email?.message} {...register('email')} />
