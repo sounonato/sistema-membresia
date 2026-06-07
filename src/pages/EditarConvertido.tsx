@@ -192,8 +192,6 @@ export default function EditarConvertido() {
               options={[
                 { value: 'masculino', label: 'Masculino' },
                 { value: 'feminino', label: 'Feminino' },
-                { value: 'jovem', label: 'Jovem' },
-                { value: 'adolescente', label: 'Adolescente' },
               ]}
               {...register('genero')}
             />
