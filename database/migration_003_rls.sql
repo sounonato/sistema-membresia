@@ -5,7 +5,6 @@ ALTER TABLE grupos_discipulado ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grupo_membros ENABLE ROW LEVEL SECURITY;
 ALTER TABLE progresso_aulas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE modulos_discipulado ENABLE ROW LEVEL SECURITY;
-ALTER TABLE acompanhamentos ENABLE ROW LEVEL SECURITY;
 
 -- Helper function para verificar perfil
 CREATE OR REPLACE FUNCTION get_user_perfil()
@@ -71,17 +70,24 @@ CREATE POLICY "disc_read_update_progresso" ON progresso_aulas
     )
   );
 
--- acompanhamentos
-DROP POLICY IF EXISTS "disc_own_acomp" ON acompanhamentos;
-DROP POLICY IF EXISTS "lider_all_acomp" ON acompanhamentos;
-
-CREATE POLICY "lider_all_acomp" ON acompanhamentos
-  FOR ALL TO authenticated USING (is_lider()) WITH CHECK (is_lider());
-
-CREATE POLICY "disc_own_acomp" ON acompanhamentos
-  FOR ALL TO authenticated
-  USING (
-    discipulador_id IN (
-      SELECT id FROM discipuladores WHERE usuario_id = auth.uid()
-    )
-  );
+-- acompanhamentos (se a tabela existir no banco)
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'acompanhamentos') THEN
+    ALTER TABLE acompanhamentos ENABLE ROW LEVEL SECURITY;
+    
+    DROP POLICY IF EXISTS "disc_own_acomp" ON acompanhamentos;
+    DROP POLICY IF EXISTS "lider_all_acomp" ON acompanhamentos;
+    
+    EXECUTE 'CREATE POLICY "lider_all_acomp" ON acompanhamentos
+      FOR ALL TO authenticated USING (is_lider()) WITH CHECK (is_lider())';
+    
+    EXECUTE 'CREATE POLICY "disc_own_acomp" ON acompanhamentos
+      FOR ALL TO authenticated
+      USING (
+        discipulador_id IN (
+          SELECT id FROM discipuladores WHERE usuario_id = auth.uid()
+        )
+      )';
+  END IF;
+END $$;

@@ -54,7 +54,7 @@ async function fetchModulos() {
 }
 
 export default function Discipulado() {
-  const { isLider, isDiscipulador, user } = useAuth()
+  const { canEdit, isLiderOrPastor, isDiscipulador, user } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
   const [grupoError, setGrupoError] = useState('')
@@ -76,7 +76,7 @@ export default function Discipulado() {
   const { data: grupos = [], isLoading } = useQuery({
     queryKey: ['grupos', discipuladorIdFilter],
     queryFn: () => fetchGrupos(discipuladorIdFilter),
-    enabled: isLider || (isDiscipulador && meuDiscipulador !== undefined),
+    enabled: isLiderOrPastor || (isDiscipulador && meuDiscipulador !== undefined),
   })
   const { data: discipuladores = [] } = useQuery({ queryKey: ['discipuladores'], queryFn: fetchDiscipuladores })
   const { data: modulos = [] } = useQuery({ queryKey: ['modulos'], queryFn: fetchModulos })
@@ -114,7 +114,7 @@ export default function Discipulado() {
           <h1 className="text-3xl font-serif font-bold text-stone-900">Discipulado</h1>
           <p className="text-sm text-stone-500 mt-1">{grupos.length} grupos cadastrados</p>
         </div>
-        {isLider && (
+        {canEdit && (
           <Button onClick={() => setShowDialog(true)}>
             <Plus size={16} />
             Novo Grupo

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Dialog } from '@/components/ui/dialog'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatPhone } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 import type { Discipulador } from '@/types'
 
 const schema = z.object({
@@ -31,6 +32,7 @@ async function fetchDiscipuladores() {
 }
 
 export default function Discipuladores() {
+  const { canEdit } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [editTarget, setEditTarget] = useState<(Discipulador & { grupos: { id: string; status: string }[] }) | null>(null)
   const [discError, setDiscError] = useState('')
@@ -119,10 +121,12 @@ export default function Discipuladores() {
           <h1 className="text-3xl font-serif font-bold text-stone-900">Discipuladores</h1>
           <p className="text-sm text-stone-500 mt-1">{discipuladores.filter(d => d.ativo).length} ativos</p>
         </div>
-        <Button onClick={() => setShowDialog(true)}>
-          <Plus size={16} />
-          Novo Discipulador
-        </Button>
+        {canEdit && (
+          <Button onClick={() => setShowDialog(true)}>
+            <Plus size={16} />
+            Novo Discipulador
+          </Button>
+        )}
       </div>
 
       {toggleError && (
@@ -175,30 +179,32 @@ export default function Discipuladores() {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
-                    <button
-                      onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
-                      className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium"
-                    >
-                      {d.ativo ? 'Desativar' : 'Reativar'}
-                    </button>
-                    <div className="flex items-center gap-3">
+                  {canEdit && (
+                    <div className="flex items-center justify-between mt-3">
                       <button
-                        onClick={() => { setEditTarget(d); resetEdit({ nome: d.nome, telefone: d.telefone, email: d.email ?? '' }) }}
-                        className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium flex items-center gap-1"
+                        onClick={() => toggleAtivo.mutate({ id: d.id, ativo: d.ativo })}
+                        className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium"
                       >
-                        <Pencil size={11} />
-                        Editar
+                        {d.ativo ? 'Desativar' : 'Reativar'}
                       </button>
-                      <button
-                        onClick={() => setDeleteTarget({ id: d.id, nome: d.nome })}
-                        className="text-xs text-stone-400 hover:text-red-600 transition-colors font-medium flex items-center gap-1"
-                      >
-                        <Trash2 size={11} />
-                        Excluir
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => { setEditTarget(d); resetEdit({ nome: d.nome, telefone: d.telefone, email: d.email ?? '' }) }}
+                          className="text-xs text-stone-400 hover:text-amber-700 transition-colors font-medium flex items-center gap-1"
+                        >
+                          <Pencil size={11} />
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget({ id: d.id, nome: d.nome })}
+                          className="text-xs text-stone-400 hover:text-red-600 transition-colors font-medium flex items-center gap-1"
+                        >
+                          <Trash2 size={11} />
+                          Excluir
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             )

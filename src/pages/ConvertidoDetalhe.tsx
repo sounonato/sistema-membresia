@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog } from '@/components/ui/dialog'
 import { Select } from '@/components/ui/select'
 import { formatDate, formatPhone, COMO_CONHECEU_LABELS, ESTADO_CIVIL_LABELS } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 import type { NovoConvertido, StatusConvertido, GrupoDiscipulado } from '@/types'
 
 async function fetchConvertido(id: string) {
@@ -51,6 +52,7 @@ export default function ConvertidoDetalhe() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { canEdit } = useAuth()
   const [showStatusDialog, setShowStatusDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [novoStatus, setNovoStatus] = useState<StatusConvertido>('ativo')
@@ -130,23 +132,25 @@ export default function ConvertidoDetalhe() {
               {convertido.quer_batismo && <Badge variant="warning">Quer Batismo</Badge>}
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Button size="sm" variant="outline" onClick={() => navigate(`/convertidos/${id}/editar`)}>
-              <Pencil size={13} />
-              Editar
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => {
-              setNovoStatus(convertido.status)
-              setShowStatusDialog(true)
-            }}>
-              <Edit size={13} />
-              Status
-            </Button>
-            <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => setShowDeleteDialog(true)}>
-              <Trash2 size={13} />
-              Excluir
-            </Button>
-          </div>
+          {canEdit && (
+            <div className="flex flex-col gap-2">
+              <Button size="sm" variant="outline" onClick={() => navigate(`/convertidos/${id}/editar`)}>
+                <Pencil size={13} />
+                Editar
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => {
+                setNovoStatus(convertido.status)
+                setShowStatusDialog(true)
+              }}>
+                <Edit size={13} />
+                Status
+              </Button>
+              <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => setShowDeleteDialog(true)}>
+                <Trash2 size={13} />
+                Excluir
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, BookOpen, UserCheck,
-  GraduationCap, LogOut, Church, KeyRound,
+  GraduationCap, LogOut, Church, KeyRound, X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
@@ -13,7 +13,6 @@ const NAV_LIDER = [
   { to: '/discipulado', icon: BookOpen, label: 'Discipulado' },
   { to: '/discipuladores', icon: UserCheck, label: 'Discipuladores' },
   { to: '/modulos', icon: GraduationCap, label: 'Módulos' },
-  { to: '/usuarios', icon: KeyRound, label: 'Usuários' },
 ]
 
 const NAV_DISCIPULADOR = [
@@ -21,21 +20,40 @@ const NAV_DISCIPULADOR = [
   { to: '/discipulado', icon: BookOpen, label: 'Meus Grupos' },
 ]
 
-export function Sidebar() {
-  const { profile, signOut, isLider } = useAuth()
-  const nav = isLider ? NAV_LIDER : NAV_DISCIPULADOR
+interface SidebarProps {
+  drawerOpen: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ drawerOpen, onClose }: SidebarProps) {
+  const { profile, signOut, isLiderOrPastor, canEdit } = useAuth()
+  const nav = isLiderOrPastor ? NAV_LIDER : NAV_DISCIPULADOR
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-stone-50 border-r border-stone-200 min-h-screen fixed left-0 top-0 bottom-0 z-30">
-      {/* Logo */}
+    <aside className={cn(
+      'flex flex-col w-64 bg-stone-50 border-r border-stone-200 min-h-screen',
+      // Desktop: sempre fixo e visível
+      'lg:fixed lg:left-0 lg:top-0 lg:bottom-0 lg:flex lg:z-30',
+      // Mobile: só renderiza quando drawerOpen
+      drawerOpen ? 'flex' : 'hidden lg:flex',
+    )}>
+      {/* Logo + botão fechar no mobile */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-stone-200">
         <div className="w-9 h-9 bg-amber-700 rounded-xl flex items-center justify-center">
           <Church size={18} className="text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <p className="text-sm font-serif font-bold text-stone-900">A Jornada do</p>
           <p className="text-xs font-semibold text-amber-700">Discípulo</p>
         </div>
+        {/* Botão fechar — só mobile */}
+        <button
+          onClick={onClose}
+          className="lg:hidden p-1.5 rounded-lg text-stone-400 hover:bg-stone-100 transition-colors"
+          aria-label="Fechar menu"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       {/* Nav */}
@@ -45,6 +63,7 @@ export function Sidebar() {
             key={to}
             to={to}
             end={to === '/'}
+            onClick={onClose}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all',
@@ -58,6 +77,23 @@ export function Sidebar() {
             {label}
           </NavLink>
         ))}
+        {canEdit && (
+          <NavLink
+            to="/usuarios"
+            onClick={onClose}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all',
+                isActive
+                  ? 'bg-amber-50 text-amber-800 font-semibold border-l-2 border-amber-600 rounded-r-xl pl-2.5'
+                  : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 rounded-xl',
+              )
+            }
+          >
+            <KeyRound size={18} />
+            Usuários
+          </NavLink>
+        )}
       </nav>
 
       {/* User */}

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/contexts/AuthContext'
 import type { ModuloDiscipulado } from '@/types'
 
 const schema = z.object({
@@ -30,6 +31,7 @@ async function fetchModulos() {
 }
 
 export default function Modulos() {
+  const { canEdit } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [editing, setEditing] = useState<ModuloDiscipulado | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
@@ -91,10 +93,12 @@ export default function Modulos() {
           <h1 className="text-3xl font-serif font-bold text-stone-900">Módulos de Discipulado</h1>
           <p className="text-sm text-stone-500 mt-1">{modulos.filter(m => m.ativo).length} módulos ativos</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus size={16} />
-          Novo Módulo
-        </Button>
+        {canEdit && (
+          <Button onClick={openCreate}>
+            <Plus size={16} />
+            Novo Módulo
+          </Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -129,22 +133,24 @@ export default function Modulos() {
                   <p className="text-sm text-stone-500 mt-1 line-clamp-2">{m.descricao}</p>
                 )}
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  onClick={() => openEdit(m)}
-                  aria-label="Editar módulo"
-                  className="p-2 rounded-lg text-stone-400 hover:text-amber-700 hover:bg-amber-50 transition-colors"
-                >
-                  <Edit size={14} />
-                </button>
-                <button
-                  onClick={() => setConfirmDeleteId(m.id)}
-                  aria-label="Excluir módulo"
-                  className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
+              {canEdit && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => openEdit(m)}
+                    aria-label="Editar módulo"
+                    className="p-2 rounded-lg text-stone-400 hover:text-amber-700 hover:bg-amber-50 transition-colors"
+                  >
+                    <Edit size={14} />
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(m.id)}
+                    aria-label="Excluir módulo"
+                    className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

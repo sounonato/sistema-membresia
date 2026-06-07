@@ -14,6 +14,7 @@ import GrupoDetalhe from '@/pages/GrupoDetalhe'
 import Discipuladores from '@/pages/Discipuladores'
 import Modulos from '@/pages/Modulos'
 import GerenciarUsuarios from '@/pages/GerenciarUsuarios'
+import PortalConvertido from '@/pages/PortalConvertido'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +45,14 @@ function LiderRoute({ children }: { children: React.ReactNode }) {
   return <AppShell>{children}</AppShell>
 }
 
+function LiderOrPastorRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading, isLiderOrPastor } = useAuth()
+  if (loading) return <Spinner />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isLiderOrPastor) return <Navigate to="/" replace />
+  return <AppShell>{children}</AppShell>
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -53,15 +62,16 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/formulario" element={<FormularioPublico />} />
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/convertidos" element={<PrivateRoute><Convertidos /></PrivateRoute>} />
+            <Route path="/convertidos" element={<LiderOrPastorRoute><Convertidos /></LiderOrPastorRoute>} />
             <Route path="/convertidos/novo" element={<LiderRoute><NovoConvertido /></LiderRoute>} />
-            <Route path="/convertidos/:id" element={<PrivateRoute><ConvertidoDetalhe /></PrivateRoute>} />
+            <Route path="/convertidos/:id" element={<LiderOrPastorRoute><ConvertidoDetalhe /></LiderOrPastorRoute>} />
             <Route path="/convertidos/:id/editar" element={<LiderRoute><EditarConvertido /></LiderRoute>} />
             <Route path="/discipulado" element={<PrivateRoute><Discipulado /></PrivateRoute>} />
             <Route path="/discipulado/:id" element={<PrivateRoute><GrupoDetalhe /></PrivateRoute>} />
-            <Route path="/discipuladores" element={<LiderRoute><Discipuladores /></LiderRoute>} />
-            <Route path="/modulos" element={<LiderRoute><Modulos /></LiderRoute>} />
+            <Route path="/discipuladores" element={<LiderOrPastorRoute><Discipuladores /></LiderOrPastorRoute>} />
+            <Route path="/modulos" element={<LiderOrPastorRoute><Modulos /></LiderOrPastorRoute>} />
             <Route path="/usuarios" element={<LiderRoute><GerenciarUsuarios /></LiderRoute>} />
+            <Route path="/portal" element={<PortalConvertido />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

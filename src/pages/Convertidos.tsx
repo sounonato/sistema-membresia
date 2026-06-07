@@ -33,7 +33,7 @@ const statusOptions: { value: StatusConvertido | ''; label: string }[] = [
 ]
 
 export default function Convertidos() {
-  const { isLider } = useAuth()
+  const { canEdit } = useAuth()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusConvertido | ''>('')
   const [copiado, setCopiado] = useState(false)
@@ -63,7 +63,7 @@ export default function Convertidos() {
             {copiado ? <Check size={15} className="text-green-500" /> : <Link2 size={15} />}
             {copiado ? 'Copiado!' : 'Copiar link'}
           </Button>
-          {isLider && (
+          {canEdit && (
             <Link to="/convertidos/novo">
               <Button size="md">
                 <Plus size={16} />

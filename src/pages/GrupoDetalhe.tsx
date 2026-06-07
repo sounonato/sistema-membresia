@@ -14,6 +14,7 @@ import { Dialog } from '@/components/ui/dialog'
 import { Select } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { formatDate } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 import type { GrupoDiscipulado, NovoConvertido, ProgressoAula, StatusAula } from '@/types'
 
 async function fetchGrupo(id: string) {
@@ -56,6 +57,8 @@ export default function GrupoDetalhe() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { canEdit, isDiscipulador } = useAuth()
+  const podeMarcarAula = canEdit || isDiscipulador
   const [showAddMembro, setShowAddMembro] = useState(false)
   const [convertidoSelecionado, setConvertidoSelecionado] = useState('')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
@@ -209,10 +212,12 @@ export default function GrupoDetalhe() {
               <Users size={15} />
               Membros ({membros.length})
             </CardTitle>
-            <Button size="sm" variant="secondary" onClick={() => setShowAddMembro(true)}>
-              <Plus size={13} />
-              Adicionar
-            </Button>
+            {canEdit && (
+              <Button size="sm" variant="secondary" onClick={() => setShowAddMembro(true)}>
+                <Plus size={13} />
+                Adicionar
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -230,13 +235,15 @@ export default function GrupoDetalhe() {
                     <p className="text-xs text-stone-400">Desde {formatDate(m.data_entrada)}</p>
                   </div>
                   <Badge variant={sv}>{sl}</Badge>
-                  <button
-                    onClick={() => setConfirmRemoveId(m.id)}
-                    aria-label="Remover membro"
-                    className="p-1.5 rounded text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {canEdit && (
+                    <button
+                      onClick={() => setConfirmRemoveId(m.id)}
+                      aria-label="Remover membro"
+                      className="p-1.5 rounded text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
                 </div>
               )
             })
@@ -268,17 +275,8 @@ export default function GrupoDetalhe() {
                   status === 'cancelada' ? <XCircle size={18} className="text-red-500" /> :
                   <Circle size={18} className="text-stone-300" />
  
-                return (
-                  <button
-                    key={num}
-                    onClick={() => toggleAula.mutate({ numeroAula: num, statusAtual: status as StatusAula })}
-                    disabled={grupo.status === 'encerrado'}
-                    className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                      status === 'realizada'
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                        : 'border-stone-100 hover:border-amber-200 hover:bg-stone-50'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
+                const buttonContent = (
+                  <>
                     {icon}
                     <div className="flex-1">
                       <p className={`text-sm font-medium ${status === 'realizada' ? 'text-emerald-800' : 'text-stone-700'}`}>
@@ -288,7 +286,31 @@ export default function GrupoDetalhe() {
                         <p className="text-xs text-stone-400">{formatDate(p.data_realizada)}</p>
                       )}
                     </div>
+                  </>
+                )
+
+                const cardClassName = `flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                  status === 'realizada'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                    : 'border-stone-100 hover:border-amber-200 hover:bg-stone-50'
+                }`
+
+                return podeMarcarAula ? (
+                  <button
+                    key={num}
+                    onClick={() => toggleAula.mutate({ numeroAula: num, statusAtual: status as StatusAula })}
+                    disabled={grupo.status === 'encerrado'}
+                    className={`${cardClassName} disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {buttonContent}
                   </button>
+                ) : (
+                  <div
+                    key={num}
+                    className={cardClassName}
+                  >
+                    {buttonContent}
+                  </div>
                 )
               })}
             </div>

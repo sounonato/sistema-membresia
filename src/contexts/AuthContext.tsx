@@ -12,7 +12,9 @@ interface AuthContextValue {
   signOut: () => Promise<void>
   isAdmin: boolean
   isPastor: boolean
-  isLider: boolean         // admin | pastor | lider — acesso total
+  isLider: boolean         // admin | lider — acesso de escrita total
+  isLiderOrPastor: boolean // admin | pastor | lider — pode VER área do líder
+  canEdit: boolean         // alias de isLider — usar nos botões de ação
   isDiscipulador: boolean  // apenas discipulador — acesso restrito
 }
 
@@ -69,8 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user, session, profile, loading,
       signIn, signOut,
       isAdmin: profile?.perfil === 'admin',
-      isPastor: profile?.perfil === 'pastor' || profile?.perfil === 'admin',
-      isLider: ['admin', 'pastor', 'lider'].includes(profile?.perfil ?? ''),
+      isPastor: profile?.perfil === 'pastor',
+      isLider: ['admin', 'lider'].includes(profile?.perfil ?? ''),
+      isLiderOrPastor: ['admin', 'pastor', 'lider'].includes(profile?.perfil ?? ''),
+      canEdit: ['admin', 'lider'].includes(profile?.perfil ?? ''),
       isDiscipulador: profile?.perfil === 'discipulador',
     }}>
       {children}
