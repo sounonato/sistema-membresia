@@ -23,14 +23,16 @@ serve(async (req) => {
   )
 
   // Buscar convertido pelo email
-  const { data: convertido } = await supabase
+  const { data: rows, error: convertidoError } = await supabase
     .from('novos_convertidos')
     .select('id, nome, data_conversao')
-    .eq('email', email.toLowerCase().trim())
-    .maybeSingle()
+    .ilike('email', email.trim())
+    .limit(1)
+
+  const convertido = rows?.[0] ?? null
 
   if (!convertido) {
-    return new Response(JSON.stringify({ error: 'Nenhum registro encontrado com esse e-mail.' }), {
+    return new Response(JSON.stringify({ error: convertidoError?.message ?? 'Nenhum registro encontrado com esse e-mail.' }), {
       status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }

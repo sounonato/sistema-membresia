@@ -94,15 +94,19 @@ export default function EditarConvertido() {
   const jaFrequentava = watch('ja_frequentava_igreja')
 
   async function onSubmit(data: FormData) {
+    const { genero, ...rest } = data
+    const payload: Record<string, unknown> = {
+      ...rest,
+      email: data.email || null,
+      estado_civil: data.estado_civil || null,
+      como_conheceu: data.como_conheceu || null,
+      genero: genero || null,
+      qtd_filhos: data.tem_filhos ? (data.qtd_filhos ?? 0) : 0,
+    }
+
     const { error } = await supabase
       .from('novos_convertidos')
-      .update({
-        ...data,
-        email: data.email || null,
-        estado_civil: data.estado_civil || null,
-        como_conheceu: data.como_conheceu || null,
-        qtd_filhos: data.tem_filhos ? (data.qtd_filhos ?? 0) : 0,
-      })
+      .update(payload)
       .eq('id', id!)
 
     if (error) {
