@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, BookOpen, UserCheck,
-  GraduationCap, LogOut, Church, KeyRound, X,
+  GraduationCap, LogOut, Church, KeyRound, X, BookMarked,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
@@ -13,11 +13,13 @@ const NAV_LIDER = [
   { to: '/discipulado', icon: BookOpen, label: 'Discipulado' },
   { to: '/discipuladores', icon: UserCheck, label: 'Discipuladores' },
   { to: '/modulos', icon: GraduationCap, label: 'Módulos' },
+  { to: '/manual', icon: BookMarked, label: 'Consultar Manual' },
 ]
 
 const NAV_DISCIPULADOR = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/discipulado', icon: BookOpen, label: 'Meus Grupos' },
+  { to: '/manual', icon: BookMarked, label: 'Consultar Manual' },
 ]
 
 interface SidebarProps {

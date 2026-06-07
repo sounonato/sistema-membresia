@@ -15,6 +15,7 @@ import Discipuladores from '@/pages/Discipuladores'
 import Modulos from '@/pages/Modulos'
 import GerenciarUsuarios from '@/pages/GerenciarUsuarios'
 import PortalConvertido from '@/pages/PortalConvertido'
+import ConsultarManual from '@/pages/ConsultarManual'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/discipuladores" element={<LiderOrPastorRoute><Discipuladores /></LiderOrPastorRoute>} />
             <Route path="/modulos" element={<LiderOrPastorRoute><Modulos /></LiderOrPastorRoute>} />
             <Route path="/usuarios" element={<LiderRoute><GerenciarUsuarios /></LiderRoute>} />
+            <Route path="/manual" element={<PrivateRoute><ConsultarManual /></PrivateRoute>} />
             <Route path="/portal" element={<PortalConvertido />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

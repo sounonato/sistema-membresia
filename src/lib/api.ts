@@ -64,3 +64,17 @@ export async function createUser(data: {
   }
   return res.json()
 }
+
+export async function chatManual(pergunta: string, historico: { role: string; content: string }[]) {
+  const headers = await authHeaders()
+  const res = await fetch(`${FUNCTIONS_URL}/chat-manual`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ pergunta, historico }),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error ?? 'Erro ao consultar o manual')
+  }
+  return res.json() as Promise<{ resposta: string }>
+}
