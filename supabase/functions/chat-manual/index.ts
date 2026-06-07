@@ -9,7 +9,6 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  // Verificar autenticação
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) {
     return new Response(JSON.stringify({ error: 'Não autorizado' }), {
@@ -22,7 +21,6 @@ serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
-  // Verificar se usuário está autenticado
   const token = authHeader.replace('Bearer ', '')
   const { data: { user }, error: authError } = await supabase.auth.getUser(token)
   if (authError || !user) {
@@ -52,9 +50,8 @@ serve(async (req) => {
 
   const manualTexto = await fileData.text()
 
-  // Chamar Gemini API
-  const geminiKey = Deno.env.get('GEMINI_API_KEY')
-  if (!geminiKey) {
+  const openaiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('OPENAI_API_KEY')
+  if (!openaiKey) {
     return new Response(JSON.stringify({ error: 'Configuração de IA incompleta.' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -71,54 +68,44 @@ REGRAS ABSOLUTAS:
 6. Responda em português brasileiro.
 
 CONTEÚDO DO MANUAL:
-${manualTexto.substring(0, 800000)}`
+${manualTexto.substring(0, 360000)}`
 
   const messages = [
+    { role: 'system', content: systemPrompt },
     ...historico.slice(-6).map((h: any) => ({
-      role: h.role,
-      parts: [{ text: h.content }]
+      role: h.role === 'model' ? 'assistant' : 'user',
+      content: h.content,
     })),
-    {
-      role: 'user',
-      parts: [{ text: pergunta }]
-    }
+    { role: 'user', content: pergunta },
   ]
 
-  const geminiRes = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: messages,
-        generationConfig: {
-          temperature: 0.1,       // baixa temperatura = respostas mais conservadoras/precisas
-          maxOutputTokens: 1024,
-          topP: 0.8,
-        },
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-        ]
-      }),
-    }
-  )
+  const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages,
+      temperature: 0.1,
+      max_tokens: 1024,
+    }),
+  })
 
-  if (!geminiRes.ok) {
-    const err = await geminiRes.text()
-    console.error('Gemini error:', err)
+  if (!openaiRes.ok) {
+    const err = await openaiRes.text()
+    console.error('OpenAI error:', err)
     return new Response(JSON.stringify({ error: 'Erro ao consultar a IA. Tente novamente.' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 
-  const geminiData = await geminiRes.json()
-  const resposta = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? 'Não foi possível gerar uma resposta.'
+  const openaiData = await openaiRes.json()
+  const resposta = openaiData.choices?.[0]?.message?.content ?? 'Não foi possível gerar uma resposta.'
 
   return new Response(JSON.stringify({ resposta }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   })
 })
+// Sun Jun  7 08:21:50 -03 2026
