@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-11 (sessão 5)
+Atualizado em: 2026-07-11 (sessão 6)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -409,6 +409,80 @@ Nova seção **II. Membresia Formal** no dashboard (`paginas/dashboard/page.tsx`
 |-------|-------|
 | Email | `super@nazareno.com` |
 | Senha | `super123` (resetada nesta sessão — hash anterior estava incorreto) |
+
+---
+
+## Mudanças feitas em 2026-07-11 (sessão 6) — Piloto: segurança + email + paginação
+
+Trabalho dividido: Gemini fez o backend, Claude fez o frontend e validação.
+
+### Backend (Gemini)
+
+| Arquivo | Mudança |
+|---------|---------|
+| `backend/migracoes/006_senha_temporaria.sql` | `ALTER TABLE usuarios ADD COLUMN deve_trocar_senha BOOLEAN DEFAULT false` |
+| `backend/migracoes/007_reset_senha.sql` | `CREATE TABLE tokens_reset_senha (id, usuario_id, token, expires_at, usado)` |
+| `backend/src/servicos/email.js` | Serviço nodemailer: 3 templates (confirmação, credenciais, reset) |
+| `backend/src/index.js` | Rate limit 10 req/min no `/api/autenticacao/login` e `/api/auth/login` |
+| `backend/src/rotas/autenticacao.js` | JWT 7d + `POST /trocar-senha` + `POST /esqueci-senha` + `POST /resetar-senha` |
+| `backend/src/rotas/solicitacoes.js` | Senha temp com `crypto.randomBytes`, `deve_trocar_senha=true`, disparo de email |
+| `backend/src/rotas/membros.js` | Paginação: `?pagina=N&por_pagina=N`, retorna `{ data, total, paginas }` |
+| `backend/src/rotas/convertidos.js` | Mesma paginação de membros |
+| `backend/package.json` | Deps: `express-rate-limit`, `nodemailer` |
+
+**Variáveis de ambiente adicionadas ao `.env`:**
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+EMAIL_FROM=...
+BASE_URL=http://localhost:8085
+```
+
+### Frontend v4 (Claude)
+
+| Arquivo | Mudança |
+|---------|---------|
+| `frontend v4/src/routes/_auth.tsx` | Redirect para `/trocar-senha` se `deve_trocar_senha === true` |
+| `frontend v4/src/lib/api.ts` | Métodos: `trocarSenha`, `esqueciSenha`, `resetarSenha`; tipo `deve_trocar_senha` no `Usuario` |
+| `frontend v4/src/paginas/login/page.tsx` | Link "— esqueci minha senha" → `/esqueci-senha` |
+| `frontend v4/src/paginas/trocar-senha/page.tsx` | **Novo** — "Primeiro Acesso / Crie sua senha" (senha atual + nova + confirmar) |
+| `frontend v4/src/paginas/esqueci-senha/page.tsx` | **Novo** — formulário email → estado de confirmação |
+| `frontend v4/src/paginas/resetar-senha/page.tsx` | **Novo** — token via query param, nova senha + confirmar |
+| `frontend v4/src/paginas/termos/page.tsx` | **Novo** — 8 seções LGPD: Aceitação, Serviço, Responsabilidades, LGPD, Planos, Disponibilidade, Cancelamento, Contato |
+| `frontend v4/src/routes/trocar-senha.tsx` | **Novo** — `createFileRoute("/trocar-senha")` |
+| `frontend v4/src/routes/esqueci-senha.tsx` | **Novo** — `createFileRoute("/esqueci-senha")` |
+| `frontend v4/src/routes/resetar-senha.tsx` | **Novo** — `createFileRoute("/resetar-senha")` |
+| `frontend v4/src/routes/termos.tsx` | **Novo** — `createFileRoute("/termos")` |
+| `frontend v4/src/routeTree.gen.ts` | Registradas as 4 novas rotas nas interfaces FileRoutesByPath, fullPaths, to, id, rootRouteChildren |
+| `frontend v4/src/paginas/membros/hooks.ts` | `useMembros` agora retorna `MembrosPage { data, total, pagina, paginas }` |
+| `frontend v4/src/paginas/membros/page.tsx` | Paginação com controles Anterior/Próxima + total de registros |
+| `frontend v4/src/paginas/ministerios/page.tsx` | Corrigido `.map()` no retorno paginado (`membrosAtivosPaginado?.data`) |
+| `frontend v4/src/paginas/dashboard/hooks.ts` | Hook `useMembrosStats()` |
+| `frontend v4/src/paginas/dashboard/page.tsx` | Seção IV "Membresia": Total, Ativos, Batizados, Sem contato 60d |
+| `frontend v4/src/paginas/cadastro-igreja/page.tsx` | Link `/termos` no checkbox de aceite |
+| `frontend v4/src/components/layout/Sidebar.tsx` | Removido "est. 1908" (marcador de uma única igreja) |
+
+### Validação (browser — localhost:8080)
+
+| Checkpoint | Status |
+|-----------|--------|
+| `/login` com link "esqueci minha senha" | ✅ |
+| `/esqueci-senha` renderiza formulário | ✅ |
+| `/resetar-senha?token=abc123` renderiza formulário | ✅ |
+| `/trocar-senha` renderiza "Primeiro Acesso" | ✅ |
+| `/termos` renderiza 8 seções LGPD | ✅ |
+| TypeScript: `npx tsc --noEmit` — 0 erros novos | ✅ (só erro pré-existente em `/_auth/manual`) |
+
+### Pendente (não validado nesta sessão — requer SMTP configurado)
+
+- [ ] Email de confirmação chega ao solicitar cadastro
+- [ ] Email de credenciais chega ao aprovar solicitação
+- [ ] Email de reset chega ao solicitar esqueci-senha
+- [ ] Rate limit bloqueia após 10 tentativas de login
+- [ ] `deve_trocar_senha=true` força redirect para `/trocar-senha` no primeiro login
+- [ ] Plano básico bloqueia ao cadastrar 101° membro ativo (retorna 403)
 
 ---
 
