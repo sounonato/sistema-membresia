@@ -27,6 +27,12 @@ function AuthLayout() {
 
   useEffect(() => {
     if (!usuario) return;
+
+    if (usuario.deve_trocar_senha && pathname !== "/trocar-senha") {
+      navigate({ to: "/trocar-senha" });
+      return;
+    }
+
     const isSuper = usuario.perfil === "superadmin";
     const inSuperArea = SUPERADMIN_ROUTES.some((p) => pathname.startsWith(p));
     if (isSuper && !inSuperArea) {

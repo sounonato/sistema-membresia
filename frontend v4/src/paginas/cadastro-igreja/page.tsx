@@ -189,9 +189,9 @@ export function CadastroIgrejaPage() {
                   placeholder="nazareno-central"
                 />
                 <p className="text-xs text-stone-500 mt-2">
-                  Seu acesso:{" "}
+                  Slug de acesso:{" "}
                   <span className="font-mono text-stone-800">
-                    sistema.app/{slug || "sua-igreja"}
+                    {slug || "sua-igreja"}
                   </span>
                 </p>
               </Campo>
@@ -311,8 +311,16 @@ export function CadastroIgrejaPage() {
                   className="mt-1 h-4 w-4 accent-amber-700"
                 />
                 <span>
-                  Concordo com os termos de uso e com o tratamento dos dados
-                  informados para análise do cadastro.
+                  Concordo com os{" "}
+                  <a
+                    href="/termos"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-amber-700 underline hover:text-amber-900"
+                  >
+                    termos de uso
+                  </a>{" "}
+                  e com o tratamento dos dados informados para análise do cadastro.
                 </span>
               </label>
               {erros.aceite && (

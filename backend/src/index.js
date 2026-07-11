@@ -32,7 +32,22 @@ app.get('/health', (req, res) => {
 });
 
 // Registro de Rotas com prefixo /api
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000,       // 1 minuto
+  max: 10,                   // máximo 10 tentativas
+  message: { error: 'Muitas tentativas. Tente novamente em 1 minuto.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Aplicar antes da rota de autenticação:
+app.use('/api/autenticacao/login', loginLimiter);
+app.use('/api/auth/login', loginLimiter);
+
 app.use('/api/auth', autenticacaoRotas);
+app.use('/api/autenticacao', autenticacaoRotas);
 app.use('/api/igrejas', igrejasRotas);
 app.use('/api/convertidos', convertidosRotas);
 app.use('/api/discipulado', discipuladoRotas);

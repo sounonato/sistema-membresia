@@ -189,7 +189,8 @@ function MinisterioFormModal({
   const [liderId, setLiderId] = useState<string>("");
   const criar = useCriarMinisterio();
   const editar = useEditarMinisterio(editing?.id ?? "");
-  const { data: membrosAtivos } = useMembros({ status: "ativo" });
+  const { data: membrosAtivosPaginado } = useMembros({ status: "ativo", por_pagina: 100 });
+  const membrosAtivos = membrosAtivosPaginado?.data;
 
   const isEdit = !!editing;
 

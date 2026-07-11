@@ -65,7 +65,6 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-stone-950 text-stone-200">
       <div className="px-6 pt-7 pb-6 border-b border-white/10">
-        <p className="font-editorial italic text-amber-300/80 text-sm">est. 1908</p>
         <p className="font-serif text-xl leading-tight text-white mt-1 truncate">
           {igreja?.nome ?? "Igreja do Nazareno"}
         </p>

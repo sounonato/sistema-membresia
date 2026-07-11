@@ -1,20 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, type Membro, type MembrosStats } from "@/lib/api";
 
+type MembrosPage = {
+  data: Membro[];
+  total: number;
+  pagina: number;
+  paginas: number;
+  por_pagina: number;
+};
+
 export function useMembros(params?: {
   status?: string;
   busca?: string;
   ministerio_id?: string;
+  pagina?: number;
+  por_pagina?: number;
 }) {
   const query = new URLSearchParams();
   if (params?.status && params.status !== "__todos") query.set("status", params.status);
   if (params?.busca && params.busca.trim()) query.set("busca", params.busca.trim());
   if (params?.ministerio_id && params.ministerio_id !== "__todos")
     query.set("ministerio_id", params.ministerio_id);
-  const qs = query.toString();
-  return useQuery<Membro[]>({
+  query.set("pagina", String(params?.pagina ?? 1));
+  query.set("por_pagina", String(params?.por_pagina ?? 50));
+  return useQuery<MembrosPage>({
     queryKey: ["membros", params],
-    queryFn: () => api.getMembros(qs ? `?${qs}` : ""),
+    queryFn: () => api.getMembros(`?${query.toString()}`),
   });
 }
 

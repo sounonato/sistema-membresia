@@ -9,7 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrocarSenhaRouteImport } from './routes/trocar-senha'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as ResetarSenhaRouteImport } from './routes/resetar-senha'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
@@ -41,9 +45,29 @@ import { Route as AuthMembrosIdEditarRouteImport } from './routes/_auth.membros.
 import { Route as AuthConvertidosIdJornadaRouteImport } from './routes/_auth.convertidos.$id.jornada'
 import { Route as AuthConvertidosIdEditarRouteImport } from './routes/_auth.convertidos.$id.editar'
 
+const TrocarSenhaRoute = TrocarSenhaRouteImport.update({
+  id: '/trocar-senha',
+  path: '/trocar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetarSenhaRoute = ResetarSenhaRouteImport.update({
+  id: '/resetar-senha',
+  path: '/resetar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -200,7 +224,11 @@ const AuthConvertidosIdEditarRoute = AuthConvertidosIdEditarRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRouteWithChildren
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/resetar-senha': typeof ResetarSenhaRoute
+  '/termos': typeof TermosRoute
+  '/trocar-senha': typeof TrocarSenhaRoute
   '/$slug/login': typeof SlugLoginRoute
   '/dashboard': typeof AuthDashboardRoute
   '/discipuladores': typeof AuthDiscipuladoresRoute
@@ -231,7 +259,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/resetar-senha': typeof ResetarSenhaRoute
+  '/termos': typeof TermosRoute
+  '/trocar-senha': typeof TrocarSenhaRoute
   '/$slug/login': typeof SlugLoginRoute
   '/dashboard': typeof AuthDashboardRoute
   '/discipuladores': typeof AuthDiscipuladoresRoute
@@ -265,7 +297,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
+  '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/resetar-senha': typeof ResetarSenhaRoute
+  '/termos': typeof TermosRoute
+  '/trocar-senha': typeof TrocarSenhaRoute
   '/$slug/login': typeof SlugLoginRoute
   '/_auth/dashboard': typeof AuthDashboardRoute
   '/_auth/discipuladores': typeof AuthDiscipuladoresRoute
@@ -299,7 +335,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$slug'
+    | '/esqueci-senha'
     | '/login'
+    | '/resetar-senha'
+    | '/termos'
+    | '/trocar-senha'
     | '/$slug/login'
     | '/dashboard'
     | '/discipuladores'
@@ -330,7 +370,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/esqueci-senha'
     | '/login'
+    | '/resetar-senha'
+    | '/termos'
+    | '/trocar-senha'
     | '/$slug/login'
     | '/dashboard'
     | '/discipuladores'
@@ -363,7 +407,11 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/_auth'
+    | '/esqueci-senha'
     | '/login'
+    | '/resetar-senha'
+    | '/termos'
+    | '/trocar-senha'
     | '/$slug/login'
     | '/_auth/dashboard'
     | '/_auth/discipuladores'
@@ -397,7 +445,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SlugRoute: typeof SlugRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   LoginRoute: typeof LoginRoute
+  ResetarSenhaRoute: typeof ResetarSenhaRoute
+  TermosRoute: typeof TermosRoute
+  TrocarSenhaRoute: typeof TrocarSenhaRoute
   CadastroMembroSlugRoute: typeof CadastroMembroSlugRoute
   CadastroSlugRoute: typeof CadastroSlugRoute
   CadastroSucessoRoute: typeof CadastroSucessoRoute
@@ -406,11 +458,39 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trocar-senha': {
+      id: '/trocar-senha'
+      path: '/trocar-senha'
+      fullPath: '/trocar-senha'
+      preLoaderRoute: typeof TrocarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resetar-senha': {
+      id: '/resetar-senha'
+      path: '/resetar-senha'
+      fullPath: '/resetar-senha'
+      preLoaderRoute: typeof ResetarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof EsqueciSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -692,7 +772,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SlugRoute: SlugRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  EsqueciSenhaRoute: EsqueciSenhaRoute,
   LoginRoute: LoginRoute,
+  ResetarSenhaRoute: ResetarSenhaRoute,
+  TermosRoute: TermosRoute,
+  TrocarSenhaRoute: TrocarSenhaRoute,
   CadastroMembroSlugRoute: CadastroMembroSlugRoute,
   CadastroSlugRoute: CadastroSlugRoute,
   CadastroSucessoRoute: CadastroSucessoRoute,

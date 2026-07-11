@@ -11,13 +11,14 @@ import {
 } from "recharts";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDashboardStats } from "./hooks";
+import { useDashboardStats, useMembrosStats } from "./hooks";
 
 const PIE_COLORS = ["#b45309", "#d97706", "#f59e0b", "#fbbf24"];
 
 export function DashboardPage() {
   const { usuario, igreja } = useAuth();
   const { data, isLoading } = useDashboardStats();
+  const { data: membrosStats } = useMembrosStats();
 
   if (isLoading) {
     return (
@@ -196,6 +197,40 @@ export function DashboardPage() {
           </ul>
         </div>
       </section>
+
+      {/* Membresia stats */}
+      {membrosStats && membrosStats.total > 0 && (
+        <section>
+          <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-6 flex items-center gap-3">
+            <span className="tabular-nums">IV.</span>
+            <span className="h-px w-8 bg-stone-400" />
+            Membresia
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-stone-900">
+            {[
+              { label: "Total de membros", value: membrosStats.total, note: "Ativos + inativos" },
+              { label: "Membros ativos", value: membrosStats.ativos, note: "Em comunhão" },
+              { label: "Batizados", value: membrosStats.batizados, note: "Testemunho público" },
+              { label: "Sem contato (60d)", value: membrosStats.sem_contato_60, note: "Precisam de atenção" },
+            ].map((k, i) => (
+              <div
+                key={k.label}
+                className={
+                  "py-8 pr-4 border-b border-stone-300 " +
+                  (i < 3 ? "lg:border-r lg:border-stone-200 lg:pr-8 " : "") +
+                  (i % 2 === 0 ? "border-r border-stone-200 pr-6 lg:pr-8" : "")
+                }
+              >
+                <p className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-none tabular-nums text-stone-900 font-light">
+                  {k.value}
+                </p>
+                <p className="mt-4 text-sm text-stone-900 font-medium">{k.label}</p>
+                <p className="text-xs text-stone-500 mt-1">{k.note}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Editorial pull quote */}
       <section className="border-y border-stone-900 py-16">

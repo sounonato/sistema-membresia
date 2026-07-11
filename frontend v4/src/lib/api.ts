@@ -54,6 +54,21 @@ export const api = {
       body: JSON.stringify({ email, senha, slug }),
     }),
   me: () => request("/auth/me"),
+  trocarSenha: (senha_atual: string, senha_nova: string) =>
+    request("/autenticacao/trocar-senha", {
+      method: "POST",
+      body: JSON.stringify({ senha_atual, senha_nova }),
+    }),
+  esqueciSenha: (email: string) =>
+    publicRequest("/autenticacao/esqueci-senha", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+  resetarSenha: (token: string, senha_nova: string) =>
+    publicRequest("/autenticacao/resetar-senha", {
+      method: "POST",
+      body: JSON.stringify({ token, senha_nova }),
+    }),
 
   getIgrejas: () => request("/igrejas"),
   createIgreja: (data: unknown) =>
@@ -238,6 +253,7 @@ export type Usuario = {
   email: string;
   perfil: Perfil;
   ativo?: boolean;
+  deve_trocar_senha?: boolean;
   igreja?: Igreja | null;
   igreja_id?: string | null;
 };

@@ -65,12 +65,17 @@ export function MembrosPage() {
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState("__todos");
   const [ministerioId, setMinisterioId] = useState("__todos");
+  const [pagina, setPagina] = useState(1);
 
-  const { data, isLoading } = useMembros({
+  const { data: resultado, isLoading } = useMembros({
     busca,
     status,
     ministerio_id: ministerioId,
+    pagina,
+    por_pagina: 50,
   });
+  const data = resultado?.data ?? [];
+  const totalPaginas = resultado?.paginas ?? 1;
   const { data: ministerios } = useMinisterios();
   const excluir = useExcluirMembro();
 
@@ -144,7 +149,7 @@ export function MembrosPage() {
 
       {isLoading ? (
         <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />
-      ) : !data || data.length === 0 ? (
+      ) : data.length === 0 ? (
         <p className="text-center py-16 font-serif italic text-stone-500">
           Nenhum membro encontrado — tente ajustar os filtros.
         </p>
@@ -234,6 +239,30 @@ export function MembrosPage() {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPaginas > 1 && (
+        <div className="flex items-center justify-between mt-6 text-sm text-stone-600">
+          <span>
+            Página {pagina} de {totalPaginas} · {resultado?.total} membros
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPagina((p) => Math.max(1, p - 1))}
+              disabled={pagina === 1}
+              className="px-3 py-1.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
+            >
+              ← Anterior
+            </button>
+            <button
+              onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+              disabled={pagina === totalPaginas}
+              className="px-3 py-1.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
+            >
+              Próxima →
+            </button>
+          </div>
         </div>
       )}
     </div>

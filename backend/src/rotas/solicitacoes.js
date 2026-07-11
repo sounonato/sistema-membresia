@@ -2,6 +2,8 @@ const express = require('express');
 const db = require('../conexao');
 const { checkPerfil } = require('../middlewares/perfil');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const email = require('../servicos/email');
 
 const publicRouter = express.Router();
 const adminRouter = express.Router();
@@ -66,6 +68,16 @@ publicRouter.post('/solicitacao-igreja', async (req, res) => {
       ]
     );
 
+    try {
+      await email.enviarConfirmacaoSolicitacao(
+        req.body.responsavel_email,
+        req.body.responsavel_nome,
+        req.body.nome
+      );
+    } catch (emailErr) {
+      console.error('Erro ao enviar email de confirmação:', emailErr.message);
+    }
+
     return res.status(201).json({ mensagem: 'Solicitação recebida. Entraremos em contato em breve.' });
   } catch (err) {
     console.error('Erro ao enviar solicitação de cadastro de igreja:', err);
@@ -121,8 +133,8 @@ adminRouter.post('/solicitacoes/:id/aprovar', checkPerfil(['superadmin']), async
       return res.status(400).json({ error: `Esta solicitação já foi ${solicitacao.status}.` });
     }
 
-    // Gerar senha temporária de 8 caracteres e seu hash
-    const senhaTemporaria = Math.random().toString(36).slice(-8);
+    // Gerar senha temporária segura
+    const senhaTemporaria = crypto.randomBytes(6).toString('base64url');
     const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
     await client.query('BEGIN');
@@ -145,9 +157,9 @@ adminRouter.post('/solicitacoes/:id/aprovar', checkPerfil(['superadmin']), async
 
     // Criar o usuário administrador da igreja
     const usuarioRes = await client.query(
-      `INSERT INTO usuarios (nome, email, senha_hash, perfil, igreja_id, ativo)
-       VALUES ($1, $2, $3, 'admin', $4, true)
-       RETURNING id, nome, email, perfil, igreja_id, ativo`,
+      `INSERT INTO usuarios (nome, email, senha_hash, perfil, ativo, igreja_id, deve_trocar_senha)
+       VALUES ($1, $2, $3, 'admin', true, $4, true)
+       RETURNING id, nome, email, perfil, igreja_id, ativo, deve_trocar_senha`,
       [
         solicitacao.responsavel_nome,
         solicitacao.responsavel_email,
@@ -167,6 +179,19 @@ adminRouter.post('/solicitacoes/:id/aprovar', checkPerfil(['superadmin']), async
     );
 
     await client.query('COMMIT');
+
+    try {
+      await email.enviarCredenciais(
+        solicitacao.responsavel_email,
+        solicitacao.responsavel_nome,
+        solicitacao.nome,
+        solicitacao.slug,
+        senhaTemporaria
+      );
+    } catch (emailErr) {
+      // Não falhar a aprovação se o email falhar — logar e seguir
+      console.error('Erro ao enviar email de credenciais:', emailErr.message);
+    }
 
     return res.json({
       igreja: novaIgreja,

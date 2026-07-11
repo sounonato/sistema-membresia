@@ -138,9 +138,14 @@ export function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-8 text-xs text-stone-500 text-center font-editorial italic">
-            &mdash; feito com cuidado pastoral.
-          </p>
+          <div className="mt-8 flex justify-center">
+            <Link
+              to="/esqueci-senha"
+              className="text-xs text-stone-400 hover:text-stone-700 font-editorial italic"
+            >
+              &mdash; esqueci minha senha
+            </Link>
+          </div>
         </div>
       </div>
     </div>

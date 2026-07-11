@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
         igreja_id: usuario.igreja_id 
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: '7d' }
     );
 
     return res.json({
@@ -220,6 +220,127 @@ router.patch('/usuarios/:id/toggle', autenticar, identificarTenant, checkPerfil(
     return res.json(resultado.rows[0]);
   } catch (err) {
     console.error('Erro ao alternar status do usuário:', err);
+    return res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+});
+
+// POST /api/autenticacao/trocar-senha
+router.post('/trocar-senha', autenticar, async (req, res) => {
+  const { senha_atual, senha_nova } = req.body;
+
+  if (!senha_atual || !senha_nova) {
+    return res.status(400).json({ error: 'Senha atual e nova senha são obrigatórias' });
+  }
+
+  if (senha_nova.length < 8) {
+    return res.status(400).json({ error: 'A nova senha deve ter no mínimo 8 caracteres' });
+  }
+
+  try {
+    const resultado = await db.query('SELECT * FROM usuarios WHERE id = $1', [req.usuarioId]);
+    const usuario = resultado.rows[0];
+
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const senhaValida = await bcrypt.compare(senha_atual, usuario.senha_hash);
+    if (!senhaValida) {
+      return res.status(401).json({ error: 'Senha atual incorreta' });
+    }
+
+    const senhaHash = await bcrypt.hash(senha_nova, 10);
+    await db.query(
+      'UPDATE usuarios SET senha_hash = $1, deve_trocar_senha = false WHERE id = $2',
+      [senhaHash, req.usuarioId]
+    );
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao trocar senha:', err);
+    return res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+});
+
+// POST /api/autenticacao/esqueci-senha
+router.post('/esqueci-senha', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'E-mail é obrigatório' });
+  }
+
+  try {
+    const resultado = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+    const usuario = resultado.rows[0];
+
+    // Se não encontrar, retornar 200 mesmo assim para não vazar a existência do e-mail
+    if (!usuario) {
+      return res.json({ ok: true, mensagem: 'Se este email estiver cadastrado, você receberá as instruções.' });
+    }
+
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+    await db.query(
+      'INSERT INTO tokens_reset_senha (usuario_id, token, expires_at) VALUES ($1, $2, $3)',
+      [usuario.id, token, expiresAt]
+    );
+
+    const emailServico = require('../servicos/email');
+    try {
+      await emailServico.enviarResetSenha(usuario.email, usuario.nome, token);
+    } catch (emailErr) {
+      console.error('Erro ao enviar e-mail de redefinição:', emailErr.message);
+    }
+
+    return res.json({ ok: true, mensagem: 'Se este email estiver cadastrado, você receberá as instruções.' });
+  } catch (err) {
+    console.error('Erro no esqueci-senha:', err);
+    return res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+});
+
+// POST /api/autenticacao/resetar-senha
+router.post('/resetar-senha', async (req, res) => {
+  const { token, senha_nova } = req.body;
+
+  if (!token || !senha_nova) {
+    return res.status(400).json({ error: 'Token e nova senha são obrigatórios' });
+  }
+
+  if (senha_nova.length < 8) {
+    return res.status(400).json({ error: 'A nova senha deve ter no mínimo 8 caracteres' });
+  }
+
+  try {
+    const tokenRes = await db.query(
+      'SELECT * FROM tokens_reset_senha WHERE token = $1 AND usado = false AND expires_at > now()',
+      [token]
+    );
+
+    if (tokenRes.rows.length === 0) {
+      return res.status(400).json({ error: 'Token inválido ou expirado' });
+    }
+
+    const tokenRegistro = tokenRes.rows[0];
+    const senhaHash = await bcrypt.hash(senha_nova, 10);
+
+    // Atualiza a senha e marca o token como usado
+    await db.query(
+      'UPDATE usuarios SET senha_hash = $1, deve_trocar_senha = false WHERE id = $2',
+      [senhaHash, tokenRegistro.usuario_id]
+    );
+
+    await db.query(
+      'UPDATE tokens_reset_senha SET usado = true WHERE id = $1',
+      [tokenRegistro.id]
+    );
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao resetar senha:', err);
     return res.status(500).json({ error: 'Erro interno no servidor' });
   }
 });

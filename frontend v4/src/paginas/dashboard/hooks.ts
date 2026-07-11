@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api, type MembrosStats } from "@/lib/api";
 
 export type DashboardStats = {
   total_convertidos?: number;
@@ -14,5 +14,12 @@ export function useDashboardStats() {
   return useQuery<DashboardStats>({
     queryKey: ["dashboard", "stats"],
     queryFn: () => api.getDashboardStats(),
+  });
+}
+
+export function useMembrosStats() {
+  return useQuery<MembrosStats>({
+    queryKey: ["membros", "stats"],
+    queryFn: () => api.getMembrosStats(),
   });
 }

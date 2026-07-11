@@ -133,7 +133,47 @@ router.get('/sem-contato', checkPerfil(['admin', 'lider', 'pastor', 'discipulado
 // 7.3 GET /api/membros
 router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
   const { status, busca, ministerio_id, sem_ministerio } = req.query;
+  const pagina = parseInt(req.query.pagina) || 1;
+  const porPagina = Math.min(parseInt(req.query.por_pagina) || 50, 100);
+  const offset = (pagina - 1) * porPagina;
+
   try {
+    let whereClause = ' WHERE m.igreja_id = $1';
+    const params = [req.igrejaId];
+    let paramIndex = 2;
+
+    if (status) {
+      whereClause += ` AND m.status = $${paramIndex}`;
+      params.push(status);
+      paramIndex++;
+    } else {
+      whereClause += " AND m.status != 'excluido'";
+    }
+
+    if (busca) {
+      whereClause += ` AND (m.nome ILIKE $${paramIndex} OR m.telefone ILIKE $${paramIndex})`;
+      params.push(`%${busca}%`);
+      paramIndex++;
+    }
+
+    if (ministerio_id) {
+      whereClause += ` AND EXISTS (SELECT 1 FROM membro_ministerios mm WHERE mm.membro_id = m.id AND mm.ministerio_id = $${paramIndex} AND mm.ativo = true)`;
+      params.push(ministerio_id);
+      paramIndex++;
+    }
+
+    if (sem_ministerio === 'true') {
+      whereClause += ` AND NOT EXISTS (SELECT 1 FROM membro_ministerios mm WHERE mm.membro_id = m.id AND mm.ativo = true)`;
+    }
+
+    // 1. Query contagem
+    const countResult = await db.query(
+      `SELECT COUNT(*) FROM membros m ${whereClause}`,
+      params
+    );
+    const total = parseInt(countResult.rows[0].count);
+
+    // 2. Query paginada
     let queryText = `
       SELECT
         m.id,
@@ -159,40 +199,21 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
           '[]'::json
         ) AS ministerios
       FROM membros m
-      WHERE m.igreja_id = $1
+      ${whereClause}
+      ORDER BY m.nome ASC
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
 
-    const params = [req.igrejaId];
-    let paramIndex = 2;
+    const paginatedParams = [...params, porPagina, offset];
+    const { rows } = await db.query(queryText, paginatedParams);
 
-    if (status) {
-      queryText += ` AND m.status = $${paramIndex}`;
-      params.push(status);
-      paramIndex++;
-    } else {
-      queryText += " AND m.status != 'excluido'";
-    }
-
-    if (busca) {
-      queryText += ` AND (m.nome ILIKE $${paramIndex} OR m.telefone ILIKE $${paramIndex})`;
-      params.push(`%${busca}%`);
-      paramIndex++;
-    }
-
-    if (ministerio_id) {
-      queryText += ` AND EXISTS (SELECT 1 FROM membro_ministerios mm WHERE mm.membro_id = m.id AND mm.ministerio_id = $${paramIndex} AND mm.ativo = true)`;
-      params.push(ministerio_id);
-      paramIndex++;
-    }
-
-    if (sem_ministerio === 'true') {
-      queryText += ` AND NOT EXISTS (SELECT 1 FROM membro_ministerios mm WHERE mm.membro_id = m.id AND mm.ativo = true)`;
-    }
-
-    queryText += ` ORDER BY m.nome ASC`;
-
-    const resultado = await db.query(queryText, params);
-    return res.json(resultado.rows);
+    return res.json({
+      data: rows,
+      total,
+      pagina,
+      paginas: Math.ceil(total / porPagina),
+      por_pagina: porPagina,
+    });
   } catch (err) {
     console.error('Erro ao listar membros:', err);
     return res.status(500).json({ error: 'Erro interno ao listar membros' });
@@ -295,6 +316,29 @@ router.post('/', checkPerfil(['admin', 'lider']), async (req, res) => {
   }
 
   try {
+    // Buscar plano e contagem atual da igreja
+    const planoResult = await db.query(
+      `SELECT i.plano, COUNT(m.id) AS total
+       FROM igrejas i
+       LEFT JOIN membros m ON m.igreja_id = i.id AND m.status = 'ativo'
+       WHERE i.id = $1
+       GROUP BY i.plano`,
+      [req.igrejaId]
+    );
+
+    if (planoResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Igreja não encontrada' });
+    }
+
+    const { plano, total } = planoResult.rows[0];
+    const LIMITES = { basico: 100, pro: Infinity };
+
+    if (parseInt(total) >= (LIMITES[plano] ?? 100)) {
+      return res.status(403).json({
+        error: `Seu plano ${plano} permite até ${LIMITES[plano]} membros ativos. Faça upgrade para continuar.`
+      });
+    }
+
     const queryText = `
       INSERT INTO membros (
         igreja_id, convertido_id, nome, telefone, email, data_nascimento, genero,

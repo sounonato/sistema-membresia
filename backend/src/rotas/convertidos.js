@@ -12,29 +12,62 @@ router.use(identificarTenant);
 
 // GET /api/convertidos - Listar novos convertidos (com isolamento por igreja_id)
 router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+  const pagina = parseInt(req.query.pagina) || 1;
+  const porPagina = Math.min(parseInt(req.query.por_pagina) || 50, 100);
+  const offset = (pagina - 1) * porPagina;
+
   try {
-    let queryText = 'SELECT * FROM novos_convertidos';
+    let countQueryText = '';
+    let listQueryText = '';
     const params = [];
+    let paramIndex = 1;
 
     if (req.usuarioPerfil === 'discipulador') {
-      queryText = `
+      countQueryText = `
+        SELECT COUNT(DISTINCT nc.id) FROM novos_convertidos nc
+        JOIN grupo_membros gm ON nc.id = gm.convertido_id
+        JOIN grupos_discipulado gd ON gm.grupo_id = gd.id
+        WHERE gd.discipulador_id = $1 AND nc.igreja_id = $2
+      `;
+      listQueryText = `
         SELECT DISTINCT nc.* FROM novos_convertidos nc
         JOIN grupo_membros gm ON nc.id = gm.convertido_id
         JOIN grupos_discipulado gd ON gm.grupo_id = gd.id
         WHERE gd.discipulador_id = $1 AND nc.igreja_id = $2
         ORDER BY nc.nome ASC
+        LIMIT $3 OFFSET $4
       `;
       params.push(req.discipuladorId, req.igrejaId);
+      paramIndex = 3;
     } else {
+      let whereClause = '';
       if (req.igrejaId) {
-        queryText += ' WHERE igreja_id = $1';
+        whereClause = ' WHERE nc.igreja_id = $1';
         params.push(req.igrejaId);
+        paramIndex = 2;
       }
-      queryText += ' ORDER BY nome ASC';
+      countQueryText = `SELECT COUNT(*) FROM novos_convertidos nc${whereClause}`;
+      listQueryText = `
+        SELECT nc.* FROM novos_convertidos nc
+        ${whereClause}
+        ORDER BY nc.nome ASC
+        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      `;
     }
 
-    const resultado = await db.query(queryText, params);
-    return res.json(resultado.rows);
+    const countResult = await db.query(countQueryText, params);
+    const total = parseInt(countResult.rows[0].count);
+
+    const paginatedParams = [...params, porPagina, offset];
+    const { rows } = await db.query(listQueryText, paginatedParams);
+
+    return res.json({
+      data: rows,
+      total,
+      pagina,
+      paginas: Math.ceil(total / porPagina),
+      por_pagina: porPagina,
+    });
   } catch (err) {
     console.error('Erro ao listar novos convertidos:', err);
     return res.status(500).json({ error: 'Erro interno ao listar novos convertidos' });
@@ -102,6 +135,29 @@ router.post('/', checkPerfil(['admin', 'lider']), async (req, res) => {
   }
 
   try {
+    // Buscar plano e contagem atual da igreja
+    const planoResult = await db.query(
+      `SELECT i.plano, COUNT(nc.id) AS total
+       FROM igrejas i
+       LEFT JOIN novos_convertidos nc ON nc.igreja_id = i.id AND nc.status = 'ativo'
+       WHERE i.id = $1
+       GROUP BY i.plano`,
+      [novoConvertidoIgrejaId]
+    );
+
+    if (planoResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Igreja não encontrada' });
+    }
+
+    const { plano, total } = planoResult.rows[0];
+    const LIMITES = { basico: 100, pro: Infinity };
+
+    if (parseInt(total) >= (LIMITES[plano] ?? 100)) {
+      return res.status(403).json({
+        error: `Seu plano ${plano} permite até ${LIMITES[plano]} membros ativos. Faça upgrade para continuar.`
+      });
+    }
+
     const queryText = `
       INSERT INTO novos_convertidos (
         igreja_id, nome, telefone, email, data_conversao, data_nascimento,
