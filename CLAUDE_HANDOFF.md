@@ -1,16 +1,18 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-10 (sessão 4)
+Atualizado em: 2026-07-11 (sessão 5)
 
 ## Estado atual: FUNCIONANDO ✅
 
-**Frontend v3 é o frontend ativo do módulo Membresia.** Frontend v2 tem as outras páginas (convertidos, discipulado, relatórios). O `frontend/` (v1) é legado — não usar.
+**Frontend v4 é o frontend mais completo** — inclui todas as páginas do sistema + landing SaaS + cadastro de igreja + painel de solicitações.  
+Frontend v3 tem o módulo Membresia completo mas não tem landing/SaaS. Frontend v2 tem branding multi-tenant. Frontend v1 é legado — não usar.
 
 | Serviço | Porta | Comando |
 |---------|-------|---------|
 | Backend (Node/Express) | 3031 | `cd backend && node src/index.js` |
+| Frontend v4 (TanStack Start, COMPLETO) | 8085 | `cd "frontend v4" && bun dev` |
 | Frontend v3 (Vite + React, Membresia) | 5176 | `cd "frontend v3" && npx vite dev --port 5176` |
-| Frontend v2 (TanStack Start + Bun) | dinâmica (~8083-8084) | `cd "frontend v2" && bun dev` |
+| Frontend v2 (TanStack Start + Bun, Branding) | dinâmica (~8083-8084) | `cd "frontend v2" && bun dev` |
 | Frontend v1 (legado, não usar) | 5175 | — |
 
 ---
@@ -347,6 +349,66 @@ Nova seção **II. Membresia Formal** no dashboard (`paginas/dashboard/page.tsx`
 | `/membros/link-cadastro` | ✅ | QR âmbar, "Copiar mensagem para WhatsApp", Baixar PNG, Imprimir |
 | `/cadastro-membro/nazareno-sede` | ✅ | Página pública sem auth |
 | `/dashboard` | ✅ | Seção Membresia Formal com KPIs e barra de status reais |
+
+---
+
+## Mudanças feitas em 2026-07-11 (sessão 5)
+
+### SaaS onboarding — fluxo completo implementado
+
+**Objetivo:** Landing page pública + cadastro de igrejas + painel de aprovação superadmin.
+
+#### Backend (Gemini entregou, Claude aplicou e testou)
+
+| Arquivo | Mudança |
+|---------|---------|
+| `backend/migracoes/005_solicitacoes.sql` | `ALTER TABLE igrejas ADD COLUMN IF NOT EXISTS status` + `CREATE TABLE solicitacoes_igreja` |
+| `backend/src/rotas/solicitacoes.js` | Rotas públicas e de superadmin separadas em dois Express routers |
+| `backend/src/index.js` | Registra `solicitacoesPublico` e `solicitacoesAdmin` |
+
+**Novos endpoints:**
+
+| Método | Rota | Auth |
+|--------|------|------|
+| POST | `/api/publico/solicitacao-igreja` | Público |
+| GET | `/api/superadmin/solicitacoes?status=pendente` | superadmin |
+| POST | `/api/superadmin/solicitacoes/:id/aprovar` | superadmin (cria igreja + admin, retorna senha temp) |
+| POST | `/api/superadmin/solicitacoes/:id/rejeitar` | superadmin |
+
+**Fluxo de aprovação:** ao aprovar, cria a `igreja` + `usuario` (perfil=admin) em transação atômica, retorna `{ igreja, usuario, senha_temporaria }`.
+
+#### Frontend v4 (Lovable entregou, Claude integrou painel superadmin)
+
+**O que o Lovable construiu:**
+- `paginas/landing-saas/page.tsx` — landing page completa (hero, recursos, como funciona, planos)
+- `paginas/cadastro-igreja/page.tsx` — formulário 2 etapas (dados da igreja → responsável)
+- `paginas/cadastro-igreja/sucesso.tsx` — confirmação pós-envio
+- `lib/api-publico.ts` — `solicitarCadastroIgreja()` apontando para o backend correto
+
+**O que Claude adicionou no v4:**
+- `lib/api.ts` — 3 novos endpoints: `getSolicitacoes`, `aprovarSolicitacao`, `rejeitarSolicitacao`
+- `lib/api.ts` — tipo `SolicitacaoIgreja`
+- `paginas/igrejas/hooks.ts` — hooks `useSolicitacoes`, `useAprovarSolicitacao`, `useRejeitarSolicitacao`
+- `paginas/igrejas/page.tsx` — aba "Solicitações pendentes" com badge de contagem + tabela com ações Aprovar/Rejeitar + modal de resultado (senha temporária) + modal de rejeição com motivo
+
+#### Testado ✅ (sessão 5)
+
+| Página | Status | Observação |
+|--------|--------|------------|
+| `http://localhost:8085/` | ✅ | Landing SaaS completa |
+| `http://localhost:8085/cadastro` | ✅ | Formulário 2 etapas, states BR, preview slug |
+| POST `/api/publico/solicitacao-igreja` | ✅ | 201 — Igreja Batista Central cadastrada |
+| GET `/api/superadmin/solicitacoes?status=pendente` | ✅ | Lista solicitações (superadmin) |
+| POST `/api/superadmin/solicitacoes/:id/aprovar` | ✅ | Cria igreja + admin + senha temp em transação |
+| `/igrejas` aba Igrejas Ativas | ✅ | Tabela com 3 igrejas, ações CRUD |
+| `/igrejas` aba Solicitações Pendentes | ✅ | Badge `1`, tabela, botão ✓ abre modal com credenciais |
+
+#### Login do superadmin
+
+| Campo | Valor |
+|-------|-------|
+| Email | `super@nazareno.com` |
+| Senha | `super123` (resetada nesta sessão — hash anterior estava incorreto) |
 
 ---
 

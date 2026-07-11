@@ -14,6 +14,8 @@ const portalRotas = require('./rotas/portal');
 const publicoRotas = require('./rotas/publico');
 const membrosRotas = require('./rotas/membros');
 const ministeriosRotas = require('./rotas/ministerios');
+const autenticar = require('./middlewares/autenticacao');
+const { solicitacoesPublico, solicitacoesAdmin } = require('./rotas/solicitacoes');
 
 const app = express();
 const PORT = process.env.PORT || 3031;
@@ -39,6 +41,8 @@ app.use('/api/modulos', modulosRotas);
 app.use('/api/dashboard', painelRotas);
 app.use('/api/portal', portalRotas);
 app.use('/api/publico', publicoRotas);
+app.use('/api/publico', solicitacoesPublico);
+app.use('/api/superadmin', autenticar, solicitacoesAdmin);
 app.use('/api/membros', membrosRotas);
 app.use('/api/ministerios', ministeriosRotas);
 

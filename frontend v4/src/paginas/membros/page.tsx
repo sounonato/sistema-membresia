@@ -1,0 +1,241 @@
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { Search, Plus, Eye, Pencil, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { cn, formatDate } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { podeEditar, type Membro } from "@/lib/api";
+import { useMembros, useExcluirMembro } from "./hooks";
+import { useMinisterios } from "@/paginas/ministerios/hooks";
+
+const STATUS_STYLES: Record<string, string> = {
+  ativo: "bg-amber-50 text-amber-800 border border-amber-200",
+  inativo: "bg-stone-100 text-stone-600 border border-stone-200",
+  transferido: "bg-blue-50 text-blue-700 border border-blue-200",
+  falecido: "bg-stone-200 text-stone-500 border border-stone-300",
+  excluido: "bg-stone-200 text-stone-500 border border-stone-300",
+};
+
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <Badge
+      className={cn(
+        "rounded-none capitalize text-[10px] tracking-widest uppercase font-normal",
+        STATUS_STYLES[status] ?? STATUS_STYLES.inativo,
+      )}
+    >
+      {status}
+    </Badge>
+  );
+}
+
+function ContatoCell({ m }: { m: Membro }) {
+  const dias = m.dias_sem_contato ?? 0;
+  if (dias > 90)
+    return (
+      <Badge className="rounded-none bg-red-50 text-red-700 border border-red-200 font-normal">
+        {dias} dias — urgente
+      </Badge>
+    );
+  if (dias > 60)
+    return (
+      <Badge className="rounded-none bg-amber-50 text-amber-800 border border-amber-200 font-normal">
+        {dias} dias
+      </Badge>
+    );
+  return <span className="text-sm text-stone-600">{formatDate(m.ultimo_contato)}</span>;
+}
+
+export function MembrosPage() {
+  const { usuario } = useAuth();
+  const editor = podeEditar(usuario?.perfil);
+  const isAdmin = usuario?.perfil === "admin";
+
+  const [busca, setBusca] = useState("");
+  const [status, setStatus] = useState("__todos");
+  const [ministerioId, setMinisterioId] = useState("__todos");
+
+  const { data, isLoading } = useMembros({
+    busca,
+    status,
+    ministerio_id: ministerioId,
+  });
+  const { data: ministerios } = useMinisterios();
+  const excluir = useExcluirMembro();
+
+  async function onExcluir(m: Membro) {
+    if (!window.confirm(`Excluir "${m.nome}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      await excluir.mutateAsync(m.id);
+      toast.success("Membro excluído");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao excluir");
+    }
+  }
+
+  return (
+    <div className="text-stone-900">
+      <PageHeader
+        chapter="04"
+        eyebrow="Pastoral · Cadastro"
+        title="Membros"
+        lede="Registro formal da membresia da igreja."
+        actions={
+          editor && (
+            <Button
+              asChild
+              className="rounded-none bg-stone-900 text-amber-50 hover:bg-amber-800 h-11 px-5 gap-2"
+            >
+              <Link to="/membros/novo">
+                <Plus className="h-4 w-4" /> Novo membro
+              </Link>
+            </Button>
+          )
+        }
+      />
+
+      <div className="grid gap-3 sm:grid-cols-[1fr_200px_240px] mb-8 print:hidden">
+        <div className="flex items-center border-b border-stone-300 pb-2 gap-3">
+          <Search className="h-4 w-4 text-stone-500 shrink-0" />
+          <Input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por nome ou telefone"
+            className="border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 font-serif text-base h-9"
+          />
+        </div>
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="rounded-none border-stone-300 h-11">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__todos">Todos os status</SelectItem>
+            <SelectItem value="ativo">Ativos</SelectItem>
+            <SelectItem value="inativo">Inativos</SelectItem>
+            <SelectItem value="transferido">Transferidos</SelectItem>
+            <SelectItem value="falecido">Falecidos</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={ministerioId} onValueChange={setMinisterioId}>
+          <SelectTrigger className="rounded-none border-stone-300 h-11">
+            <SelectValue placeholder="Ministério" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__todos">Todos os ministérios</SelectItem>
+            {(ministerios ?? []).map((m) => (
+              <SelectItem key={m.id} value={m.id}>
+                {m.nome}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isLoading ? (
+        <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />
+      ) : !data || data.length === 0 ? (
+        <p className="text-center py-16 font-serif italic text-stone-500">
+          Nenhum membro encontrado — tente ajustar os filtros.
+        </p>
+      ) : (
+        <div className="border border-stone-200 bg-white overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-stone-200 text-left text-[10px] tracking-[0.25em] uppercase text-stone-500">
+                <th className="px-4 py-3 font-normal">Nome</th>
+                <th className="px-4 py-3 font-normal">Telefone</th>
+                <th className="px-4 py-3 font-normal">Entrada</th>
+                <th className="px-4 py-3 font-normal">Último contato</th>
+                <th className="px-4 py-3 font-normal">Ministérios</th>
+                <th className="px-4 py-3 font-normal">Status</th>
+                <th className="px-4 py-3 font-normal text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((m) => {
+                const mins = m.ministerios ?? [];
+                return (
+                  <tr key={m.id} className="border-b border-stone-100 hover:bg-amber-50/30">
+                    <td className="px-4 py-3">
+                      <Link
+                        to="/membros/$id"
+                        params={{ id: m.id }}
+                        className="font-serif text-base hover:text-amber-800"
+                      >
+                        {m.nome}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-stone-600 tabular-nums">{m.telefone}</td>
+                    <td className="px-4 py-3 text-stone-600">{formatDate(m.data_entrada)}</td>
+                    <td className="px-4 py-3">
+                      <ContatoCell m={m} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-1">
+                        {mins.slice(0, 2).map((mm) => (
+                          <span
+                            key={mm.id}
+                            className="text-xs px-2 py-0.5 border border-stone-200 bg-stone-50 text-stone-700"
+                          >
+                            {mm.ministerio_nome}
+                          </span>
+                        ))}
+                        {mins.length > 2 && (
+                          <span className="text-xs text-stone-500">+{mins.length - 2}</span>
+                        )}
+                        {mins.length === 0 && (
+                          <span className="text-xs text-stone-400">—</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={m.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-end gap-1">
+                        <Button asChild size="icon" variant="ghost" title="Ver">
+                          <Link to="/membros/$id" params={{ id: m.id }}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        {editor && (
+                          <Button asChild size="icon" variant="ghost" title="Editar">
+                            <Link to="/membros/$id/editar" params={{ id: m.id }}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
+                        )}
+                        {isAdmin && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            title="Excluir"
+                            onClick={() => onExcluir(m)}
+                            disabled={excluir.isPending}
+                          >
+                            <Trash2 className="h-3.5 w-3.5 text-stone-500 hover:text-red-700" />
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
