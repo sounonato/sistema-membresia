@@ -1,11 +1,12 @@
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import { Pencil, Trash2, ArrowLeft, Loader2, Sparkles } from "lucide-react";
+import { Pencil, Trash2, ArrowLeft, Loader2, Sparkles, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { podeEditar } from "@/lib/api";
 import { useConvertido, useDeleteConvertido } from "../hooks";
+import { useCriarMembro } from "@/paginas/membros/hooks";
 
 export function ConvertidoDetalhePage() {
   const { id } = useParams({ from: "/_auth/convertidos/$id/" });
@@ -14,6 +15,7 @@ export function ConvertidoDetalhePage() {
   const editor = podeEditar(usuario?.perfil);
   const { data, isLoading } = useConvertido(id);
   const del = useDeleteConvertido();
+  const criarMembro = useCriarMembro();
 
   if (isLoading || !data) {
     return (
@@ -21,6 +23,31 @@ export function ConvertidoDetalhePage() {
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
+  }
+
+  async function onPromover() {
+    if (!data) return;
+    if (!window.confirm(`Promover "${data.nome}" a membro? Um registro de membro será criado com os dados deste convertido.`)) return;
+    try {
+      await criarMembro.mutateAsync({
+        nome: data.nome,
+        telefone: data.telefone,
+        email: data.email ?? undefined,
+        data_nascimento: data.data_nascimento ?? undefined,
+        genero: (data.genero as "masculino" | "feminino" | "outro") ?? undefined,
+        estado_civil: (data.estado_civil as "solteiro" | "casado" | "divorciado" | "viuvo" | "uniao_estavel") ?? undefined,
+        profissao: data.profissao ?? undefined,
+        endereco: data.endereco ?? undefined,
+        bairro: data.bairro ?? undefined,
+        cidade: data.cidade ?? undefined,
+        data_entrada: new Date().toISOString().split("T")[0],
+        convertido_id: data.id,
+      });
+      toast.success(`${data.nome} foi promovido a membro!`);
+      navigate({ to: "/membros" });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao promover");
+    }
   }
 
   async function onExcluir() {
@@ -46,7 +73,7 @@ export function ConvertidoDetalhePage() {
             <p className="text-sm text-muted-foreground">Detalhes do convertido</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" className="rounded-xl">
             <Link to="/convertidos/$id/jornada" params={{ id }}>
               <Sparkles className="h-4 w-4" /> Ver jornada
@@ -54,14 +81,26 @@ export function ConvertidoDetalhePage() {
           </Button>
           {editor && (
             <>
+              <Button
+                variant="outline"
+                className="rounded-xl border-amber-600 text-amber-700 hover:bg-amber-50"
+                onClick={onPromover}
+                disabled={criarMembro.isPending}
+              >
+                {criarMembro.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : <UserCheck className="h-4 w-4" />
+                }
+                Promover a membro
+              </Button>
               <Button asChild variant="outline" className="rounded-xl">
-              <Link to="/convertidos/$id/editar" params={{ id }}>
-                <Pencil className="h-4 w-4" /> Editar
-              </Link>
-            </Button>
-            <Button variant="destructive" className="rounded-xl" onClick={onExcluir} disabled={del.isPending}>
-              <Trash2 className="h-4 w-4" /> Excluir
-            </Button>
+                <Link to="/convertidos/$id/editar" params={{ id }}>
+                  <Pencil className="h-4 w-4" /> Editar
+                </Link>
+              </Button>
+              <Button variant="destructive" className="rounded-xl" onClick={onExcluir} disabled={del.isPending}>
+                <Trash2 className="h-4 w-4" /> Excluir
+              </Button>
             </>
           )}
         </div>
