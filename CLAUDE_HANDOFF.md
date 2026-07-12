@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-12 (sessão 9)
+Atualizado em: 2026-07-12 (sessão 9 — completo)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -555,6 +555,32 @@ git push origin main
 psql "postgresql://postgres:EdDxjfYOZAXNalVPJWvhjbTQtBSbwRTi@hayabusa.proxy.rlwy.net:17743/railway" \
   -c "UPDATE usuarios SET senha_hash = '<hash>' WHERE email = '<email>';"
 ```
+
+---
+
+## Mudanças feitas em 2026-07-12 (sessão 9 — parte 2) — Deploy Métricas + fix routeTree
+
+### Página Métricas de Membros — deployada ✅
+
+- Rota: `/membros-metricas` — sidebar "Métricas" no grupo 03 Membresia
+- Testado em produção: `https://sistema-membresia.pages.dev/membros-metricas` ✅
+- KPIs, crescimento mensal, gênero (donut), estado civil, faixa etária (7 cores), ministérios, cidades, aniversariantes com link WhatsApp, alertas sem contato
+
+### Fix crítico: routeTree — ordem de rotas
+
+**Arquivo:** `frontend v4/src/routeTree.gen.ts`
+
+- `rootRouteChildren`: `AuthRoute` movido para **antes** de `SlugRoute`
+- Antes: `SlugRoute` (dinâmico `/$slug`) capturava `/membros-metricas` mostrando "Igreja não encontrada"
+- Depois: rotas protegidas (`/_auth/*`) têm prioridade sobre o slug dinâmico
+- ⚠️ **Atenção**: hooks PostToolUse revertem edições manuais a este arquivo entre chamadas — sempre usar um único processo para editar+commitar o `routeTree.gen.ts`
+- Commit: `8484d9c`
+
+### Relatórios expandidos — 4 novas abas de membros ✅
+
+- `/relatorios` agora tem abas: Membros, Aniversariantes (Membros), Sem Contato, Por Ministério
+- Suporte a `?tab=sem-contato` via URL (links do card de alerta da página Métricas)
+- `_auth.relatorios.tsx`: `validateSearch` com zod para o param `tab`
 
 ---
 
