@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-11 (sessão 6)
+Atualizado em: 2026-07-12 (sessão 7)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -483,6 +483,78 @@ BASE_URL=http://localhost:8085
 - [ ] Rate limit bloqueia após 10 tentativas de login
 - [ ] `deve_trocar_senha=true` força redirect para `/trocar-senha` no primeiro login
 - [ ] Plano básico bloqueia ao cadastrar 101° membro ativo (retorna 403)
+
+---
+
+---
+
+## Deploy em produção ✅ (sessão 7 — 2026-07-12)
+
+### Stack de produção
+
+| Serviço | URL | Host |
+|---------|-----|------|
+| Frontend | `https://sistema-membresia.pages.dev` | Cloudflare Pages |
+| Backend | `https://sistema-membresia-production.up.railway.app` | Railway |
+| Banco | Railway PostgreSQL (interno) | Railway |
+
+### Railway Project
+- **Projeto:** `helpful-surprise`
+- **ID:** `530f4d09-ad5c-44ae-be40-f0e3a834c1c2`
+- **Serviço backend:** `sistema-membresia` (ID: `d2f4e3ae-1ec4-40e6-a21f-d06441853b5d`)
+- **Serviço frontend antigo (ignorar):** `happy-comfort` — falhou, não usar
+- **PostgreSQL:** `hayabusa.proxy.rlwy.net:17743` / banco `railway`
+
+### Cloudflare Pages
+- **Projeto:** `sistema-membresia`
+- **Account:** `8215ffc23b9eac93c8dac57394d17915`
+- **Root directory configurado:** `frontend v4`
+- **Build command:** `npm run build`
+- **Auto-deploy:** ativado no branch `main`
+
+### Variáveis de ambiente em produção
+
+**Backend (Railway)** — configuradas via dashboard Railway:
+- `DATABASE_URL` → referência interna Postgres
+- `JWT_SECRET` → configurado
+- `PORT` → Railway injeta automaticamente
+- `CORS_ORIGINS` → `https://sistema-membresia.pages.dev,https://*.pages.dev`
+
+**Frontend (Cloudflare Pages)** — via `.env.production` commitado no repo:
+- `VITE_API_URL=https://sistema-membresia-production.up.railway.app/api`
+
+### Credenciais de produção testadas ✅
+
+| Campo | Valor |
+|-------|-------|
+| Slug | `nazareno-sede` |
+| Email | `admin@nazareno.com` |
+| Senha | `admin123` |
+
+> ⚠️ O hash no `001_esquema.sql` estava incorreto. A senha foi atualizada diretamente no banco Railway com `UPDATE usuarios SET senha_hash = <hash admin123> WHERE email = 'admin@nazareno.com'`.
+
+### Arquivos críticos do deploy
+
+| Arquivo | Papel |
+|---------|-------|
+| `frontend v4/.env.production` | `VITE_API_URL` embarcado no build Cloudflare |
+| `backend/railway.json` | Build + start + healthcheck do backend Railway |
+| `frontend v4/nixpacks.toml` | Força `npm install` (evita bindings Linux faltando) |
+| `frontend v4/.node-version` | Força Node 20 no Nixpacks |
+
+### Para fazer deploy de mudanças no backend
+
+```bash
+# git push no main → Railway auto-deploys o backend
+git push origin main
+```
+
+### Para atualizar senha de usuário no banco Railway
+
+```bash
+psql "postgresql://postgres:EdDxjfYOZAXNalVPJWvhjbTQtBSbwRTi@hayabusa.proxy.rlwy.net:17743/railway" \
+  -c "UPDATE usuarios SET senha_hash = '<hash>' WHERE email = '<email>';"
+```
 
 ---
 
