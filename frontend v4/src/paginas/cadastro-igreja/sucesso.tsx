@@ -8,7 +8,7 @@ export function CadastroSucessoPage() {
       <header className="border-b border-stone-200 bg-white">
         <div className="max-w-3xl mx-auto px-6 py-5">
           <Link to="/" className="font-serif text-xl">
-            Membresia<span className="text-amber-700">.</span>
+            Ovile<span className="text-amber-700">.</span>
           </Link>
         </div>
       </header>

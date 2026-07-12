@@ -304,7 +304,7 @@ export function MembroDetalhe() {
         </div>
       </div>
 
-      <WhatsappModal membro={m} open={waOpen} onClose={() => setWaOpen(false)} />
+      <WhatsappModal membro={m} open={waOpen} onClose={() => setWaOpen(false)} igrejaNome={igrejaNome} />
     </div>
   );
 }
@@ -610,10 +610,12 @@ function WhatsappModal({
   membro,
   open,
   onClose,
+  igrejaNome,
 }: {
   membro: Membro;
   open: boolean;
   onClose: () => void;
+  igrejaNome: string;
 }) {
   const enviar = useEnviarWhatsapp();
   const dias = membro.dias_sem_contato ?? 0;

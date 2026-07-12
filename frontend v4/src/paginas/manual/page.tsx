@@ -23,8 +23,8 @@ const SUGESTOES = [
 type Msg = { role: "user" | "assistant"; content: string };
 
 export function ManualPage() {
-  const search = useSearch({ from: "/_auth/manual" }) as { secao?: string; tab?: string };
-  const navigate = useNavigate({ from: "/_auth/manual" });
+  const search = useSearch({ strict: false }) as { secao?: string; tab?: string };
+  const navigate = useNavigate();
   const initialTab = search.secao ? "conteudo" : (search.tab as string) || "conteudo";
   const [tab, setTab] = useState<string>(initialTab);
   const [secaoAtiva, setSecaoAtiva] = useState<string>(

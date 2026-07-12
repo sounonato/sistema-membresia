@@ -4,7 +4,7 @@ import { CadastroSucessoPage } from "@/paginas/cadastro-igreja/sucesso";
 export const Route = createFileRoute("/cadastro/sucesso")({
   head: () => ({
     meta: [
-      { title: "Solicitação enviada — Membresia" },
+      { title: "Solicitação enviada — Ovile" },
       { name: "robots", content: "noindex" },
     ],
   }),
