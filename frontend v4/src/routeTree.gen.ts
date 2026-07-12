@@ -832,8 +832,8 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SlugRoute: SlugRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  SlugRoute: SlugRouteWithChildren,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
   LoginRoute: LoginRoute,
   ResetarSenhaRoute: ResetarSenhaRoute,
