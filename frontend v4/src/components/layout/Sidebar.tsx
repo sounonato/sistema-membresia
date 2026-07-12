@@ -9,6 +9,7 @@ type Section = {
     to: string;
     label: string;
     perfis: readonly string[];
+    slugContains?: string;
   }[];
 };
 
@@ -32,7 +33,7 @@ const sections: Section[] = [
       { to: "/modulos", label: "Módulos", perfis: ["admin", "lider", "pastor", "discipulador"] },
       { to: "/relatorios", label: "Relatórios", perfis: ["admin", "lider", "pastor"] },
       { to: "/qr-cadastro", label: "QR de cadastro", perfis: ["admin", "lider", "pastor"] },
-      { to: "/manual", label: "Manual", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/manual", label: "Manual", perfis: ["admin", "lider", "pastor", "discipulador"], slugContains: "nazareno" },
     ],
   },
   {
@@ -55,10 +56,15 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { usuario, igreja, logout } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const igrejaSlug = igreja?.slug ?? "";
   const visibleSections = sections
     .map((s) => ({
       ...s,
-      items: s.items.filter((i) => usuario && i.perfis.includes(usuario.perfil)),
+      items: s.items.filter((i) => {
+        if (!usuario || !i.perfis.includes(usuario.perfil)) return false;
+        if (i.slugContains && !igrejaSlug.includes(i.slugContains)) return false;
+        return true;
+      }),
     }))
     .filter((s) => s.items.length > 0);
 
