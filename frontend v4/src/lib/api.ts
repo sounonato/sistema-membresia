@@ -235,6 +235,8 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  importarMembros: (formData: FormData) =>
+    requestMultipart("/membros/importar", formData),
 };
 
 export type Perfil = "superadmin" | "admin" | "lider" | "pastor" | "discipulador";

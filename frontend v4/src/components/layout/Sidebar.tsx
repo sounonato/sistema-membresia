@@ -48,6 +48,7 @@ const sections: Section[] = [
     label: "Administração",
     items: [
       { to: "/usuarios", label: "Usuários", perfis: ["admin", "lider"] },
+      { to: "/migracao", label: "Migração", perfis: ["admin", "lider"] },
     ],
   },
 ];

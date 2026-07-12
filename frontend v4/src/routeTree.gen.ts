@@ -28,6 +28,7 @@ import { Route as AuthRelatoriosRouteImport } from './routes/_auth.relatorios'
 import { Route as AuthQrCadastroRouteImport } from './routes/_auth.qr-cadastro'
 import { Route as AuthModulosRouteImport } from './routes/_auth.modulos'
 import { Route as AuthMinisteriosRouteImport } from './routes/_auth.ministerios'
+import { Route as AuthMigracaoRouteImport } from './routes/_auth.migracao'
 import { Route as AuthManualRouteImport } from './routes/_auth.manual'
 import { Route as AuthIgrejasRouteImport } from './routes/_auth.igrejas'
 import { Route as AuthFollowupWhatsappRouteImport } from './routes/_auth.followup-whatsapp'
@@ -140,6 +141,11 @@ const AuthMinisteriosRoute = AuthMinisteriosRouteImport.update({
   path: '/ministerios',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthMigracaoRoute = AuthMigracaoRouteImport.update({
+  id: '/migracao',
+  path: '/migracao',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthManualRoute = AuthManualRouteImport.update({
   id: '/manual',
   path: '/manual',
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/igrejas': typeof AuthIgrejasRoute
   '/manual': typeof AuthManualRoute
+  '/migracao': typeof AuthMigracaoRoute
   '/ministerios': typeof AuthMinisteriosRoute
   '/modulos': typeof AuthModulosRoute
   '/qr-cadastro': typeof AuthQrCadastroRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/igrejas': typeof AuthIgrejasRoute
   '/manual': typeof AuthManualRoute
+  '/migracao': typeof AuthMigracaoRoute
   '/ministerios': typeof AuthMinisteriosRoute
   '/modulos': typeof AuthModulosRoute
   '/qr-cadastro': typeof AuthQrCadastroRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/_auth/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/_auth/igrejas': typeof AuthIgrejasRoute
   '/_auth/manual': typeof AuthManualRoute
+  '/_auth/migracao': typeof AuthMigracaoRoute
   '/_auth/ministerios': typeof AuthMinisteriosRoute
   '/_auth/modulos': typeof AuthModulosRoute
   '/_auth/qr-cadastro': typeof AuthQrCadastroRoute
@@ -355,6 +364,7 @@ export interface FileRouteTypes {
     | '/followup-whatsapp'
     | '/igrejas'
     | '/manual'
+    | '/migracao'
     | '/ministerios'
     | '/modulos'
     | '/qr-cadastro'
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/followup-whatsapp'
     | '/igrejas'
     | '/manual'
+    | '/migracao'
     | '/ministerios'
     | '/modulos'
     | '/qr-cadastro'
@@ -429,6 +440,7 @@ export interface FileRouteTypes {
     | '/_auth/followup-whatsapp'
     | '/_auth/igrejas'
     | '/_auth/manual'
+    | '/_auth/migracao'
     | '/_auth/ministerios'
     | '/_auth/modulos'
     | '/_auth/qr-cadastro'
@@ -604,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthMinisteriosRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/migracao': {
+      id: '/_auth/migracao'
+      path: '/migracao'
+      fullPath: '/migracao'
+      preLoaderRoute: typeof AuthMigracaoRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/manual': {
       id: '/_auth/manual'
       path: '/manual'
@@ -744,6 +763,7 @@ interface AuthRouteChildren {
   AuthFollowupWhatsappRoute: typeof AuthFollowupWhatsappRoute
   AuthIgrejasRoute: typeof AuthIgrejasRoute
   AuthManualRoute: typeof AuthManualRoute
+  AuthMigracaoRoute: typeof AuthMigracaoRoute
   AuthMinisteriosRoute: typeof AuthMinisteriosRoute
   AuthModulosRoute: typeof AuthModulosRoute
   AuthQrCadastroRoute: typeof AuthQrCadastroRoute
@@ -768,6 +788,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthFollowupWhatsappRoute: AuthFollowupWhatsappRoute,
   AuthIgrejasRoute: AuthIgrejasRoute,
   AuthManualRoute: AuthManualRoute,
+  AuthMigracaoRoute: AuthMigracaoRoute,
   AuthMinisteriosRoute: AuthMinisteriosRoute,
   AuthModulosRoute: AuthModulosRoute,
   AuthQrCadastroRoute: AuthQrCadastroRoute,
