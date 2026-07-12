@@ -19,6 +19,7 @@ import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CadastroIndexRouteImport } from './routes/cadastro.index'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
+import { Route as SuperadminLoginRouteImport } from './routes/superadmin.login'
 import { Route as CadastroSucessoRouteImport } from './routes/cadastro.sucesso'
 import { Route as CadastroSlugRouteImport } from './routes/cadastro.$slug'
 import { Route as CadastroMembroSlugRouteImport } from './routes/cadastro-membro.$slug'
@@ -93,6 +94,11 @@ const SlugIndexRoute = SlugIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SlugRoute,
+} as any)
+const SuperadminLoginRoute = SuperadminLoginRouteImport.update({
+  id: '/superadmin/login',
+  path: '/superadmin/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroSucessoRoute = CadastroSucessoRouteImport.update({
   id: '/cadastro/sucesso',
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/cadastro-membro/$slug': typeof CadastroMembroSlugRoute
   '/cadastro/$slug': typeof CadastroSlugRoute
   '/cadastro/sucesso': typeof CadastroSucessoRoute
+  '/superadmin/login': typeof SuperadminLoginRoute
   '/$slug/': typeof SlugIndexRoute
   '/cadastro/': typeof CadastroIndexRoute
   '/convertidos/novo': typeof AuthConvertidosNovoRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/cadastro-membro/$slug': typeof CadastroMembroSlugRoute
   '/cadastro/$slug': typeof CadastroSlugRoute
   '/cadastro/sucesso': typeof CadastroSucessoRoute
+  '/superadmin/login': typeof SuperadminLoginRoute
   '/$slug': typeof SlugIndexRoute
   '/cadastro': typeof CadastroIndexRoute
   '/convertidos/novo': typeof AuthConvertidosNovoRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/cadastro-membro/$slug': typeof CadastroMembroSlugRoute
   '/cadastro/$slug': typeof CadastroSlugRoute
   '/cadastro/sucesso': typeof CadastroSucessoRoute
+  '/superadmin/login': typeof SuperadminLoginRoute
   '/$slug/': typeof SlugIndexRoute
   '/cadastro/': typeof CadastroIndexRoute
   '/_auth/convertidos/novo': typeof AuthConvertidosNovoRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/cadastro-membro/$slug'
     | '/cadastro/$slug'
     | '/cadastro/sucesso'
+    | '/superadmin/login'
     | '/$slug/'
     | '/cadastro/'
     | '/convertidos/novo'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/cadastro-membro/$slug'
     | '/cadastro/$slug'
     | '/cadastro/sucesso'
+    | '/superadmin/login'
     | '/$slug'
     | '/cadastro'
     | '/convertidos/novo'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/cadastro-membro/$slug'
     | '/cadastro/$slug'
     | '/cadastro/sucesso'
+    | '/superadmin/login'
     | '/$slug/'
     | '/cadastro/'
     | '/_auth/convertidos/novo'
@@ -453,6 +465,7 @@ export interface RootRouteChildren {
   CadastroMembroSlugRoute: typeof CadastroMembroSlugRoute
   CadastroSlugRoute: typeof CadastroSlugRoute
   CadastroSucessoRoute: typeof CadastroSucessoRoute
+  SuperadminLoginRoute: typeof SuperadminLoginRoute
   CadastroIndexRoute: typeof CadastroIndexRoute
 }
 
@@ -527,6 +540,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$slug/'
       preLoaderRoute: typeof SlugIndexRouteImport
       parentRoute: typeof SlugRoute
+    }
+    '/superadmin/login': {
+      id: '/superadmin/login'
+      path: '/superadmin/login'
+      fullPath: '/superadmin/login'
+      preLoaderRoute: typeof SuperadminLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/cadastro/sucesso': {
       id: '/cadastro/sucesso'
@@ -780,6 +800,7 @@ const rootRouteChildren: RootRouteChildren = {
   CadastroMembroSlugRoute: CadastroMembroSlugRoute,
   CadastroSlugRoute: CadastroSlugRoute,
   CadastroSucessoRoute: CadastroSucessoRoute,
+  SuperadminLoginRoute: SuperadminLoginRoute,
   CadastroIndexRoute: CadastroIndexRoute,
 }
 export const routeTree = rootRouteImport
