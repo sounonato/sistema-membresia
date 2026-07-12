@@ -61,7 +61,14 @@ router.get('/igrejas/:slug/grupos', async (req, res) => {
 // POST /api/publico/igrejas/:slug/cadastro — cadastro via QR público
 router.post('/igrejas/:slug/cadastro', async (req, res) => {
   const { slug } = req.params;
-  const { nome, telefone, email, data_nascimento, endereco, grupo_id, questionario } = req.body;
+  const {
+    nome, telefone, email, data_nascimento,
+    genero, estado_civil, profissao, tem_filhos,
+    endereco, bairro, cidade,
+    como_conheceu, batizado, quer_batismo,
+    ja_frequentava_igreja, ja_fez_discipulado,
+    pedido_oracao, grupo_id,
+  } = req.body;
 
   if (!nome || !telefone) {
     return res.status(400).json({ error: 'Nome e telefone são obrigatórios' });
@@ -77,16 +84,26 @@ router.post('/igrejas/:slug/cadastro', async (req, res) => {
     }
     const igrejaId = igrejaRes.rows[0].id;
 
-    const { tomou_decisao, ja_batizado, avaliacao, pedido_oracao } = questionario ?? {};
     const observacoes = pedido_oracao ? `Pedido de oração: ${pedido_oracao}` : null;
 
     const resultado = await db.query(
       `INSERT INTO novos_convertidos
-         (nome, telefone, email, data_nascimento, endereco, batizado, data_conversao, observacoes, igreja_id)
-       VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE, $7, $8)
+         (nome, telefone, email, data_nascimento,
+          genero, estado_civil, profissao, tem_filhos,
+          endereco, bairro, cidade,
+          como_conheceu, batizado, quer_batismo,
+          ja_frequentava_igreja, ja_fez_discipulado,
+          observacoes, data_conversao, igreja_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,CURRENT_DATE,$18)
        RETURNING id`,
-      [nome, telefone, email ?? null, data_nascimento ?? null, endereco ?? null,
-       ja_batizado ?? false, observacoes, igrejaId]
+      [
+        nome, telefone, email ?? null, data_nascimento ?? null,
+        genero ?? null, estado_civil ?? null, profissao ?? null, tem_filhos ?? false,
+        endereco ?? null, bairro ?? null, cidade ?? null,
+        como_conheceu ?? null, batizado ?? false, quer_batismo ?? false,
+        ja_frequentava_igreja ?? false, ja_fez_discipulado ?? false,
+        observacoes, igrejaId,
+      ]
     );
 
     const convertidoId = resultado.rows[0].id;
