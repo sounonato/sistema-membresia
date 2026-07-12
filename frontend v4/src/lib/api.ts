@@ -98,7 +98,10 @@ export const api = {
       body: JSON.stringify({ motivo }),
     }),
 
-  getConvertidos: () => request("/convertidos"),
+  getConvertidos: () =>
+    request("/convertidos").then((r: unknown) =>
+      Array.isArray(r) ? r : (r as { data: unknown[] }).data ?? [],
+    ),
   getConvertido: (id: string) => request(`/convertidos/${id}`),
   createConvertido: (data: unknown) =>
     request("/convertidos", { method: "POST", body: JSON.stringify(data) }),
