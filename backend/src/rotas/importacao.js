@@ -221,14 +221,14 @@ router.post('/membros/importar', autenticar, checkPerfil(['admin', 'lider']), id
         await db.query(
           `INSERT INTO membros (
             igreja_id, nome, telefone, email, data_nascimento, genero,
-            estado_civil, profissao, endereco, bairro, cidade, estado, cep,
+            estado_civil, profissao, endereco, bairro, cidade, estado,
             data_entrada, tipo_entrada, data_batismo, batizado, status, ultimo_contato
           ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, CURRENT_DATE
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, CURRENT_DATE
           )`,
           [
             igrejaId, nome, telefone, email, data_nascimento, genero,
-            estado_civil, profissao, endereco, bairro, cidade, estado, cep,
+            estado_civil, profissao, endereco, bairro, cidade, estado,
             data_entrada, tipo_entrada, data_batismo, batizado, status
           ]
         );
