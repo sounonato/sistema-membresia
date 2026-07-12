@@ -1,7 +1,7 @@
 {
-  "name": "sistema-membresia-backend",
+  "name": "ovile-backend",
   "version": "1.0.0",
-  "description": "Backend do Sistema de Membresia da Igreja do Nazareno",
+  "description": "Backend da plataforma Ovile — gestão de membresia para igrejas",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

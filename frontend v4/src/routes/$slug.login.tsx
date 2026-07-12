@@ -53,20 +53,15 @@ function SlugLogin() {
             {igreja?.logo_url ? (
               <img
                 src={igreja.logo_url}
-                alt={igreja.nome}
-                className="h-16 w-16 rounded-2xl object-contain bg-white border border-border"
+                alt={igreja?.nome ?? ""}
+                className="h-20 w-20 rounded-2xl object-contain bg-white border border-border"
               />
             ) : (
-              <div className="grid place-content-center h-14 w-14 rounded-2xl bg-primary text-primary-foreground">
-                <Church className="h-7 w-7" />
+              <div className="grid place-content-center h-16 w-16 rounded-2xl bg-primary text-primary-foreground">
+                <Church className="h-8 w-8" />
               </div>
             )}
-            <div>
-              <h1 className="font-serif text-2xl text-primary">
-                {igreja?.nome ?? "Igreja"}
-              </h1>
-              <p className="text-sm text-muted-foreground">Powered by Ovile</p>
-            </div>
+            <p className="text-xs text-muted-foreground tracking-widest uppercase">Powered by Ovile</p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
