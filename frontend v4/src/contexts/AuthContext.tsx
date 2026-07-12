@@ -69,7 +69,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ usuario, token, slug, igreja: usuario?.igreja ?? null, loading, login, logout }}
+      value={{
+        usuario,
+        token,
+        slug,
+        igreja:
+          usuario?.igreja ??
+          ((usuario as unknown as Record<string, string>)?.igreja_nome
+            ? {
+                id: usuario?.igreja_id ?? "",
+                nome: (usuario as unknown as Record<string, string>).igreja_nome,
+                slug: (usuario as unknown as Record<string, string>).igreja_slug ?? "",
+              }
+            : null),
+        loading,
+        login,
+        logout,
+      }}
     >
       {children}
     </Ctx.Provider>
