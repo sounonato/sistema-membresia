@@ -58,7 +58,7 @@ function exportPDF(titulo: string, igreja: string, linhas: Row[]) {
 
 export function RelatoriosPage() {
   const { igreja } = useAuth();
-  const igrejaNome = igreja?.nome ?? "Igreja do Nazareno";
+  const igrejaNome = igreja?.nome ?? "Ovile";
   const [ini, setIni] = useState("");
   const [fim, setFim] = useState("");
 

@@ -59,7 +59,7 @@ function SlugLanding() {
         </div>
       </main>
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        Sistema de Membresia · Powered by Nazareno Connect
+        Powered by Ovile
       </footer>
     </div>
   );

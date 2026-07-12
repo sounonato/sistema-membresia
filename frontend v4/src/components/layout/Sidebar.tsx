@@ -66,14 +66,14 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col bg-stone-950 text-stone-200">
       <div className="px-6 pt-7 pb-6 border-b border-white/10">
         <p className="font-serif text-xl leading-tight text-white mt-1 truncate">
-          {igreja?.nome ?? "Igreja do Nazareno"}
+          {igreja?.nome ?? "Ovile"}
         </p>
         <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mt-2 truncate">
           {usuario?.perfil === "superadmin"
             ? "— Painel superadmin"
             : igreja?.slug
               ? `— @${igreja.slug}`
-              : "— Sistema de Membresia"}
+              : "— Ovile"}
         </p>
       </div>
 

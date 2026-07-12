@@ -65,7 +65,7 @@ function SlugLogin() {
               <h1 className="font-serif text-2xl text-primary">
                 {igreja?.nome ?? "Igreja"}
               </h1>
-              <p className="text-sm text-muted-foreground">Sistema de Membresia</p>
+              <p className="text-sm text-muted-foreground">Powered by Ovile</p>
             </div>
           </div>
 

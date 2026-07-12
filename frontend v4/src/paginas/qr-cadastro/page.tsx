@@ -116,7 +116,7 @@ export function QrCadastroPage() {
         <div className="bg-white border border-stone-300 p-10 flex flex-col items-center justify-center text-center print:shadow-none print:border-0 relative">
           <div className="absolute top-4 left-4 right-4 border-t border-b border-stone-200 h-2" />
           <p className="text-[10px] uppercase tracking-[0.4em] text-stone-500">
-            {igreja?.nome ?? "Igreja do Nazareno"}
+            {igreja?.nome ?? "Ovile"}
           </p>
           <h2 className="font-serif text-4xl text-stone-900 mt-3 leading-tight">
             {grupoNome ? grupoNome : "Faça parte"}

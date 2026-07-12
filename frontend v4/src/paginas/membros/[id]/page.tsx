@@ -68,7 +68,8 @@ const STATUS_STYLES: Record<string, string> = {
 export function MembroDetalhe() {
   const { id } = useParams({ from: "/_auth/membros/$id/" });
   const navigate = useNavigate();
-  const { usuario } = useAuth();
+  const { usuario, igreja } = useAuth();
+  const igrejaNome = igreja?.nome ?? "Ovile";
   const editor = podeEditar(usuario?.perfil);
   const { data: m, isLoading } = useMembro(id);
   const viHoje = useViHoje();
@@ -619,8 +620,8 @@ function WhatsappModal({
   const inativo = dias >= 60;
 
   const template = inativo
-    ? `Olá, ${membro.nome}! 😊\n\nA gente sente sua falta por aqui! 💛\n\nComo você está? Estamos com saudade e pensando em você.\n\nQue Deus te abençoe! 🙏\n— Igreja do Nazareno`
-    : `Olá, ${membro.nome}! 😊\n\nPassando pra dar um oi e saber como você está.\n\nQue Deus continue te abençoando! 🙏\n— Igreja do Nazareno`;
+    ? `Olá, ${membro.nome}! 😊\n\nA gente sente sua falta por aqui! 💛\n\nComo você está? Estamos com saudade e pensando em você.\n\nQue Deus te abençoe! 🙏\n— ${igrejaNome}`
+    : `Olá, ${membro.nome}! 😊\n\nPassando pra dar um oi e saber como você está.\n\nQue Deus continue te abençoando! 🙏\n— ${igrejaNome}`;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>

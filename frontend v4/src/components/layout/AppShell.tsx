@@ -8,7 +8,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const { igreja, usuario } = useAuth();
   const titulo =
-    usuario?.perfil === "superadmin" ? "Painel Superadmin" : igreja?.nome ?? "Igreja do Nazareno";
+    usuario?.perfil === "superadmin" ? "Painel Superadmin" : igreja?.nome ?? "Ovile";
 
   return (
     <div className="min-h-screen bg-[#faf7f2] flex w-full">
