@@ -73,10 +73,10 @@ app.use('/api/portal', portalRotas);
 app.use('/api/publico', publicoRotas);
 app.use('/api/publico', solicitacoesPublico);
 app.use('/api/superadmin', autenticar, solicitacoesAdmin);
+app.use('/api', membrosMetricasRotas);
 app.use('/api/membros', membrosRotas);
 app.use('/api/ministerios', ministeriosRotas);
 app.use('/api', importacaoRotas);
-app.use('/api', membrosMetricasRotas);
 
 // Servir arquivos estáticos do diretório de uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
