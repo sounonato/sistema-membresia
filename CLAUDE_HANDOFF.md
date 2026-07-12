@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-12 (sessão 8)
+Atualizado em: 2026-07-12 (sessão 9)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -584,6 +584,58 @@ psql "postgresql://postgres:EdDxjfYOZAXNalVPJWvhjbTQtBSbwRTi@hayabusa.proxy.rlwy
 - Botão "Promover a membro" (âmbar) na página de detalhe do convertido
 - Chama `useCriarMembro()` com todos os dados do convertido pré-preenchidos + `convertido_id` vinculado
 - Redireciona para `/membros` após promoção com toast de sucesso
+
+---
+
+## Mudanças feitas em 2026-07-12 (sessão 9) — Fix importação + Formulário convertido + Plano dashboard
+
+### Fix: coluna `cep` inexistente no INSERT de importação
+
+**Arquivo:** `backend/src/rotas/importacao.js`
+
+- Removido `cep` da lista de colunas do INSERT (a tabela `membros` não tem essa coluna — nunca adicionar)
+- Renumerados parâmetros `$N` de `$18` para `$17` após a remoção
+- **Atenção:** a variável `cep` ainda existe no mapeamento de linhas (linha 198) mas não vai para o banco — é descartada silenciosamente. Isso é intencional.
+- Commit: "fix: remover coluna cep inexistente do INSERT de importação"
+
+### Formulário público de novo convertido — atualizado
+
+**Arquivos:**
+- `backend/src/rotas/publico.js` — POST `/api/publico/igrejas/:slug/cadastro`
+- `frontend v4/src/paginas/cadastro-publico/page.tsx`
+
+**Campos adicionados ao formulário público (`/cadastro/:slug`):**
+
+| Campo | Tipo | Onde salva |
+|-------|------|------------|
+| `estado_civil` | Select (solteiro/casado/divorciado/viuvo/uniao_estavel) | `novos_convertidos.estado_civil` |
+| `genero` | Select (masculino/feminino/outro) | `novos_convertidos.genero` |
+| `profissao` | Text | `novos_convertidos.profissao` |
+| `tem_filhos` | Checkbox | `novos_convertidos.tem_filhos` |
+| `bairro` | Text | `novos_convertidos.bairro` |
+| `como_conheceu` | Select (6 opções) | `novos_convertidos.como_conheceu` |
+| `batizado` | Checkbox | `novos_convertidos.batizado` |
+| `quer_batismo` | Checkbox | `novos_convertidos.quer_batismo` |
+| `ja_frequentava_igreja` | Checkbox | `novos_convertidos.ja_frequentava_igreja` |
+| `ja_fez_discipulado` | Checkbox | `novos_convertidos.ja_fez_discipulado` |
+| `pedido_oracao` | Textarea | `novos_convertidos.observacoes` (com prefixo "Pedido de oração:") |
+
+**Campos removidos do formulário:** `sexo`, `decisao`, `avaliacao_curso`, `observacoes`
+
+**Estrutura visual mantida:** Chapter I (Seus dados), Chapter II (Onde você mora), Chapter III (Sua história) — header dark bg-stone-950, tipografia serif, rounded-none, botão stone-950
+
+**Referência de design:** `https://sistema-membresia-psi.vercel.app/formulario`
+
+### Plano para Gemini: Dashboard de Métricas + Relatórios de Membros
+
+**Arquivo criado:** `docs/GEMINI-DASHBOARD-METRICAS-MEMBROS.md`
+
+Instruções completas para o Gemini construir:
+- **Backend:** `GET /api/membros/metricas` em `backend/src/rotas/membrosMetricas.js` — 9 queries SQL (KPIs, crescimento mensal, por gênero, faixa etária, estado civil, ministério, sem contato, por cidade, aniversariantes do mês)
+- **Frontend:** `frontend v4/src/paginas/membros-metricas/` — gráficos Recharts (bar, donut, horizontal bar), tabela cidades, lista aniversariantes com links WhatsApp, alertas sem contato
+- **Relatórios:** expandir `/relatorios` com 4 novas tabs de membros
+- **Sidebar:** link "Métricas" no grupo Membresia
+- **Rota:** `/_auth/membros-metricas` no routeTree.gen.ts
 
 ---
 
