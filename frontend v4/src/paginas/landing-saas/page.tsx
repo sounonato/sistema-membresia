@@ -1,8 +1,19 @@
-import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, QrCode, Users, HeartHandshake, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function LandingSaasPage() {
+  const [showSlug, setShowSlug] = useState(false);
+  const [slug, setSlug] = useState("");
+  const navigate = useNavigate();
+
+  function handleEntrar(e: React.FormEvent) {
+    e.preventDefault();
+    const s = slug.trim();
+    if (s) navigate({ to: "/$slug/login", params: { slug: s } });
+  }
+
   return (
     <div className="min-h-screen bg-white text-stone-900">
       {/* Nav */}
@@ -17,12 +28,29 @@ export function LandingSaasPage() {
             <a href="#planos" className="hover:text-stone-900 transition">Planos</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link
-              to="/login"
-              className="text-sm text-stone-600 hover:text-stone-900 transition px-3 py-2"
-            >
-              Entrar
-            </Link>
+            {showSlug ? (
+              <form onSubmit={handleEntrar} className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="slug da sua igreja"
+                  className="border border-stone-300 rounded-md px-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-1 focus:ring-amber-700"
+                />
+                <Button type="submit" size="sm" className="bg-amber-700 hover:bg-amber-800 text-white rounded-md">
+                  Ir
+                </Button>
+                <button type="button" onClick={() => setShowSlug(false)} className="text-xs text-stone-400 hover:text-stone-600 px-1">✕</button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setShowSlug(true)}
+                className="text-sm text-stone-600 hover:text-stone-900 transition px-3 py-2"
+              >
+                Entrar
+              </button>
+            )}
             <Link to="/cadastro">
               <Button size="sm" className="bg-amber-700 hover:bg-amber-800 text-white rounded-md">
                 Cadastrar igreja
