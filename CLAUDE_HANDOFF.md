@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-12 (sessão 7)
+Atualizado em: 2026-07-12 (sessão 8)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -555,6 +555,35 @@ git push origin main
 psql "postgresql://postgres:EdDxjfYOZAXNalVPJWvhjbTQtBSbwRTi@hayabusa.proxy.rlwy.net:17743/railway" \
   -c "UPDATE usuarios SET senha_hash = '<hash>' WHERE email = '<email>';"
 ```
+
+---
+
+## Mudanças feitas em 2026-07-12 (sessão 8) — Rebranding Ovile + QR dual + Promover a membro
+
+### Rebranding para "Ovile" (plataforma SaaS)
+- Todos os textos "Sistema de Membresia", "Membresia.", "Nazareno Connect" substituídos por "Ovile" em todo o frontend v4
+- `paginas/landing-saas/page.tsx`: navbar e footer com "Ovile."; botão Entrar virou inline slug form (sem redirect loop)
+- `routes/$slug.login.tsx`: removido nome da igreja hardcoded; apenas logo + "Powered by Ovile"
+- `routes/login.tsx`: reescrito como `LoginEntrada` com campo slug (era redirect loop)
+- `routes/superadmin.login.tsx`: **novo** — tela dark com ShieldCheck para superadmin (sem slug)
+- `routeTree.gen.ts`: commitado com a rota superadmin (crítico para Cloudflare Pages)
+- Páginas órfãs deletadas: `paginas/landing/`, `paginas/login/`
+- `routes/_auth.manual.tsx`: Manual exclusivo para igrejas com slug "nazareno" (beforeLoad redirect)
+- `components/layout/Sidebar.tsx`: `slugContains: "nazareno"` no item Manual
+- Fixes TypeScript: `igrejaNome` como prop em `WhatsappModal`, `useSearch({ strict: false })` no manual
+
+### QR de cadastro — dois QR Codes lado a lado
+**Arquivo:** `frontend v4/src/paginas/qr-cadastro/page.tsx`
+- Dois cards separados: "Novo Convertido" (`/cadastro/$slug`) e "Cadastro de Membro" (`/cadastro-membro/$slug`)
+- Cada card tem: copiar link, baixar PNG, imprimir
+- Seletor de grupo afeta só o QR de convertido
+- QR em âmbar (#92400e) com borda preta
+
+### Promover Convertido a Membro
+**Arquivo:** `frontend v4/src/paginas/convertidos/[id]/page.tsx`
+- Botão "Promover a membro" (âmbar) na página de detalhe do convertido
+- Chama `useCriarMembro()` com todos os dados do convertido pré-preenchidos + `convertido_id` vinculado
+- Redireciona para `/membros` após promoção com toast de sucesso
 
 ---
 
