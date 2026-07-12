@@ -21,7 +21,20 @@ const app = express();
 const PORT = process.env.PORT || 3031;
 
 // Configuração do CORS
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
+  : ['http://localhost:8080', 'http://localhost:5175'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some(o => origin === o || origin.endsWith('.pages.dev') || origin.endsWith('.railway.app'))) {
+      return callback(null, true);
+    }
+    callback(new Error('CORS não permitido'));
+  },
+  credentials: true,
+}));
 
 // Middleware para JSON
 app.use(express.json());

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3031/api";
+const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3031/api";
 
 export interface SolicitacaoIgrejaPayload {
   nome: string;
