@@ -9,7 +9,7 @@ export function LandingSaasPage() {
       <header className="border-b border-stone-200">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="font-serif text-xl tracking-tight">
-            Membresia<span className="text-amber-700">.</span>
+            Ovile<span className="text-amber-700">.</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-stone-600">
             <a href="#recursos" className="hover:text-stone-900 transition">Recursos</a>
@@ -196,7 +196,7 @@ export function LandingSaasPage() {
         <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-stone-500">
           <div>
             <p className="font-serif text-lg text-stone-900">
-              Membresia<span className="text-amber-700">.</span>
+              Ovile<span className="text-amber-700">.</span>
             </p>
             <p className="mt-1 text-xs">
               Desenvolvido para igrejas evangélicas · &copy; {new Date().getFullYear()}
