@@ -15,6 +15,7 @@ const publicoRotas = require('./rotas/publico');
 const membrosRotas = require('./rotas/membros');
 const ministeriosRotas = require('./rotas/ministerios');
 const importacaoRotas = require('./rotas/importacao');
+const membrosMetricasRotas = require('./rotas/membrosMetricas');
 const autenticar = require('./middlewares/autenticacao');
 const { solicitacoesPublico, solicitacoesAdmin } = require('./rotas/solicitacoes');
 
@@ -75,6 +76,7 @@ app.use('/api/superadmin', autenticar, solicitacoesAdmin);
 app.use('/api/membros', membrosRotas);
 app.use('/api/ministerios', ministeriosRotas);
 app.use('/api', importacaoRotas);
+app.use('/api', membrosMetricasRotas);
 
 // Servir arquivos estáticos do diretório de uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

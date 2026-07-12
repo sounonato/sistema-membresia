@@ -29,6 +29,7 @@ import { Route as AuthQrCadastroRouteImport } from './routes/_auth.qr-cadastro'
 import { Route as AuthModulosRouteImport } from './routes/_auth.modulos'
 import { Route as AuthMinisteriosRouteImport } from './routes/_auth.ministerios'
 import { Route as AuthMigracaoRouteImport } from './routes/_auth.migracao'
+import { Route as AuthMembrosMetricasRouteImport } from './routes/_auth.membros-metricas'
 import { Route as AuthManualRouteImport } from './routes/_auth.manual'
 import { Route as AuthIgrejasRouteImport } from './routes/_auth.igrejas'
 import { Route as AuthFollowupWhatsappRouteImport } from './routes/_auth.followup-whatsapp'
@@ -146,6 +147,11 @@ const AuthMigracaoRoute = AuthMigracaoRouteImport.update({
   path: '/migracao',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthMembrosMetricasRoute = AuthMembrosMetricasRouteImport.update({
+  id: '/membros-metricas',
+  path: '/membros-metricas',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthManualRoute = AuthManualRouteImport.update({
   id: '/manual',
   path: '/manual',
@@ -247,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/igrejas': typeof AuthIgrejasRoute
   '/manual': typeof AuthManualRoute
+  '/membros-metricas': typeof AuthMembrosMetricasRoute
   '/migracao': typeof AuthMigracaoRoute
   '/ministerios': typeof AuthMinisteriosRoute
   '/modulos': typeof AuthModulosRoute
@@ -284,6 +291,7 @@ export interface FileRoutesByTo {
   '/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/igrejas': typeof AuthIgrejasRoute
   '/manual': typeof AuthManualRoute
+  '/membros-metricas': typeof AuthMembrosMetricasRoute
   '/migracao': typeof AuthMigracaoRoute
   '/ministerios': typeof AuthMinisteriosRoute
   '/modulos': typeof AuthModulosRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/_auth/followup-whatsapp': typeof AuthFollowupWhatsappRoute
   '/_auth/igrejas': typeof AuthIgrejasRoute
   '/_auth/manual': typeof AuthManualRoute
+  '/_auth/membros-metricas': typeof AuthMembrosMetricasRoute
   '/_auth/migracao': typeof AuthMigracaoRoute
   '/_auth/ministerios': typeof AuthMinisteriosRoute
   '/_auth/modulos': typeof AuthModulosRoute
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
     | '/followup-whatsapp'
     | '/igrejas'
     | '/manual'
+    | '/membros-metricas'
     | '/migracao'
     | '/ministerios'
     | '/modulos'
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/followup-whatsapp'
     | '/igrejas'
     | '/manual'
+    | '/membros-metricas'
     | '/migracao'
     | '/ministerios'
     | '/modulos'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/_auth/followup-whatsapp'
     | '/_auth/igrejas'
     | '/_auth/manual'
+    | '/_auth/membros-metricas'
     | '/_auth/migracao'
     | '/_auth/ministerios'
     | '/_auth/modulos'
@@ -623,6 +635,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthMigracaoRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/membros-metricas': {
+      id: '/_auth/membros-metricas'
+      path: '/membros-metricas'
+      fullPath: '/membros-metricas'
+      preLoaderRoute: typeof AuthMembrosMetricasRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/manual': {
       id: '/_auth/manual'
       path: '/manual'
@@ -763,6 +782,7 @@ interface AuthRouteChildren {
   AuthFollowupWhatsappRoute: typeof AuthFollowupWhatsappRoute
   AuthIgrejasRoute: typeof AuthIgrejasRoute
   AuthManualRoute: typeof AuthManualRoute
+  AuthMembrosMetricasRoute: typeof AuthMembrosMetricasRoute
   AuthMigracaoRoute: typeof AuthMigracaoRoute
   AuthMinisteriosRoute: typeof AuthMinisteriosRoute
   AuthModulosRoute: typeof AuthModulosRoute
@@ -788,6 +808,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthFollowupWhatsappRoute: AuthFollowupWhatsappRoute,
   AuthIgrejasRoute: AuthIgrejasRoute,
   AuthManualRoute: AuthManualRoute,
+  AuthMembrosMetricasRoute: AuthMembrosMetricasRoute,
   AuthMigracaoRoute: AuthMigracaoRoute,
   AuthMinisteriosRoute: AuthMinisteriosRoute,
   AuthModulosRoute: AuthModulosRoute,

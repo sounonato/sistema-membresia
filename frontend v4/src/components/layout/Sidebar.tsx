@@ -40,6 +40,7 @@ const sections: Section[] = [
     label: "Membresia",
     items: [
       { to: "/membros", label: "Membros", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/membros-metricas", label: "Métricas", perfis: ["admin", "lider", "pastor"] },
       { to: "/ministerios", label: "Ministérios", perfis: ["admin", "lider", "pastor", "discipulador"] },
       { to: "/followup-whatsapp", label: "Follow-up", perfis: ["admin", "lider", "pastor"] },
     ],

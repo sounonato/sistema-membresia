@@ -174,6 +174,7 @@ export const api = {
   getMembros: (qs: string = "") => request(`/membros${qs}`),
   getMembro: (id: string) => request(`/membros/${id}`),
   getMembrosStats: () => request("/membros/stats"),
+  getMembrosMetricas: () => request("/membros/metricas"),
   getMembrosSemContato: (dias: number = 60) =>
     request(`/membros/sem-contato?dias=${dias}`),
   createMembro: (data: unknown) =>

@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FileSpreadsheet, FileText, Loader2 } from "lucide-react";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -19,6 +20,13 @@ function fmtDate(d?: string | null) {
   const date = new Date(d);
   if (isNaN(date.getTime())) return String(d);
   return date.toLocaleDateString("pt-BR");
+}
+
+function formatGender(g?: string | null) {
+  if (g === "feminino") return "Feminino";
+  if (g === "masculino") return "Masculino";
+  if (g === "outro") return "Outro";
+  return "Não informado";
 }
 
 function dentroPeriodo(d: string | null | undefined, ini?: string, fim?: string) {
@@ -61,6 +69,17 @@ export function RelatoriosPage() {
   const igrejaNome = igreja?.nome ?? "Ovile";
   const [ini, setIni] = useState("");
   const [fim, setFim] = useState("");
+  const [diasSemContato, setDiasSemContato] = useState(60);
+
+  const search = useSearch({ from: "/_auth/relatorios" }) as { tab?: string };
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(search.tab || "convertidos");
+
+  useEffect(() => {
+    if (search.tab && search.tab !== activeTab) {
+      setActiveTab(search.tab);
+    }
+  }, [search.tab]);
 
   const convertidos = useQuery<any[]>({
     queryKey: ["convertidos"],
@@ -73,6 +92,23 @@ export function RelatoriosPage() {
   const grupos = useQuery<any[]>({
     queryKey: ["grupos"],
     queryFn: () => api.getGrupos(),
+  });
+
+  // Queries para relatórios de membros
+  const membrosQuery = useQuery<any>({
+    queryKey: ["membros-relatorio"],
+    queryFn: () => api.getMembros("?status=ativo&por_pagina=1000"),
+    enabled: activeTab === "membros",
+  });
+  const metricasQuery = useQuery<any>({
+    queryKey: ["membros-metricas-relatorio"],
+    queryFn: () => api.getMembrosMetricas(),
+    enabled: activeTab === "aniversariantes-membros" || activeTab === "por-ministerio",
+  });
+  const semContatoQuery = useQuery<any[]>({
+    queryKey: ["membros-sem-contato", diasSemContato],
+    queryFn: () => api.getMembrosSemContato(diasSemContato),
+    enabled: activeTab === "sem-contato",
   });
 
   const lista = convertidos.data ?? [];
@@ -158,6 +194,69 @@ export function RelatoriosPage() {
     }));
   }, [grupos.data]);
 
+  // Membros ativos por período
+  const membrosFiltrados = useMemo<Row[]>(() => {
+    const list = membrosQuery.data?.data ?? [];
+    return list
+      .filter((m: any) => dentroPeriodo(m.data_entrada, ini, fim))
+      .map((m: any) => {
+        const minList = Array.isArray(m.ministerios)
+          ? m.ministerios.map((x: any) => x.nome).join(", ")
+          : "";
+        return {
+          Nome: m.nome,
+          Telefone: m.telefone ?? "",
+          Gênero: formatGender(m.genero),
+          "Data Entrada": fmtDate(m.data_entrada),
+          "Tipo Entrada": m.tipo_entrada
+            ? m.tipo_entrada === "batismo"
+              ? "Batismo"
+              : m.tipo_entrada === "transferencia"
+                ? "Transferência"
+                : m.tipo_entrada === "aclamacao"
+                  ? "Aclamação"
+                  : "Reconciliação"
+            : "—",
+          Batizado: m.batizado ? "Sim" : "Não",
+          Ministérios: minList || "Nenhum",
+        };
+      });
+  }, [membrosQuery.data, ini, fim]);
+
+  // Aniversariantes de membros
+  const aniversariantesMembros = useMemo<Row[]>(() => {
+    const list = metricasQuery.data?.aniversariantes_mes ?? [];
+    return list.map((m: any) => {
+      const dia = m.data_nascimento ? new Date(m.data_nascimento).getDate() : "—";
+      return {
+        Dia: dia,
+        Nome: m.nome,
+        Telefone: m.telefone ?? "",
+        Idade: m.idade !== undefined ? `${m.idade} anos` : "—",
+      };
+    });
+  }, [metricasQuery.data]);
+
+  // Membros sem contato
+  const semContatoFiltrados = useMemo<Row[]>(() => {
+    const list = semContatoQuery.data ?? [];
+    return list.map((m: any) => ({
+      Nome: m.nome,
+      Telefone: m.telefone ?? "",
+      "Último Contato": fmtDate(m.ultimo_contato),
+      "Dias sem contato": m.dias_sem_contato !== undefined ? `${m.dias_sem_contato} dias` : "—",
+    }));
+  }, [semContatoQuery.data]);
+
+  // Membros por ministério
+  const ministeriosMembros = useMemo<Row[]>(() => {
+    const list = metricasQuery.data?.por_ministerio ?? [];
+    return list.map((m: any) => ({
+      Ministério: m.ministerio,
+      "Total de Membros": m.quantidade,
+    }));
+  }, [metricasQuery.data]);
+
   if (convertidos.isLoading) {
     return (
       <div className="grid place-content-center py-16 text-muted-foreground">
@@ -191,14 +290,24 @@ export function RelatoriosPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="convertidos">
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => {
+          setActiveTab(val);
+          navigate({ search: { tab: val } as any });
+        }}
+      >
         <TabsList className="rounded-none bg-transparent border-b border-stone-300 p-0 h-auto gap-6 flex-wrap justify-start">
           {[
             ["convertidos", "Convertidos"],
-            ["aniversariantes", "Aniversariantes"],
+            ["aniversariantes", "Aniversariantes (Conv.)"],
             ["decisoes", "Decisões / Batismos"],
             ["modulos", "Módulos"],
             ["grupos", "Grupos"],
+            ["membros", "Membros"],
+            ["aniversariantes-membros", "Aniversariantes (Membros)"],
+            ["sem-contato", "Sem Contato"],
+            ["por-ministerio", "Por Ministério"],
           ].map(([v, l]) => (
             <TabsTrigger key={v} value={v} className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none">
               {l}
@@ -215,7 +324,7 @@ export function RelatoriosPage() {
         </TabsContent>
         <TabsContent value="aniversariantes" className="mt-6">
           <RelatorioTabela
-            titulo="Aniversariantes do mês"
+            titulo="Aniversariantes do mês (Novos Convertidos)"
             igreja={igrejaNome}
             linhas={aniversariantes}
           />
@@ -240,6 +349,70 @@ export function RelatoriosPage() {
             igreja={igrejaNome}
             linhas={resumoGrupos}
           />
+        </TabsContent>
+        <TabsContent value="membros" className="mt-6">
+          {membrosQuery.isLoading ? (
+            <div className="grid place-content-center py-12 text-stone-500">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+          ) : (
+            <RelatorioTabela
+              titulo="Membros Ativos"
+              igreja={igrejaNome}
+              linhas={membrosFiltrados}
+            />
+          )}
+        </TabsContent>
+        <TabsContent value="aniversariantes-membros" className="mt-6">
+          {metricasQuery.isLoading ? (
+            <div className="grid place-content-center py-12 text-stone-500">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+          ) : (
+            <RelatorioTabela
+              titulo="Aniversariantes do Mês (Membros)"
+              igreja={igrejaNome}
+              linhas={aniversariantesMembros}
+            />
+          )}
+        </TabsContent>
+        <TabsContent value="sem-contato" className="mt-6">
+          <div className="bg-white border border-stone-200 p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
+            <Label className="text-xs uppercase tracking-wider text-stone-500 shrink-0">Período sem contato:</Label>
+            <select
+              value={diasSemContato}
+              onChange={(e) => setDiasSemContato(Number(e.target.value))}
+              className="w-full rounded-none border border-stone-300 bg-transparent px-3 py-1.5 text-sm focus:outline-none focus:border-amber-800"
+            >
+              <option value={30}>Mais de 30 dias</option>
+              <option value={60}>Mais de 60 dias</option>
+              <option value={90}>Mais de 90 dias</option>
+            </select>
+          </div>
+          {semContatoQuery.isLoading ? (
+            <div className="grid place-content-center py-12 text-stone-500">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+          ) : (
+            <RelatorioTabela
+              titulo={`Membros sem contato há ${diasSemContato}+ dias`}
+              igreja={igrejaNome}
+              linhas={semContatoFiltrados}
+            />
+          )}
+        </TabsContent>
+        <TabsContent value="por-ministerio" className="mt-6">
+          {metricasQuery.isLoading ? (
+            <div className="grid place-content-center py-12 text-stone-500">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
+          ) : (
+            <RelatorioTabela
+              titulo="Membros por Ministério"
+              igreja={igrejaNome}
+              linhas={ministeriosMembros}
+            />
+          )}
         </TabsContent>
       </Tabs>
     </div>
