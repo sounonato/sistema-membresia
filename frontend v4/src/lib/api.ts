@@ -48,10 +48,10 @@ async function requestMultipart(path: string, body: FormData) {
 }
 
 export const api = {
-  login: (email: string, senha: string, slug: string) =>
+  login: (email: string, senha: string, slug?: string) =>
     request("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, senha, slug }),
+      body: JSON.stringify({ email, senha, ...(slug ? { slug } : {}) }),
     }),
   me: () => request("/auth/me"),
   trocarSenha: (senha_atual: string, senha_nova: string) =>
@@ -262,6 +262,8 @@ export type Usuario = {
   deve_trocar_senha?: boolean;
   igreja?: Igreja | null;
   igreja_id?: string | null;
+  igreja_slug?: string | null;
+  igreja_nome?: string | null;
 };
 
 export function podeEditar(perfil?: Perfil) {

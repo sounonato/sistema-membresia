@@ -7,7 +7,7 @@ type AuthCtx = {
   slug: string | null;
   igreja: Igreja | null;
   loading: boolean;
-  login: (email: string, senha: string, slug: string) => Promise<void>;
+  login: (email: string, senha: string, slug?: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -48,14 +48,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token]);
 
-  async function login(email: string, senha: string, slugIgreja: string) {
+  async function login(email: string, senha: string, slugIgreja?: string) {
     const res = await api.login(email, senha, slugIgreja);
     const t = res.token ?? res.access_token;
     if (!t) throw new Error("Token não retornado pelo servidor");
+    const slugFinal = slugIgreja ?? res.usuario?.igreja_slug ?? "";
     localStorage.setItem("token", t);
-    localStorage.setItem("slug", slugIgreja);
+    localStorage.setItem("slug", slugFinal);
     setToken(t);
-    setSlug(slugIgreja);
+    setSlug(slugFinal);
     if (res.usuario) setUsuario(res.usuario);
   }
 
