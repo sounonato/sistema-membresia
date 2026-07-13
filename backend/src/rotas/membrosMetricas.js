@@ -159,7 +159,7 @@ router.get('/membros/metricas', checkPerfil(['admin', 'lider', 'pastor']), async
 
   } catch (err) {
     console.error('Erro ao buscar métricas de membros:', err);
-    return res.status(500).json({ error: 'Erro interno ao buscar métricas de membros' });
+    return res.status(500).json({ error: 'Erro interno ao buscar métricas de membros', detalhe: err.message });
   }
 });
 
