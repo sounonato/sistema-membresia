@@ -26,6 +26,18 @@ function AuthLayout() {
   }, [token, navigate]);
 
   useEffect(() => {
+    const cor = usuario?.igreja_cor;
+    if (cor) {
+      document.documentElement.style.setProperty("--primary", cor);
+    } else {
+      document.documentElement.style.removeProperty("--primary");
+    }
+    return () => {
+      document.documentElement.style.removeProperty("--primary");
+    };
+  }, [usuario?.igreja_cor]);
+
+  useEffect(() => {
     if (!usuario) return;
 
     if (usuario.deve_trocar_senha && pathname !== "/trocar-senha") {

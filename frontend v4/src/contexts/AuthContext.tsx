@@ -81,6 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 id: usuario?.igreja_id ?? "",
                 nome: (usuario as unknown as Record<string, string>).igreja_nome,
                 slug: (usuario as unknown as Record<string, string>).igreja_slug ?? "",
+                cor_primaria: usuario?.igreja_cor,
+                logo_url: usuario?.igreja_logo,
               }
             : null),
         loading,

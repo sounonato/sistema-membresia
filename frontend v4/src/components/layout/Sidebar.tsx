@@ -73,9 +73,17 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-stone-950 text-stone-200">
       <div className="px-6 pt-7 pb-6 border-b border-white/10">
-        <p className="font-serif text-xl leading-tight text-white mt-1 truncate">
-          {igreja?.nome ?? "Ovile"}
-        </p>
+        {usuario?.igreja_logo ? (
+          <img
+            src={usuario.igreja_logo}
+            alt={usuario.igreja_nome ?? "Logo"}
+            className="h-8 w-auto object-contain mt-1"
+          />
+        ) : (
+          <p className="font-serif text-xl leading-tight text-white mt-1 truncate">
+            {usuario?.igreja_nome ?? "Ovile"}<span style={{ color: "var(--primary, #b45309)" }}>.</span>
+          </p>
+        )}
         <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mt-2 truncate">
           {usuario?.perfil === "superadmin"
             ? "— Painel superadmin"

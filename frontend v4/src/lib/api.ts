@@ -289,6 +289,8 @@ export type Usuario = {
   igreja_id?: string | null;
   igreja_slug?: string | null;
   igreja_nome?: string | null;
+  igreja_cor?: string;
+  igreja_logo?: string;
 };
 
 export function podeEditar(perfil?: Perfil) {

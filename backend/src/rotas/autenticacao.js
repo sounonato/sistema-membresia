@@ -79,7 +79,9 @@ router.post('/login', async (req, res) => {
 router.get('/me', autenticar, async (req, res) => {
   try {
     const resultado = await db.query(
-      `SELECT u.id, u.nome, u.email, u.perfil, u.ativo, u.igreja_id, u.created_at, i.nome as igreja_nome, i.slug as igreja_slug
+      `SELECT u.id, u.nome, u.email, u.perfil, u.ativo, u.igreja_id, u.created_at,
+              i.nome as igreja_nome, i.slug as igreja_slug,
+              i.cor_primaria as igreja_cor, i.logo_url as igreja_logo
        FROM usuarios u
        LEFT JOIN igrejas i ON u.igreja_id = i.id
        WHERE u.id = $1`,
