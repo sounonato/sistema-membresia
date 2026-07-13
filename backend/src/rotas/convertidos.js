@@ -241,6 +241,27 @@ router.put('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   }
 });
 
+// PATCH /api/convertidos/:id/transferir - Transferir convertido para outra igreja (Apenas superadmin)
+router.patch('/:id/transferir', checkPerfil([]), async (req, res) => {
+  if (req.usuarioPerfil !== 'superadmin') {
+    return res.status(403).json({ error: 'Apenas superadmin pode transferir convertidos entre igrejas' });
+  }
+  const { id } = req.params;
+  const { igreja_id } = req.body;
+  if (!igreja_id) return res.status(400).json({ error: 'igreja_id é obrigatório' });
+  try {
+    const resultado = await db.query(
+      'UPDATE novos_convertidos SET igreja_id = $1 WHERE id = $2 RETURNING id, nome, igreja_id',
+      [igreja_id, id]
+    );
+    if (resultado.rows.length === 0) return res.status(404).json({ error: 'Convertido não encontrado' });
+    return res.json(resultado.rows[0]);
+  } catch (err) {
+    console.error('Erro ao transferir convertido:', err);
+    return res.status(500).json({ error: 'Erro interno ao transferir convertido' });
+  }
+});
+
 // DELETE /api/convertidos/:id - Excluir convertido (Apenas admin e lider)
 router.delete('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   const { id } = req.params;
