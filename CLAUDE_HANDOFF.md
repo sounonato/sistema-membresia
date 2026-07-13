@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-12 (sessão 9 — completo)
+Atualizado em: 2026-07-13 (sessão 10)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -24,7 +24,7 @@ Frontend v3 tem o módulo Membresia completo mas não tem landing/SaaS. Frontend
 | Anderson | `sou.nonato@live.com` | admin | `nazareno123` |
 | Ryan Miqueias | `rnmiqueias@gmail.com` | lider | `nazareno123` |
 | Admin padrão | `admin@nazareno.com` | admin | `admin123` |
-| Superadmin | `super@nazareno.com` | superadmin | `admin123` |
+| Superadmin | `super@nazareno.com` | superadmin | `super123` |
 
 **Não há mais campo Slug no login.** O sistema identifica a igreja automaticamente pelo email do usuário.
 
@@ -108,6 +108,44 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 10 (2026-07-13)
+
+### Login global `/login` (sem slug)
+- **Problema:** cliente precisava saber o slug da igreja pra acessar o sistema
+- **Solução:** nova rota `/login` — cliente digita só email + senha, backend detecta a igreja pelo email e retorna `igreja_slug` no payload
+- `frontend v4/src/routes/login.tsx` — nova rota criada
+- `frontend v4/src/paginas/login-global/page.tsx` — tela Ovile sem branding de igreja
+- `AuthContext.tsx` — `login(email, senha, slug?)` — slug vira opcional, usa `res.usuario.igreja_slug` como fallback
+- `api.ts` — slug opcional no login
+- `/$slug/login` continua funcionando para links diretos com branding
+
+### Transferência de convertidos (produção)
+- Ana Beatriz Barros da Silva e Giovanna Henrique Honorato Fischer movidas da "Igreja do Nazareno Sede" → "Igreja Nazareno Janga"
+- Novo endpoint `PATCH /api/convertidos/:id/transferir` (só superadmin) permite mover convertido entre igrejas
+- Transferência executada via API de produção (`sistema-membresia-production.up.railway.app`)
+
+### ⚠️ Lição crítica aprendida: banco local ≠ produção
+- `backend/.env` aponta para `localhost:5432/membresia` (banco local de desenvolvimento)
+- O deploy de produção no Railway usa um DATABASE_URL diferente (variável de ambiente do Railway)
+- **Nunca** alterar dados de produção via banco local — sempre usar a API de produção (`https://sistema-membresia-production.up.railway.app/api`) com as credenciais do superadmin
+- Superadmin produção: `super@nazareno.com` / `super123`
+
+### Página Métricas de Membros (`/membros-metricas`) — entregue e corrigida (sessão 9/10)
+- Gemini entregou backend (`membrosMetricas.js`) e frontend (`page.tsx`, `hooks.ts`, rota)
+- 3 bugs corrigidos por Claude:
+  1. Route ordering: `membrosMetricasRotas` registrado ANTES de `membrosRotas` em `index.js`
+  2. Colunas faltando no Railway: `ALTER TABLE membros ADD COLUMN fez_curso_membresia` + `data_conversao` aplicados manualmente
+  3. `column "faixa" does not exist`: query de faixa etária usava alias em ORDER BY — corrigido com subquery + `sort_key`
+
+### Igrejas de produção (Railway)
+| Igreja | Slug | ID |
+|--------|------|-----|
+| Igreja Batista Central | `batista-central` | `a9d5a54a-...` |
+| Igreja do Nazareno Sede | `nazareno-sede` | `e742c0f6-...` |
+| Igreja Nazareno Janga | `igreja-nazareno-janga` | `42b06182-...` |
 
 ---
 
