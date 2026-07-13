@@ -560,11 +560,31 @@ psql "postgresql://postgres:EdDxjfYOZAXNalVPJWvhjbTQtBSbwRTi@hayabusa.proxy.rlwy
 
 ## Mudanças feitas em 2026-07-12 (sessão 9 — parte 2) — Deploy Métricas + fix routeTree
 
-### Página Métricas de Membros — deployada ✅
+### Página Métricas de Membros — deployada e funcionando ✅
 
 - Rota: `/membros-metricas` — sidebar "Métricas" no grupo 03 Membresia
 - Testado em produção: `https://sistema-membresia.pages.dev/membros-metricas` ✅
-- KPIs, crescimento mensal, gênero (donut), estado civil, faixa etária (7 cores), ministérios, cidades, aniversariantes com link WhatsApp, alertas sem contato
+- KPIs reais: 224 ativos, 215 batizados, 145 feminino / 79 masculino
+- Crescimento mensal, gênero (donut), estado civil, faixa etária (7 cores), ministérios, cidades, aniversariantes com link WhatsApp, alertas sem contato
+
+### Bugs corrigidos pós-deploy (sessão 9)
+
+**1. Rota capturada pelo `/membros/:id`**
+- `GET /api/membros/metricas` era interceptado por `GET /api/membros/:id` com `id = "metricas"`
+- Fix: mover `app.use('/api', membrosMetricasRotas)` para **antes** de `app.use('/api/membros', membrosRotas)` em `backend/src/index.js`
+
+**2. Colunas faltando no banco Railway de produção**
+- `data_conversao` e `fez_curso_membresia` foram adicionadas na sessão 4 como `ALTER TABLE` mas nunca aplicadas no Railway
+- Fix: executado diretamente no Railway PostgreSQL:
+  ```sql
+  ALTER TABLE membros ADD COLUMN IF NOT EXISTS data_conversao DATE;
+  ALTER TABLE membros ADD COLUMN IF NOT EXISTS fez_curso_membresia BOOLEAN DEFAULT false;
+  ```
+- ⚠️ **Lição**: toda migration nova deve ser aplicada manualmente no Railway — não há sistema automático de migrations
+
+**3. `ORDER BY faixa` com alias no PostgreSQL**
+- `ORDER BY CASE WHEN faixa = '0-17'` falha porque PostgreSQL não aceita alias dentro de expressão CASE no ORDER BY
+- Fix em `backend/src/rotas/membrosMetricas.js`: envolver a query de faixa etária em subquery com `sort_key = MIN(COALESCE(data_nascimento, '9999-01-01'))`
 
 ### Fix crítico: routeTree — ordem de rotas
 
