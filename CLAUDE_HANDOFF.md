@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-13 (sessão 10)
+Atualizado em: 2026-07-13 (sessão 11)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,34 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 11 (2026-07-13)
+
+### Login e dashboard de discipuladores
+- `POST /api/discipuladores/:id/acesso` — cria conta de login vinculada ao discipulador (`usuario_id`)
+- `DELETE /api/discipuladores/:id/acesso` — revoga acesso (desativa conta, não deleta)
+- `GET /api/discipuladores/:id/convertidos` — lista convertidos de um discipulador específico
+- `PATCH /api/convertidos/:id/responsavel` — atribui discipulador a um convertido via grupo (cria grupo automaticamente se não existir)
+- Frontend: coluna "Acesso" na página de discipuladores com modal criar/revogar
+- Frontend: seção "Responsável" na ficha do convertido com select de discipuladores ativos
+- Frontend: `DashboardDiscipulador` — quando `perfil === 'discipulador'`, dashboard restrito com KPIs e lista dos seus convertidos
+- Sidebar: discipulador vê apenas "Panorama" e "Meus Convertidos"; todos os outros itens ocultos
+
+### Permissões de acesso na ficha do membro
+- `PATCH /api/autenticacao/usuarios/:id/perfil` — troca o perfil de um usuário (admin/lider); protegido contra alteração de superadmin
+- `POST /api/membros/:id/acesso` — cria login vinculado ao membro com email + senha + perfil escolhido
+- `DELETE /api/membros/:id/acesso` — revoga acesso (desativa conta, preserva histórico)
+- `GET /api/membros/:id` agora faz LEFT JOIN com `usuarios` e retorna `usuario_email`, `usuario_perfil`, `usuario_ativo`
+- Frontend: card "Acesso ao sistema" na ficha do membro — sem conta: botão "Criar acesso"; com conta: badge de perfil + select para trocar + botão "Revogar"
+- Hooks invalidam `["membros", id]` e `["usuarios"]` simultaneamente para manter `/usuarios` sincronizado
+- **Sem migration necessária** — `membros.usuario_id` já existia no schema
+- **Escopo só em membros** — `novos_convertidos` não tem `usuario_id` (exigiria migration em produção)
+
+### Docs Gemini gerados nesta sessão
+- `docs/GEMINI-DISCIPULADORES-LOGIN.md` — plano para login de discipuladores (executado)
+- `docs/GEMINI-PERMISSOES-MEMBRO.md` — plano para permissões na ficha do membro (executado)
 
 ---
 
