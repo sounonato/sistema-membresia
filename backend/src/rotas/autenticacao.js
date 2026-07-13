@@ -224,6 +224,48 @@ router.patch('/usuarios/:id/toggle', autenticar, identificarTenant, checkPerfil(
   }
 });
 
+// PATCH /api/autenticacao/usuarios/:id/perfil — Trocar perfil de um usuário (admin/lider)
+router.patch('/usuarios/:id/perfil', autenticar, identificarTenant, checkPerfil(['admin', 'lider']), async (req, res) => {
+  const { id } = req.params;
+  const { perfil } = req.body;
+
+  const perfisValidos = ['admin', 'lider', 'pastor', 'discipulador'];
+  if (!perfil || !perfisValidos.includes(perfil)) {
+    return res.status(400).json({ error: 'Perfil inválido. Use: admin, lider, pastor ou discipulador' });
+  }
+
+  try {
+    const usuarioRes = await db.query(
+      'SELECT ativo, igreja_id, perfil FROM usuarios WHERE id = $1',
+      [id]
+    );
+    if (usuarioRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    const usuarioAlvo = usuarioRes.rows[0];
+
+    // Impedir alteração de superadmin
+    if (usuarioAlvo.perfil === 'superadmin') {
+      return res.status(403).json({ error: 'Não é possível alterar o perfil de um superadmin' });
+    }
+
+    // Isolamento de tenant: não pode alterar usuário de outra igreja
+    if (req.usuarioPerfil !== 'superadmin' && usuarioAlvo.igreja_id !== req.igrejaId) {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    const resultado = await db.query(
+      'UPDATE usuarios SET perfil = $1 WHERE id = $2 RETURNING id, nome, email, perfil, ativo',
+      [perfil, id]
+    );
+
+    return res.json(resultado.rows[0]);
+  } catch (err) {
+    console.error('Erro ao alterar perfil:', err);
+    return res.status(500).json({ error: 'Erro interno ao alterar perfil' });
+  }
+});
+
 // POST /api/autenticacao/trocar-senha
 router.post('/trocar-senha', autenticar, async (req, res) => {
   const { senha_atual, senha_nova } = req.body;

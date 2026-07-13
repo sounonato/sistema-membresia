@@ -253,6 +253,16 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ discipulador_id: discipuladorId }),
     }),
+
+  // Membros — acesso ao sistema
+  criarAcessoMembro: (id: string, data: { email: string; senha: string; perfil: string }) =>
+    request(`/membros/${id}/acesso`, { method: "POST", body: JSON.stringify(data) }),
+  revogarAcessoMembro: (id: string) =>
+    request(`/membros/${id}/acesso`, { method: "DELETE" }),
+
+  // Usuários — trocar perfil
+  alterarPerfilUsuario: (usuarioId: string, perfil: string) =>
+    request(`/auth/usuarios/${usuarioId}/perfil`, { method: "PATCH", body: JSON.stringify({ perfil }) }),
 };
 
 export type Perfil = "superadmin" | "admin" | "lider" | "pastor" | "discipulador";
@@ -337,6 +347,11 @@ export type Membro = {
   updated_at: string;
   ministerios?: MembroMinisterio[];
   cargos?: CargoMembro[];
+  usuario_id_vinculado?: string | null;
+  usuario_email?: string | null;
+  usuario_perfil?: Perfil | null;
+  usuario_ativo?: boolean | null;
+  discipulador_id?: string | null;
 };
 
 export type MembroMinisterio = {

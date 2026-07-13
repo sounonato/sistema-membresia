@@ -139,3 +139,38 @@ export function useEncerrarCargo(membroId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["membros", membroId] }),
   });
 }
+
+export function useCriarAcessoMembro(membroId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { email: string; senha: string; perfil: string }) =>
+      api.criarAcessoMembro(membroId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["membros", membroId] });
+      qc.invalidateQueries({ queryKey: ["usuarios"] });
+    },
+  });
+}
+
+export function useRevogarAcessoMembro(membroId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.revogarAcessoMembro(membroId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["membros", membroId] });
+      qc.invalidateQueries({ queryKey: ["usuarios"] });
+    },
+  });
+}
+
+export function useAlterarPerfilUsuario(membroId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ usuarioId, perfil }: { usuarioId: string; perfil: string }) =>
+      api.alterarPerfilUsuario(usuarioId, perfil),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["membros", membroId] });
+      qc.invalidateQueries({ queryKey: ["usuarios"] });
+    },
+  });
+}

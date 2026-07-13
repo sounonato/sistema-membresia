@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   Loader2,
@@ -55,6 +55,9 @@ import {
   useRemoveMembroMinisterio,
   useAddCargo,
   useEncerrarCargo,
+  useCriarAcessoMembro,
+  useRevogarAcessoMembro,
+  useAlterarPerfilUsuario,
 } from "../hooks";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -74,6 +77,67 @@ export function MembroDetalhe() {
   const { data: m, isLoading } = useMembro(id);
   const viHoje = useViHoje();
   const [waOpen, setWaOpen] = useState(false);
+
+  // Mutations para acesso membro
+  const criarAcesso = useCriarAcessoMembro(id);
+  const revogarAcesso = useRevogarAcessoMembro(id);
+  const alterarPerfil = useAlterarPerfilUsuario(id);
+
+  // States para acesso
+  const [acessoOpen, setAcessoOpen] = useState(false);
+  const [acessoEmail, setAcessoEmail] = useState("");
+  const [acessoSenha, setAcessoSenha] = useState("");
+  const [acessoPerfil, setAcessoPerfil] = useState("discipulador");
+  const [perfilSel, setPerfilSel] = useState("");
+
+  useEffect(() => {
+    if (m?.usuario_perfil) {
+      setPerfilSel(m.usuario_perfil);
+    }
+  }, [m?.usuario_perfil]);
+
+  async function onSalvarPerfil() {
+    if (!m?.usuario_id_vinculado) return;
+    try {
+      await alterarPerfil.mutateAsync({
+        usuarioId: m.usuario_id_vinculado,
+        perfil: perfilSel,
+      });
+      toast.success("Perfil atualizado");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao atualizar perfil");
+    }
+  }
+
+  async function onRevogarAcesso() {
+    if (!window.confirm("Deseja revogar o acesso deste membro? A conta do usuário será desativada.")) return;
+    try {
+      await revogarAcesso.mutateAsync();
+      toast.success("Acesso revogado");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao revogar");
+    }
+  }
+
+  async function onCriarAcesso(e: React.FormEvent) {
+    e.preventDefault();
+    if (!acessoEmail || !acessoSenha) {
+      toast.error("Email e senha são obrigatórios");
+      return;
+    }
+    try {
+      await criarAcesso.mutateAsync({
+        email: acessoEmail,
+        senha: acessoSenha,
+        perfil: acessoPerfil,
+      });
+      toast.success("Acesso criado!");
+      setAcessoOpen(false);
+      setAcessoSenha("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao criar acesso");
+    }
+  }
 
   if (isLoading || !m)
     return <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />;
@@ -222,6 +286,102 @@ export function MembroDetalhe() {
               </Info>
             </dl>
           </Card>
+
+          {/* Card Acesso ao Sistema */}
+          {editor && (
+            <Card title="Acesso ao sistema">
+              {m.usuario_email ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      className={cn(
+                        "rounded-none text-[10px] tracking-widest uppercase font-normal",
+                        m.usuario_ativo
+                          ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                          : "bg-red-50 text-red-800 border border-red-200",
+                      )}
+                    >
+                      {m.usuario_ativo ? "Ativo" : "Inativo"}
+                    </Badge>
+                    <span className="text-xs text-stone-500 truncate" title={m.usuario_email}>
+                      {m.usuario_email}
+                    </span>
+                  </div>
+
+                  {m.discipulador_id && (
+                    <div className="bg-amber-50 border border-amber-200 p-3 flex gap-2 items-start text-xs text-amber-900 leading-normal">
+                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <div>
+                        Este membro também está cadastrado como discipulador.
+                        O acesso é compartilhado entre os registros.
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] tracking-widest uppercase text-stone-500">
+                      Perfil de acesso
+                    </Label>
+                    <Select value={perfilSel} onValueChange={setPerfilSel}>
+                      <SelectTrigger className="rounded-none border-stone-300 w-full bg-white h-9">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                        <SelectItem value="lider">Líder</SelectItem>
+                        <SelectItem value="pastor">Pastor</SelectItem>
+                        <SelectItem value="discipulador">Discipulador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex gap-2 pt-2 border-t border-stone-100">
+                    <Button
+                      onClick={onSalvarPerfil}
+                      disabled={alterarPerfil.isPending}
+                      size="sm"
+                      className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50 text-xs px-3 h-8"
+                    >
+                      {alterarPerfil.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1.5" />}
+                      Salvar perfil
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={onRevogarAcesso}
+                      disabled={revogarAcesso.isPending}
+                      size="sm"
+                      className="rounded-none border-red-200 text-red-700 hover:bg-red-50 text-xs px-3 h-8"
+                    >
+                      {revogarAcesso.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1.5" />}
+                      Revogar acesso
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge className="rounded-none text-[10px] tracking-widest uppercase font-normal bg-stone-100 text-stone-500 border border-stone-200">
+                      Sem acesso
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-stone-500">
+                    Este membro não possui credenciais de acesso ao sistema.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setAcessoEmail(m.email ?? "");
+                      setAcessoSenha("");
+                      setAcessoPerfil("discipulador");
+                      setAcessoOpen(true);
+                    }}
+                    className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50 text-xs px-4 h-9 w-full"
+                  >
+                    Criar acesso
+                  </Button>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
 
         <div className="lg:col-span-2">
@@ -303,6 +463,71 @@ export function MembroDetalhe() {
           </Tabs>
         </div>
       </div>
+
+      {/* Dialog Criar Acesso */}
+      <Dialog open={acessoOpen} onOpenChange={setAcessoOpen}>
+        <DialogContent className="rounded-none max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-lg">Criar Acesso ao Sistema</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onCriarAcesso} className="space-y-4 pt-2">
+            {m.discipulador_id && (
+              <div className="bg-amber-50 border border-amber-200 p-3 flex gap-2 items-start text-xs text-amber-900 leading-normal">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <div>
+                  Este membro também é discipulador. O acesso criado será compartilhado com o registro de discipulador.
+                </div>
+              </div>
+            )}
+            <div>
+              <Label className="text-xs uppercase tracking-widest text-stone-500">E-mail</Label>
+              <Input
+                type="email"
+                required
+                value={acessoEmail}
+                onChange={(e) => setAcessoEmail(e.target.value)}
+                placeholder="nome@igreja.org"
+                className="rounded-none border-stone-300 mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs uppercase tracking-widest text-stone-500">Senha</Label>
+              <Input
+                type="password"
+                required
+                minLength={8}
+                value={acessoSenha}
+                onChange={(e) => setAcessoSenha(e.target.value)}
+                placeholder="Mínimo 8 caracteres"
+                className="rounded-none border-stone-300 mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs uppercase tracking-widest text-stone-500">Perfil</Label>
+              <Select value={acessoPerfil} onValueChange={setAcessoPerfil}>
+                <SelectTrigger className="rounded-none border-stone-300 mt-1 bg-white">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                  <SelectItem value="lider">Líder</SelectItem>
+                  <SelectItem value="pastor">Pastor</SelectItem>
+                  <SelectItem value="discipulador">Discipulador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setAcessoOpen(false)} className="rounded-none">
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={criarAcesso.isPending} className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50">
+                {criarAcesso.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Criar acesso
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <WhatsappModal membro={m} open={waOpen} onClose={() => setWaOpen(false)} igrejaNome={igrejaNome} />
     </div>

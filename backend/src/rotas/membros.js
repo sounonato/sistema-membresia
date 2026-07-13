@@ -229,10 +229,21 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
         `SELECT
           m.*,
           c.nome AS conjuge_nome_cadastrado,
-          nc.nome AS convertido_nome
+          nc.nome AS convertido_nome,
+          u.id AS usuario_id_vinculado,
+          u.email AS usuario_email,
+          u.perfil AS usuario_perfil,
+          u.ativo AS usuario_ativo,
+          (
+            SELECT id FROM discipuladores 
+            WHERE (usuario_id = m.usuario_id OR (m.email IS NOT NULL AND email = m.email))
+            AND igreja_id = m.igreja_id
+            LIMIT 1
+          ) AS discipulador_id
         FROM membros m
         LEFT JOIN membros c ON m.conjuge_id = c.id
         LEFT JOIN novos_convertidos nc ON m.convertido_id = nc.id
+        LEFT JOIN usuarios u ON m.usuario_id = u.id
         WHERE m.id = $1 AND m.igreja_id = $2`,
         [id, req.igrejaId]
       ),
@@ -822,6 +833,88 @@ router.post('/:id/whatsapp', checkPerfil(['admin', 'lider', 'pastor']), async (r
 
     console.error('Erro ao enviar WhatsApp:', err);
     return res.status(500).json({ error: 'Erro ao enviar mensagem WhatsApp', detalhe: err.message });
+  }
+});
+
+// POST /api/membros/:id/acesso — Criar login para membro (admin/lider)
+router.post('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) => {
+  const { id } = req.params;
+  const { email, senha, perfil } = req.body;
+
+  const perfisValidos = ['admin', 'lider', 'pastor', 'discipulador'];
+  if (!email || !senha || !perfil || !perfisValidos.includes(perfil)) {
+    return res.status(400).json({ error: 'Email, senha e perfil válido são obrigatórios' });
+  }
+
+  try {
+    const membroRes = await db.query(
+      'SELECT * FROM membros WHERE id = $1 AND igreja_id = $2',
+      [id, req.igrejaId]
+    );
+    if (membroRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Membro não encontrado' });
+    }
+    const membro = membroRes.rows[0];
+
+    if (membro.usuario_id) {
+      return res.status(409).json({ error: 'Membro já possui uma conta de acesso' });
+    }
+
+    const emailCheck = await db.query(
+      'SELECT id FROM usuarios WHERE email = $1 AND igreja_id = $2',
+      [email, req.igrejaId]
+    );
+    if (emailCheck.rows.length > 0) {
+      return res.status(409).json({ error: 'Este e-mail já está em uso nesta igreja' });
+    }
+
+    const bcrypt = require('bcrypt');
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const usuarioResult = await db.query(
+      `INSERT INTO usuarios (nome, email, senha_hash, perfil, igreja_id)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, nome, email, perfil, ativo`,
+      [membro.nome, email, senhaHash, perfil, req.igrejaId]
+    );
+    const usuario = usuarioResult.rows[0];
+
+    await db.query(
+      'UPDATE membros SET usuario_id = $1 WHERE id = $2',
+      [usuario.id, id]
+    );
+
+    return res.status(201).json({
+      message: 'Acesso created com sucesso',
+      usuario: { id: usuario.id, email: usuario.email, perfil: usuario.perfil }
+    });
+  } catch (err) {
+    console.error('Erro ao criar acesso do membro:', err);
+    return res.status(500).json({ error: 'Erro interno ao criar acesso' });
+  }
+});
+
+// DELETE /api/membros/:id/acesso — Revogar login do membro (admin/lider)
+router.delete('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) => {
+  const { id } = req.params;
+  try {
+    const membroRes = await db.query(
+      'SELECT usuario_id FROM membros WHERE id = $1 AND igreja_id = $2',
+      [id, req.igrejaId]
+    );
+    if (membroRes.rows.length === 0) return res.status(404).json({ error: 'Membro não encontrado' });
+    const { usuario_id } = membroRes.rows[0];
+    if (!usuario_id) return res.status(404).json({ error: 'Membro não possui acesso' });
+
+    // Desativar a conta (não deleta para preservar histórico)
+    await db.query('UPDATE usuarios SET ativo = false WHERE id = $1', [usuario_id]);
+    // Desvincular
+    await db.query('UPDATE membros SET usuario_id = NULL WHERE id = $1', [id]);
+
+    return res.json({ message: 'Acesso revogado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao revogar acesso do membro:', err);
+    return res.status(500).json({ error: 'Erro interno ao revogar acesso' });
   }
 });
 
