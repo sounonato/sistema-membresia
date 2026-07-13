@@ -8,6 +8,9 @@ export type Discipulador = {
   email?: string;
   qtd_grupos?: number;
   ativo?: boolean;
+  usuario_id?: string | null;
+  usuario_nome?: string | null;
+  usuario_email?: string | null;
 };
 
 export function useDiscipuladores() {

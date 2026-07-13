@@ -13,7 +13,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { useAuth } from "@/contexts/AuthContext";
-import { podeEditar } from "@/lib/api";
+import { api, podeEditar } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateDiscipulador, useDeleteDiscipulador, useDiscipuladores, useUpdateDiscipulador,
   type Discipulador,
@@ -28,12 +29,60 @@ export function DiscipuladoresPage() {
   const update = useUpdateDiscipulador();
   const del = useDeleteDiscipulador();
 
+  const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Discipulador | null>(null);
   const [form, setForm] = useState<Partial<Discipulador>>({});
 
+  // Acesso login discipulador
+  const [acessoOpen, setAcessoOpen] = useState(false);
+  const [acessoDiscipulador, setAcessoDiscipulador] = useState<Discipulador | null>(null);
+  const [acessoEmail, setAcessoEmail] = useState("");
+  const [acessoSenha, setAcessoSenha] = useState("");
+  const [acessoLoading, setAcessoLoading] = useState(false);
+
   function abrirNovo() { setEdit(null); setForm({ ativo: true }); setOpen(true); }
   function abrirEdit(d: Discipulador) { setEdit(d); setForm(d); setOpen(true); }
+
+  function abrirCriarAcesso(d: Discipulador) {
+    setAcessoDiscipulador(d);
+    setAcessoEmail(d.email ?? "");
+    setAcessoSenha("");
+    setAcessoOpen(true);
+  }
+
+  async function salvarAcesso() {
+    if (!acessoDiscipulador) return;
+    if (!acessoEmail || !acessoSenha) {
+      toast.error("Email e senha são obrigatórios");
+      return;
+    }
+    setAcessoLoading(true);
+    try {
+      await api.criarAcessoDiscipulador(acessoDiscipulador.id, {
+        email: acessoEmail,
+        senha: acessoSenha,
+      });
+      toast.success("Acesso criado com sucesso");
+      setAcessoOpen(false);
+      qc.invalidateQueries({ queryKey: ["discipuladores"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao criar acesso");
+    } finally {
+      setAcessoLoading(false);
+    }
+  }
+
+  async function revogarAcesso(d: Discipulador) {
+    if (!window.confirm(`Revogar acesso de ${d.nome}? A conta de usuário será desativada.`)) return;
+    try {
+      await api.revogarAcessoDiscipulador(d.id);
+      toast.success("Acesso revogado com sucesso");
+      qc.invalidateQueries({ queryKey: ["discipuladores"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao revogar acesso");
+    }
+  }
 
   async function salvar() {
     try {
@@ -79,6 +128,7 @@ export function DiscipuladoresPage() {
                     <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Telefone</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">E-mail</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 text-right">Grupos</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Acesso</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Ativo</TableHead>
                     {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-stone-500">Ações</TableHead>}
                   </TableRow>
@@ -91,6 +141,38 @@ export function DiscipuladoresPage() {
                       <TableCell className="text-sm text-stone-700">{d.telefone ?? "—"}</TableCell>
                       <TableCell className="text-sm italic text-stone-600">{d.email ?? "—"}</TableCell>
                       <TableCell className="text-right font-serif text-lg tabular-nums text-stone-900">{d.qtd_grupos ?? 0}</TableCell>
+                      <TableCell>
+                        {d.usuario_email ? (
+                          <div className="flex flex-col gap-0.5 items-start">
+                            <span className="text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5 font-medium">
+                              Com acesso
+                            </span>
+                            <span className="text-xs text-stone-500 mt-1">{d.usuario_email}</span>
+                            {editor && (
+                              <button
+                                onClick={() => revogarAcesso(d)}
+                                className="text-[10px] text-red-600 hover:text-red-800 underline mt-0.5 cursor-pointer bg-transparent border-0 p-0"
+                              >
+                                Revogar
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-0.5 items-start">
+                            <span className="text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5">
+                              Sem acesso
+                            </span>
+                            {editor && (
+                              <button
+                                onClick={() => abrirCriarAcesso(d)}
+                                className="text-[10px] text-amber-700 hover:text-amber-900 underline mt-0.5 cursor-pointer bg-transparent border-0 p-0"
+                              >
+                                Criar acesso
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <span className={d.ativo === false
                           ? "text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5"
@@ -134,6 +216,43 @@ export function DiscipuladoresPage() {
             <Button onClick={salvar} disabled={create.isPending || update.isPending}>
               {(create.isPending || update.isPending) && <Loader2 className="h-4 w-4 animate-spin" />}
               Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={acessoOpen} onOpenChange={setAcessoOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-primary">
+              Criar Acesso ao Sistema
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-sm text-stone-600">
+              Crie uma conta de login para o discipulador <strong>{acessoDiscipulador?.nome}</strong>.
+            </div>
+            <Campo label="E-mail">
+              <Input
+                type="email"
+                value={acessoEmail}
+                onChange={(e) => setAcessoEmail(e.target.value)}
+                placeholder="exemplo@igreja.org"
+              />
+            </Campo>
+            <Campo label="Senha">
+              <Input
+                type="password"
+                value={acessoSenha}
+                onChange={(e) => setAcessoSenha(e.target.value)}
+                placeholder="Mínimo 8 caracteres"
+              />
+            </Campo>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAcessoOpen(false)}>Cancelar</Button>
+            <Button onClick={salvarAcesso} disabled={acessoLoading}>
+              {acessoLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Criar acesso
             </Button>
           </DialogFooter>
         </DialogContent>

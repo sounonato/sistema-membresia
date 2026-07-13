@@ -23,25 +23,25 @@ const sections: Section[] = [
     items: [
       { to: "/dashboard", label: "Panorama", perfis: ["admin", "lider", "pastor", "discipulador"] },
       { to: "/convertidos", label: "Convertidos", perfis: ["admin", "lider", "pastor", "discipulador"] },
-      { to: "/discipulado", label: "Discipulado", perfis: ["admin", "lider", "pastor", "discipulador"] },
-      { to: "/discipuladores", label: "Discipuladores", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/discipulado", label: "Discipulado", perfis: ["admin", "lider", "pastor"] },
+      { to: "/discipuladores", label: "Discipuladores", perfis: ["admin", "lider", "pastor"] },
     ],
   },
   {
     label: "Ministério",
     items: [
-      { to: "/modulos", label: "Módulos", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/modulos", label: "Módulos", perfis: ["admin", "lider", "pastor"] },
       { to: "/relatorios", label: "Relatórios", perfis: ["admin", "lider", "pastor"] },
       { to: "/qr-cadastro", label: "QR de cadastro", perfis: ["admin", "lider", "pastor"] },
-      { to: "/manual", label: "Manual", perfis: ["admin", "lider", "pastor", "discipulador"], slugContains: "nazareno" },
+      { to: "/manual", label: "Manual", perfis: ["admin", "lider", "pastor"], slugContains: "nazareno" },
     ],
   },
   {
     label: "Membresia",
     items: [
-      { to: "/membros", label: "Membros", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/membros", label: "Membros", perfis: ["admin", "lider", "pastor"] },
       { to: "/membros-metricas", label: "Métricas", perfis: ["admin", "lider", "pastor"] },
-      { to: "/ministerios", label: "Ministérios", perfis: ["admin", "lider", "pastor", "discipulador"] },
+      { to: "/ministerios", label: "Ministérios", perfis: ["admin", "lider", "pastor"] },
       { to: "/followup-whatsapp", label: "Follow-up", perfis: ["admin", "lider", "pastor"] },
     ],
   },
@@ -96,6 +96,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <ul className="space-y-0.5">
               {section.items.map((it) => {
                 const active = pathname === it.to || pathname.startsWith(it.to + "/");
+                const itemLabel = it.to === "/convertidos" && usuario?.perfil === "discipulador" ? "Meus Convertidos" : it.label;
                 return (
                   <li key={it.to}>
                     <Link
@@ -116,7 +117,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       >
                         &mdash;
                       </span>
-                      <span className="font-serif tracking-tight">{it.label}</span>
+                      <span className="font-serif tracking-tight">{itemLabel}</span>
                     </Link>
                   </li>
                 );

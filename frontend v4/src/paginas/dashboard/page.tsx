@@ -12,6 +12,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats, useMembrosStats } from "./hooks";
+import DashboardDiscipulador from "./dashboard-discipulador";
 
 const PIE_COLORS = ["#b45309", "#d97706", "#f59e0b", "#fbbf24"];
 
@@ -19,6 +20,10 @@ export function DashboardPage() {
   const { usuario, igreja } = useAuth();
   const { data, isLoading } = useDashboardStats();
   const { data: membrosStats } = useMembrosStats();
+
+  if (usuario?.perfil === "discipulador") {
+    return <DashboardDiscipulador />;
+  }
 
   if (isLoading) {
     return (

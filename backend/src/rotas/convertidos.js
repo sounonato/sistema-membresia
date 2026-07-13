@@ -80,10 +80,16 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
 
   try {
     const params = [id];
-    let queryText = 'SELECT * FROM novos_convertidos WHERE id = $1';
+    let queryText = `
+      SELECT nc.*, gd.discipulador_id 
+      FROM novos_convertidos nc
+      LEFT JOIN grupo_membros gm ON nc.id = gm.convertido_id
+      LEFT JOIN grupos_discipulado gd ON gm.grupo_id = gd.id AND gd.status = 'ativo'
+      WHERE nc.id = $1
+    `;
 
     if (req.igrejaId) {
-      queryText += ' AND igreja_id = $2';
+      queryText += ' AND nc.igreja_id = $2';
       params.push(req.igrejaId);
     }
 
@@ -285,6 +291,73 @@ router.delete('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   } catch (err) {
     console.error('Erro ao excluir convertido:', err);
     return res.status(500).json({ error: 'Erro interno ao excluir convertido' });
+  }
+});
+
+// PATCH /api/convertidos/:id/responsavel — Atribuir discipulador a um convertido (admin/lider)
+router.patch('/:id/responsavel', checkPerfil(['admin', 'lider']), async (req, res) => {
+  const { id } = req.params; // id do convertido
+  const { discipulador_id } = req.body; // pode ser null para remover
+
+  try {
+    // Remover de grupos existentes primeiro
+    await db.query(
+      `DELETE FROM grupo_membros WHERE convertido_id = $1
+       AND grupo_id IN (
+         SELECT id FROM grupos_discipulado WHERE igreja_id = $2
+       )`,
+      [id, req.igrejaId]
+    );
+
+    if (!discipulador_id) {
+      return res.json({ message: 'Responsável removido' });
+    }
+
+    // Verificar discipulador
+    const disc = await db.query(
+      'SELECT * FROM discipuladores WHERE id = $1 AND igreja_id = $2 AND ativo = true',
+      [discipulador_id, req.igrejaId]
+    );
+    if (disc.rows.length === 0) {
+      return res.status(404).json({ error: 'Discipulador não encontrado ou inativo' });
+    }
+
+    // Buscar ou criar grupo padrão do discipulador
+    let grupo = await db.query(
+      `SELECT id FROM grupos_discipulado
+       WHERE discipulador_id = $1 AND igreja_id = $2 AND status = 'ativo'
+       ORDER BY created_at DESC LIMIT 1`,
+      [discipulador_id, req.igrejaId]
+    );
+
+    let grupoId;
+    if (grupo.rows.length === 0) {
+      // Criar grupo padrão
+      const novoGrupo = await db.query(
+        `INSERT INTO grupos_discipulado (igreja_id, nome, discipulador_id, data_inicio, status)
+         VALUES ($1, $2, $3, CURRENT_DATE, 'ativo') RETURNING id`,
+        [req.igrejaId, `Grupo de ${disc.rows[0].nome}`, discipulador_id]
+      );
+      grupoId = novoGrupo.rows[0].id;
+    } else {
+      grupoId = grupo.rows[0].id;
+    }
+
+    // Adicionar convertido ao grupo
+    await db.query(
+      `INSERT INTO grupo_membros (igreja_id, grupo_id, convertido_id)
+       VALUES ($1, $2, $3) ON CONFLICT (grupo_id, convertido_id) DO NOTHING`,
+      [req.igrejaId, grupoId, id]
+    );
+
+    return res.json({
+      message: 'Responsável atribuído',
+      discipulador: disc.rows[0],
+      grupo_id: grupoId
+    });
+  } catch (err) {
+    console.error('Erro ao atribuir responsável:', err);
+    return res.status(500).json({ error: 'Erro interno ao atribuir responsável' });
   }
 });
 

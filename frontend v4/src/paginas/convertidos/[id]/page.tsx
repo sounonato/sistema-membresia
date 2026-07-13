@@ -1,21 +1,37 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil, Trash2, ArrowLeft, Loader2, Sparkles, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { podeEditar } from "@/lib/api";
+import { api, podeEditar } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { useConvertido, useDeleteConvertido } from "../hooks";
 import { useCriarMembro } from "@/paginas/membros/hooks";
+import { useDiscipuladores } from "@/paginas/discipuladores/hooks";
 
 export function ConvertidoDetalhePage() {
   const { id } = useParams({ from: "/_auth/convertidos/$id/" });
   const navigate = useNavigate();
   const { usuario } = useAuth();
   const editor = podeEditar(usuario?.perfil);
+  const qc = useQueryClient();
   const { data, isLoading } = useConvertido(id);
   const del = useDeleteConvertido();
   const criarMembro = useCriarMembro();
+  const { data: discipuladores } = useDiscipuladores();
+
+  const [selectedDiscId, setSelectedDiscId] = useState<string>("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (data?.discipulador_id) {
+      setSelectedDiscId(data.discipulador_id);
+    } else {
+      setSelectedDiscId("");
+    }
+  }, [data?.discipulador_id]);
 
   if (isLoading || !data) {
     return (
@@ -23,6 +39,36 @@ export function ConvertidoDetalhePage() {
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
+  }
+
+  const ativosDiscipuladores = (discipuladores ?? []).filter(d => d.ativo !== false);
+
+  async function onSalvarResponsavel() {
+    setSaving(true);
+    try {
+      await api.atribuirResponsavel(id, selectedDiscId || null);
+      toast.success("Responsável atualizado");
+      qc.invalidateQueries({ queryKey: ["convertidos", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function onRemoverResponsavel() {
+    if (!window.confirm("Deseja remover o discipulador responsável?")) return;
+    setSaving(true);
+    try {
+      await api.atribuirResponsavel(id, null);
+      toast.success("Responsável removido");
+      setSelectedDiscId("");
+      qc.invalidateQueries({ queryKey: ["convertidos", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao remover");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function onPromover() {
@@ -138,6 +184,54 @@ export function ConvertidoDetalhePage() {
         <Info label="Já fez discipulado" value={data.fez_discipulado ? "Sim" : "Não"} />
         <Info label="Observações" value={data.observacoes} full />
       </Section>
+
+      <Card className="rounded-2xl">
+        <CardHeader>
+          <CardTitle className="font-serif text-primary">Responsável pelo discipulado</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-1.5 max-w-md">
+            <label className="text-xs uppercase tracking-wide text-muted-foreground">Discipulador responsável</label>
+            <select
+              value={selectedDiscId}
+              onChange={(e) => setSelectedDiscId(e.target.value)}
+              className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm focus:border-stone-400 focus:outline-none"
+              disabled={!editor || saving}
+            >
+              <option value="">Sem responsável atribuído</option>
+              {ativosDiscipuladores.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.nome} {d.email ? `(${d.email})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+          {editor && (
+            <div className="flex gap-2">
+              <Button
+                onClick={onSalvarResponsavel}
+                disabled={saving}
+                size="sm"
+                className="rounded-xl"
+              >
+                {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Salvar responsável
+              </Button>
+              {data.discipulador_id && (
+                <Button
+                  variant="outline"
+                  onClick={onRemoverResponsavel}
+                  disabled={saving}
+                  size="sm"
+                  className="rounded-xl border-destructive text-destructive hover:bg-destructive/5"
+                >
+                  Remover responsável
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

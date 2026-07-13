@@ -238,6 +238,21 @@ export const api = {
     }),
   importarMembros: (formData: FormData) =>
     requestMultipart("/membros/importar", formData),
+
+  // Discipuladores — acesso
+  criarAcessoDiscipulador: (id: string, data: { email: string; senha: string }) =>
+    request(`/discipuladores/${id}/acesso`, { method: "POST", body: JSON.stringify(data) }),
+  revogarAcessoDiscipulador: (id: string) =>
+    request(`/discipuladores/${id}/acesso`, { method: "DELETE" }),
+  getConvertidosDiscipulador: (id: string) =>
+    request(`/discipuladores/${id}/convertidos`),
+
+  // Convertidos — responsável
+  atribuirResponsavel: (convertidoId: string, discipuladorId: string | null) =>
+    request(`/convertidos/${convertidoId}/responsavel`, {
+      method: "PATCH",
+      body: JSON.stringify({ discipulador_id: discipuladorId }),
+    }),
 };
 
 export type Perfil = "superadmin" | "admin" | "lider" | "pastor" | "discipulador";

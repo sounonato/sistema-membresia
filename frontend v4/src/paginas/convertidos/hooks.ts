@@ -24,6 +24,7 @@ export type Convertido = {
   fez_discipulado?: boolean;
   observacoes?: string;
   status?: string;
+  discipulador_id?: string | null;
 };
 
 export function useConvertidos() {
