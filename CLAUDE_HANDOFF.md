@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-13 (sessão 12)
+Atualizado em: 2026-07-14 (sessão 13)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,38 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 13 (2026-07-14)
+
+### Páginas de erro padronizadas — testado em produção ✅
+
+**`frontend v4/src/components/ErrorPage.tsx`** — novo componente central de erro
+- Cobre todos os códigos HTTP relevantes: 400, 401, 403, 404, 409, 422, 429, 500, 501, 502, 503, 504
+- Mensagens em português com título + descrição + detalhe por código
+- Emoji por família de erro (🔒 401, 🚫 403, 🌿 404, ⚙️ 5xx, ⚠️ 4xx)
+- Número do erro grande e translúcido como decoração
+- Botões contextuais: "Fazer login" (401), "Voltar ao início", "Voltar", "Tentar novamente" (5xx)
+- Usa `var(--primary)` — respeita branding da igreja
+
+**`frontend v4/src/lib/api.ts`** — `ApiError` com status HTTP
+- Nova classe `ApiError extends Error` com campo `status: number`
+- Todas as funções `request`, `publicRequest`, `requestMultipart` lançam `ApiError` (antes era `Error` genérico sem código)
+- Exportada para uso em qualquer componente que precise checar o código do erro
+
+**`frontend v4/src/routes/__root.tsx`**
+- `notFoundComponent` → usa `ErrorPage` código 404
+- `errorComponent` → detecta status do `ApiError` e exibe `ErrorPage` com código correto
+- 401 especial: limpa `localStorage.token` e redireciona para `/login` automaticamente
+
+**`frontend v4/src/routes/$slug.tsx`**
+- "Igreja não encontrada" migrado do componente inline para `ErrorPage` — visual unificado
+
+**Cenários testados em `sistema-membresia.pages.dev`:**
+- `/a/b/c/d` (URL sem rota) → 404 ✅
+- `/slug-inexistente` → 404 "Igreja não encontrada" ✅
+- Token inválido no painel → redireciona para `/login` ✅
 
 ---
 
