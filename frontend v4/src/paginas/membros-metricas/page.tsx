@@ -227,10 +227,9 @@ export function MembrosMetricasPage() {
                   {genero.map((item: any) => (
                     <div key={item.genero} className="flex items-center gap-3 text-sm text-foreground">
                       <div
-                        className="w-3 h-3"
+                        className="w-3 h-3 bg-primary"
                         style={{
-                          backgroundColor:
-                            PIE_COLORS[item.genero as keyof typeof PIE_COLORS] || PIE_COLORS.nao_informado,
+                          opacity: GENDER_OPACITIES[item.genero as keyof typeof GENDER_OPACITIES] ?? "0.5",
                         }}
                       />
                       <span className="font-medium text-foreground">{formatGender(item.genero)}:</span>
