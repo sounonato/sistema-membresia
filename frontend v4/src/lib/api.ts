@@ -1,5 +1,14 @@
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3031/api";
 
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("token");
@@ -15,7 +24,7 @@ async function request(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: "Erro desconhecido" }));
-    throw new Error(err.error || "Erro na requisição");
+    throw new ApiError(err.error || "Erro na requisição", res.status);
   }
   if (res.status === 204) return null;
   return res.json();
@@ -29,7 +38,7 @@ async function publicRequest(path: string, options: RequestInit = {}) {
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: "Erro desconhecido" }));
-    throw new Error(err.error || "Erro na requisição");
+    throw new ApiError(err.error || "Erro na requisição", res.status);
   }
   if (res.status === 204) return null;
   return res.json();
@@ -42,7 +51,7 @@ async function requestMultipart(path: string, body: FormData) {
   const res = await fetch(`${BASE_URL}${path}`, { method: "POST", headers, body });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: "Erro desconhecido" }));
-    throw new Error(err.error || "Erro na requisição");
+    throw new ApiError(err.error || "Erro na requisição", res.status);
   }
   return res.json();
 }

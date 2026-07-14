@@ -1,8 +1,9 @@
-import { Outlet, createFileRoute, Link } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Loader2, Church } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { api, type Igreja } from "@/lib/api";
+import { ErrorPage } from "@/components/ErrorPage";
 
 export const Route = createFileRoute("/$slug")({
   component: SlugLayout,
@@ -34,23 +35,12 @@ function SlugLayout() {
 
   if (isError || !data) {
     return (
-      <div className="min-h-screen grid place-content-center bg-secondary px-4">
-        <div className="max-w-md text-center space-y-4">
-          <div className="mx-auto grid place-content-center h-16 w-16 rounded-2xl bg-muted text-muted-foreground">
-            <Church className="h-8 w-8" />
-          </div>
-          <h1 className="font-serif text-2xl text-primary">Igreja não encontrada</h1>
-          <p className="text-sm text-muted-foreground">
-            Verifique o endereço ou volte para a página inicial.
-          </p>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Voltar
-          </Link>
-        </div>
-      </div>
+      <ErrorPage
+        code={404}
+        title="Igreja não encontrada"
+        description="O endereço da igreja que você acessou não existe ou foi desativado."
+        detail="Verifique o link ou volte para a página inicial."
+      />
     );
   }
 

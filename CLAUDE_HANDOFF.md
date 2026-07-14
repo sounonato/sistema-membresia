@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-13 (sessão 11)
+Atualizado em: 2026-07-13 (sessão 12)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,26 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 12 (2026-07-13)
+
+### Branding multi-tenant — testado e aprovado em produção
+- `GET /api/autenticacao/me` retorna `igreja_cor` e `igreja_logo` via LEFT JOIN com igrejas
+- `_auth.tsx` aplica `--primary` CSS variable no `document.documentElement` ao logar
+- `AuthContext.tsx` armazena `igreja_cor` e `igreja_logo` do `/me`
+- `Sidebar.tsx` exibe logo da igreja (se disponível) ou nome da igreja no lugar de "Ovile."
+- `api.ts` — tipo `Usuario` inclui `igreja_cor` e `igreja_logo`
+- **Teste produção:** Igreja Batista Central com `cor_primaria = #1d4ed8` (azul) — usuário `teste@batista.com` / `teste123` criado — painel fica azul após login ✅
+- CSS variable `--primary` confirmado como `#1d4ed8` via `getComputedStyle` — botões e títulos ficam azuis
+- Nota: textos hardcoded com `text-amber-800` não mudam (ex: saudação "Teste." no dashboard) — são estilos fixos, não usam `var(--primary)`
+- Doc: `docs/GEMINI-BRANDING-APLICAR.md` — plano executado pelo Gemini
+
+### Usuários de teste criados em produção (Railway)
+| Email | Senha | Igreja | Perfil |
+|-------|-------|--------|--------|
+| `teste@batista.com` | `teste123` | Igreja Batista Central | admin |
 
 ---
 
