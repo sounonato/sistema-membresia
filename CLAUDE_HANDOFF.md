@@ -111,6 +111,23 @@ sistema-membresia/
 
 ---
 
+## Mudanças — Sessão 15 (2026-07-14)
+
+### Dark mode — correções pós-Gemini ✅
+
+**Problema:** Após migração em massa de classes stone/amber para semânticas, algumas páginas ainda ficavam ilegíveis no dark mode.
+
+**Correções aplicadas:**
+
+- **`AppShell.tsx`** — `bg-[#faf7f2]` hardcoded bloqueava o dark mode no conteúdo principal. Trocado para `bg-background`.
+- **Migração em massa via sed (17 páginas + 2 componentes)** — todas as classes stone/amber residuais trocadas para semânticas (`bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `hover:bg-muted/50`)
+- **Gemini aplicou refinamentos** de badges, botões, tabelas e hovers conforme spec em `docs/GEMINI-DESIGN-REFINAMENTO.md`
+- **Bug corrigido:** `PIE_COLORS is not defined` em `membros-metricas/page.tsx` — Gemini renomeou a constante para `GENDER_OPACITIES` mas deixou referência na legenda do gráfico. Corrigido com `bg-primary` + `opacity` inline. **Commit:** `c5905d9`
+
+**Estado:** dark mode funcional em todas as páginas testadas (Dashboard, Membros, Discipulado, Convertidos, Módulos, Relatórios, Usuários, Métricas, Discipuladores).
+
+---
+
 ## Mudanças — Sessão 14 (2026-07-14)
 
 ### Paleta Velvet+Bone + Dark Mode — deployado em produção ✅
