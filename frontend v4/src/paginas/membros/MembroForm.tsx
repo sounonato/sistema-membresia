@@ -17,9 +17,9 @@ import type { Membro } from "@/lib/api";
 import { useConvertidos } from "@/paginas/convertidos/hooks";
 
 const inputClass =
-  "border-0 border-b border-stone-300 rounded-none bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-amber-800 font-serif text-base h-11";
+  "border-0 border-b border-border rounded-none bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-amber-800 font-serif text-base h-11";
 
-const selectTriggerClass = "rounded-none border-stone-300 h-11";
+const selectTriggerClass = "rounded-none border-border h-11";
 
 type Props = {
   initial?: Partial<Membro>;
@@ -323,7 +323,7 @@ export function MembroForm({
           rows={4}
           value={form.observacoes ?? ""}
           onChange={(e) => set("observacoes", e.target.value)}
-          className="rounded-none border-stone-300 focus-visible:ring-0 focus-visible:border-amber-800 font-serif"
+          className="rounded-none border-border focus-visible:ring-0 focus-visible:border-amber-800 font-serif"
         />
       </section>
 
@@ -387,12 +387,12 @@ export function MembroForm({
         </section>
       )}
 
-      <div className="flex gap-3 pt-4 border-t border-stone-200">
+      <div className="flex gap-3 pt-4 border-t border-border">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="rounded-none border-stone-300"
+          className="rounded-none border-border"
         >
           Cancelar
         </Button>
@@ -420,8 +420,8 @@ function Field({
 }) {
   return (
     <div>
-      <Label className="flex items-baseline gap-3 text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-1">
-        <span className="font-serif italic text-amber-800 not-italic normal-case tabular-nums text-xs">
+      <Label className="flex items-baseline gap-3 text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-1">
+        <span className="font-serif italic text-primary not-italic normal-case tabular-nums text-xs">
           {n}
         </span>
         {label}

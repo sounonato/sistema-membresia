@@ -89,7 +89,7 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
   const is4xx = code >= 400 && code < 500;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-4 py-16 font-sans">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-muted px-4 py-16 font-sans">
       {/* Decorative top line */}
       <div
         className="mb-10 h-px w-24"
@@ -111,15 +111,15 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
         </div>
 
         {/* Title */}
-        <h1 className="font-editorial text-2xl font-semibold text-stone-900">
+        <h1 className="font-editorial text-2xl font-semibold text-foreground">
           {displayTitle}
         </h1>
 
         {/* Description */}
-        <p className="mt-3 text-base text-stone-500">{displayDescription}</p>
+        <p className="mt-3 text-base text-muted-foreground">{displayDescription}</p>
 
         {/* Detail */}
-        <p className="mt-1 text-sm text-stone-400">{displayDetail}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{displayDetail}</p>
 
         {/* Actions */}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -144,7 +144,7 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
           {showBack && (
             <button
               onClick={() => window.history.back()}
-              className="inline-flex items-center justify-center rounded-md border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50"
+              className="inline-flex items-center justify-center rounded-md border border-border bg-white px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
             >
               Voltar
             </button>
@@ -153,7 +153,7 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
           {!is4xx && (
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center rounded-md border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50"
+              className="inline-flex items-center justify-center rounded-md border border-border bg-white px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
             >
               Tentar novamente
             </button>

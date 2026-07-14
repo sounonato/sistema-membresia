@@ -55,10 +55,10 @@ function QrCard({
   const label = tipo === "convertido" ? "Novo Convertido" : "Cadastro de Membro";
 
   return (
-    <div className="bg-white border border-stone-200 flex flex-col">
+    <div className="bg-white border border-border flex flex-col">
       {/* Header do card */}
-      <div className="px-5 py-3 border-b border-stone-200 flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-widest text-stone-500 font-medium">{label}</span>
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{label}</span>
         <div className="flex gap-1">
           <Button size="icon" variant="ghost" className="h-7 w-7" onClick={copiar} title="Copiar link">
             <Copy className="h-3.5 w-3.5" />
@@ -74,13 +74,13 @@ function QrCard({
 
       {/* QR */}
       <div className="flex flex-col items-center justify-center text-center p-8 flex-1">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-stone-500">{igrejaNome}</p>
-        <h2 className="font-serif text-3xl text-stone-900 mt-2 leading-tight">{titulo}</h2>
-        <p className="font-[Instrument_Serif,serif] italic text-base text-stone-500 mt-1">{subtitulo}</p>
-        <div ref={canvasRef} className="mt-6 bg-white p-4 border border-stone-900">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">{igrejaNome}</p>
+        <h2 className="font-serif text-3xl text-foreground mt-2 leading-tight">{titulo}</h2>
+        <p className="font-[Instrument_Serif,serif] italic text-base text-muted-foreground mt-1">{subtitulo}</p>
+        <div ref={canvasRef} className="mt-6 bg-white p-4 border border-foreground">
           <QRCodeCanvas value={url} size={200} level="H" includeMargin={false} fgColor="#92400e" />
         </div>
-        <p className="text-[10px] text-stone-400 mt-3 break-all max-w-xs">{url}</p>
+        <p className="text-[10px] text-muted-foreground mt-3 break-all max-w-xs">{url}</p>
       </div>
     </div>
   );
@@ -108,7 +108,7 @@ export function QrCadastroPage() {
     : null;
 
   if (!slugAtivo) {
-    return <div className="text-stone-500 italic font-serif">Nenhuma igreja vinculada à sua conta.</div>;
+    return <div className="text-muted-foreground italic font-serif">Nenhuma igreja vinculada à sua conta.</div>;
   }
 
   return (
@@ -124,7 +124,7 @@ export function QrCadastroPage() {
 
       {/* Filtro de grupo — só afeta o QR de convertido */}
       <div className="print:hidden max-w-xs">
-        <Label className="text-[10px] uppercase tracking-widest text-stone-500">
+        <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
           Grupo para o QR de convertido
         </Label>
         <Select value={grupoId} onValueChange={setGrupoId}>
@@ -138,7 +138,7 @@ export function QrCadastroPage() {
             ))}
           </SelectContent>
         </Select>
-        <p className="text-xs italic font-serif text-stone-500 mt-1">
+        <p className="text-xs italic font-serif text-muted-foreground mt-1">
           O QR de grupo já vincula o convertido ao grupo de discipulado.
         </p>
       </div>

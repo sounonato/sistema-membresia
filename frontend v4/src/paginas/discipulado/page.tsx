@@ -72,50 +72,50 @@ export function DiscipuladoPage() {
         title="Discipulado"
         lede="Cada grupo é um pequeno círculo de mesa onde a fé é masticada e passada adiante."
         actions={editor && (
-          <Button className="rounded-none border border-stone-900 bg-stone-900 hover:bg-stone-800" onClick={() => setOpen(true)}>
+          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={() => setOpen(true)}>
             <Plus className="h-4 w-4" /> Novo grupo
           </Button>
         )}
       />
 
-      <div className="bg-white border border-stone-200">
+      <div className="bg-white border border-border">
         <div className="p-4 sm:p-6">
           {isLoading ? (
             <div className="grid place-content-center py-10 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : !data || data.length === 0 ? (
-            <p className="py-10 text-center text-sm text-stone-500 italic font-serif">Nenhum grupo cadastrado — o primeiro círculo ainda espera por uma cadeira posta.</p>
+            <p className="py-10 text-center text-sm text-muted-foreground italic font-serif">Nenhum grupo cadastrado — o primeiro círculo ainda espera por uma cadeira posta.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-stone-300">
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-10">Nº</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Grupo</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Discipulador</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Módulo</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 text-right">Membros</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Status</TableHead>
+                  <TableRow className="border-border">
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Nº</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Grupo</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Discipulador</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Módulo</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Membros</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((g, i) => (
-                    <TableRow key={g.id} className="border-stone-200 hover:bg-stone-50">
-                      <TableCell className="font-serif italic text-stone-400 tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
+                    <TableRow key={g.id} className="border-border hover:bg-muted">
+                      <TableCell className="font-serif italic text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
                       <TableCell>
-                        <Link to="/discipulado/$id" params={{ id: g.id }} className="font-serif text-lg text-stone-900 hover:text-primary underline-offset-4 hover:underline">
+                        <Link to="/discipulado/$id" params={{ id: g.id }} className="font-serif text-lg text-foreground hover:text-primary underline-offset-4 hover:underline">
                           {g.nome}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-sm text-stone-700">{g.discipulador_nome ?? g.discipulador ?? "—"}</TableCell>
-                      <TableCell className="text-sm italic text-stone-600">{g.modulo_nome ?? g.modulo ?? "—"}</TableCell>
-                      <TableCell className="text-right font-serif text-lg tabular-nums text-stone-900">{g.qtd_membros ?? g.membros?.length ?? 0}</TableCell>
+                      <TableCell className="text-sm text-foreground">{g.discipulador_nome ?? g.discipulador ?? "—"}</TableCell>
+                      <TableCell className="text-sm italic text-muted-foreground">{g.modulo_nome ?? g.modulo ?? "—"}</TableCell>
+                      <TableCell className="text-right font-serif text-lg tabular-nums text-foreground">{g.qtd_membros ?? g.membros?.length ?? 0}</TableCell>
                       <TableCell>
                         <span className={
                           g.status === "ativo"
                             ? "text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5"
-                            : "text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5"
+                            : "text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5"
                         }>
                           {g.status ?? "ativo"}
                         </span>

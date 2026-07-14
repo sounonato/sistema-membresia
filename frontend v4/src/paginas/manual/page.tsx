@@ -53,7 +53,7 @@ export function ManualPage() {
       />
 
       <Tabs value={tab} onValueChange={(v) => { setTab(v); navigate({ search: { ...search, tab: v } as any }); }}>
-        <TabsList className="rounded-none bg-transparent border-b border-stone-300 p-0 h-auto gap-6">
+        <TabsList className="rounded-none bg-transparent border-b border-border p-0 h-auto gap-6">
           <TabsTrigger value="conteudo" className="rounded-none gap-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none">
             <BookText className="h-4 w-4" /> Conteúdo
           </TabsTrigger>
@@ -64,19 +64,19 @@ export function ManualPage() {
 
         <TabsContent value="conteudo" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
-            <aside className="border-r border-stone-200 pr-6 h-[calc(100vh-18rem)] overflow-y-auto">
+            <aside className="border-r border-border pr-6 h-[calc(100vh-18rem)] overflow-y-auto">
               <div className="relative mb-3">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={filtro}
                   onChange={(e) => setFiltro(e.target.value)}
                   placeholder="Buscar no manual…"
-                  className="pl-8 h-9 rounded-none border-0 border-b border-stone-300 focus-visible:ring-0 focus-visible:border-primary bg-transparent"
+                  className="pl-8 h-9 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent"
                 />
               </div>
               {filtrado ? (
                 <div className="space-y-1">
-                  <p className="text-[10px] uppercase tracking-widest text-stone-500 mb-2">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
                     {filtrado.length} resultado(s)
                   </p>
                   {filtrado.map((s) => (
@@ -89,7 +89,7 @@ export function ManualPage() {
                       )}
                     >
                       <p className="font-serif">{s.titulo}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-stone-500 truncate mt-0.5">{s.capituloTitulo}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate mt-0.5">{s.capituloTitulo}</p>
                     </button>
                   ))}
                 </div>
@@ -97,14 +97,14 @@ export function ManualPage() {
                 <nav className="space-y-5">
                   {MANUAL.map((p, pi) => (
                     <div key={p.id}>
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500 flex items-center gap-2 mb-2">
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 mb-2">
                         <span className="font-serif italic text-primary tabular-nums">{String(pi + 1).padStart(2, "0")}</span>
                         <span className="h-px flex-1 bg-stone-200" />
                         {p.titulo}
                       </p>
                       {p.capitulos.map((c) => (
                         <div key={c.id} className="mt-1">
-                          <p className="font-serif italic text-sm text-stone-600 mt-2">
+                          <p className="font-serif italic text-sm text-muted-foreground mt-2">
                             {c.titulo}
                           </p>
                           {c.secoes.map((s) => (
@@ -115,7 +115,7 @@ export function ManualPage() {
                                 "block w-full text-left py-1.5 text-sm border-l-2 pl-3 transition-colors",
                                 secaoAtiva === s.id
                                   ? "border-primary text-primary font-medium"
-                                  : "border-transparent text-stone-700 hover:border-stone-400",
+                                  : "border-transparent text-foreground hover:border-stone-400",
                               )}
                             >
                               {s.titulo}
@@ -129,10 +129,10 @@ export function ManualPage() {
               )}
             </aside>
 
-            <div className="bg-white border border-stone-200 p-8 md:p-12 h-[calc(100vh-18rem)] overflow-y-auto">
+            <div className="bg-white border border-border p-8 md:p-12 h-[calc(100vh-18rem)] overflow-y-auto">
               {secao ? (
-                <article className="prose prose-stone max-w-2xl mx-auto prose-headings:font-serif prose-headings:text-stone-900 prose-h2:text-4xl prose-h2:leading-tight prose-p:font-[Instrument_Sans,sans-serif] prose-p:text-stone-700">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500 m-0 flex items-center gap-3">
+                <article className="prose prose-stone max-w-2xl mx-auto prose-headings:font-serif prose-headings:text-foreground prose-h2:text-4xl prose-h2:leading-tight prose-p:font-[Instrument_Sans,sans-serif] prose-p:text-foreground">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground m-0 flex items-center gap-3">
                     <span className="font-serif italic text-primary text-base">§</span>
                     {secao.parteTitulo} · {secao.capituloTitulo}
                   </p>
@@ -140,9 +140,9 @@ export function ManualPage() {
                   <div className="h-px w-16 bg-primary/60 my-6" />
                   <ReactMarkdown>{secao.conteudo}</ReactMarkdown>
                   {secao.tags && (
-                    <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-stone-200 not-prose">
+                    <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border not-prose">
                       {secao.tags.map((t) => (
-                        <span key={t} className="text-[10px] uppercase tracking-widest text-stone-500 border border-stone-300 px-2 py-0.5">
+                        <span key={t} className="text-[10px] uppercase tracking-widest text-muted-foreground border border-border px-2 py-0.5">
                           #{t}
                         </span>
                       ))}
@@ -150,7 +150,7 @@ export function ManualPage() {
                   )}
                 </article>
               ) : (
-                <p className="text-sm italic font-serif text-stone-500">Selecione uma seção no sumário.</p>
+                <p className="text-sm italic font-serif text-muted-foreground">Selecione uma seção no sumário.</p>
               )}
             </div>
           </div>
@@ -214,12 +214,12 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
   function onSubmit(e: FormEvent) { e.preventDefault(); enviar(texto); }
 
   return (
-    <div className="bg-white border border-stone-200 flex flex-col h-[calc(100vh-18rem)] overflow-hidden">
+    <div className="bg-white border border-border flex flex-col h-[calc(100vh-18rem)] overflow-hidden">
       <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-4">
         {msgs.length === 0 && (
           <div className="text-center py-16">
-            <p className="font-serif italic text-2xl text-stone-400">"Pergunte, e vos será respondido."</p>
-            <p className="text-[10px] uppercase tracking-widest text-stone-400 mt-4">— comece com uma dúvida abaixo —</p>
+            <p className="font-serif italic text-2xl text-muted-foreground">"Pergunte, e vos será respondido."</p>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4">— comece com uma dúvida abaixo —</p>
           </div>
         )}
         {msgs.map((m, i) => {
@@ -231,12 +231,12 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
                   "max-w-[80%] px-5 py-3 text-sm whitespace-pre-wrap",
                   m.role === "user"
                     ? "bg-stone-900 text-stone-50"
-                    : "bg-stone-50 text-stone-800 border-l-2 border-primary",
+                    : "bg-muted text-foreground border-l-2 border-primary",
                 )}
               >
                 <ReactMarkdown>{m.content}</ReactMarkdown>
                 {refs.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-stone-300/60">
+                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/60">
                     {refs.slice(0, 3).map((r) => (
                       <button
                         key={r.id}
@@ -254,15 +254,15 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
         })}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-stone-50 border-l-2 border-primary px-5 py-3">
-              <Loader2 className="h-4 w-4 animate-spin text-stone-400" />
+            <div className="bg-muted border-l-2 border-primary px-5 py-3">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-stone-200 p-4 sm:p-6 space-y-3 bg-stone-50/50">
+      <div className="border-t border-border p-4 sm:p-6 space-y-3 bg-muted/50">
         <div className="flex flex-wrap gap-2">
           {SUGESTOES.map((s) => (
             <button
@@ -270,7 +270,7 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
               type="button"
               onClick={() => enviar(s)}
               disabled={loading}
-              className="text-[11px] italic font-serif border border-stone-300 bg-white px-3 py-1.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+              className="text-[11px] italic font-serif border border-border bg-white px-3 py-1.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
             >
               "{s}"
             </button>
@@ -282,7 +282,7 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
             onChange={(e) => setTexto(e.target.value)}
             placeholder="Digite sua pergunta…"
             disabled={loading}
-            className="rounded-none border-0 border-b border-stone-300 bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+            className="rounded-none border-0 border-b border-border bg-transparent focus-visible:ring-0 focus-visible:border-primary"
           />
           <Button type="submit" disabled={loading || !texto.trim()} className="rounded-none bg-stone-900 hover:bg-stone-800">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

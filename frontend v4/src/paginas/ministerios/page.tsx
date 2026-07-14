@@ -54,7 +54,7 @@ export function MinisteriosPage() {
   }
 
   return (
-    <div className="text-stone-900">
+    <div className="text-foreground">
       <PageHeader
         chapter="05"
         eyebrow="Ministério · Organização"
@@ -76,10 +76,10 @@ export function MinisteriosPage() {
       />
 
       {isLoading ? (
-        <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />
+        <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-muted-foreground" />
       ) : !data || data.length === 0 ? (
         <div className="py-16 text-center space-y-4">
-          <p className="font-serif italic text-stone-500">
+          <p className="font-serif italic text-muted-foreground">
             Nenhum ministério cadastrado ainda.
           </p>
           {editor && (
@@ -99,7 +99,7 @@ export function MinisteriosPage() {
           {data.map((m) => (
             <article
               key={m.id}
-              className="border border-stone-200 border-l-4 border-l-amber-700 bg-white p-6 flex flex-col"
+              className="border border-border border-l-4 border-l-amber-700 bg-white p-6 flex flex-col"
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className="font-serif text-xl leading-tight">{m.nome}</h3>
@@ -107,22 +107,22 @@ export function MinisteriosPage() {
                   className={cn(
                     "rounded-none text-[10px] tracking-widest uppercase font-normal",
                     m.ativo
-                      ? "bg-amber-50 text-amber-800 border border-amber-200"
-                      : "bg-stone-100 text-stone-500 border border-stone-200",
+                      ? "bg-amber-50 text-primary border border-amber-200"
+                      : "bg-muted text-muted-foreground border border-border",
                   )}
                 >
                   {m.ativo ? "ativo" : "inativo"}
                 </Badge>
               </div>
-              <p className="text-sm text-stone-600 flex items-center gap-2 mb-1">
-                <User className="h-3.5 w-3.5 text-stone-400" />
+              <p className="text-sm text-muted-foreground flex items-center gap-2 mb-1">
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
                 {m.lider_nome ?? "Sem líder definido"}
               </p>
-              <p className="text-sm text-stone-600 flex items-center gap-2 mb-4">
-                <Users className="h-3.5 w-3.5 text-stone-400" />
+              <p className="text-sm text-muted-foreground flex items-center gap-2 mb-4">
+                <Users className="h-3.5 w-3.5 text-muted-foreground" />
                 {m.total_membros ?? 0} membro(s)
               </p>
-              <div className="mt-auto flex items-center gap-1 pt-4 border-t border-stone-100">
+              <div className="mt-auto flex items-center gap-1 pt-4 border-t border-border">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -149,7 +149,7 @@ export function MinisteriosPage() {
                       onClick={() => onExcluir(m)}
                       disabled={excluir.isPending}
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-stone-500 hover:text-red-700" />
+                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-700" />
                     </Button>
                   </>
                 )}
@@ -239,27 +239,27 @@ function MinisterioFormModal({
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label className="text-xs uppercase tracking-widest text-stone-500">Nome</Label>
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Nome</Label>
             <Input
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              className="rounded-none border-stone-300 mt-1"
+              className="rounded-none border-border mt-1"
             />
           </div>
           <div>
-            <Label className="text-xs uppercase tracking-widest text-stone-500">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">
               Descrição
             </Label>
             <Textarea
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              className="rounded-none border-stone-300 mt-1"
+              className="rounded-none border-border mt-1"
             />
           </div>
           <div>
-            <Label className="text-xs uppercase tracking-widest text-stone-500">Líder</Label>
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Líder</Label>
             <Select value={liderId} onValueChange={setLiderId}>
-              <SelectTrigger className="rounded-none border-stone-300 mt-1">
+              <SelectTrigger className="rounded-none border-border mt-1">
                 <SelectValue placeholder="Sem líder" />
               </SelectTrigger>
               <SelectContent>
@@ -309,24 +309,24 @@ function MinisterioDetalheModal({
           </DialogTitle>
         </DialogHeader>
         {isLoading || !data ? (
-          <Loader2 className="h-6 w-6 animate-spin mx-auto my-8 text-stone-400" />
+          <Loader2 className="h-6 w-6 animate-spin mx-auto my-8 text-muted-foreground" />
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-stone-600">
-              <span className="text-stone-500">Líder:</span>{" "}
+            <p className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground">Líder:</span>{" "}
               {data.lider_nome ?? "—"}
             </p>
             {data.descricao && (
-              <p className="text-sm font-serif italic text-stone-700">
+              <p className="text-sm font-serif italic text-foreground">
                 {data.descricao}
               </p>
             )}
             <div>
-              <h4 className="text-[10px] tracking-widest uppercase text-stone-500 mb-2">
+              <h4 className="text-[10px] tracking-widest uppercase text-muted-foreground mb-2">
                 Membros
               </h4>
               {(data.membros ?? []).filter((m) => m.ativo).length === 0 ? (
-                <p className="text-sm text-stone-500 italic">Sem membros ativos.</p>
+                <p className="text-sm text-muted-foreground italic">Sem membros ativos.</p>
               ) : (
                 <ul className="divide-y divide-stone-100">
                   {(data.membros ?? [])
@@ -377,12 +377,12 @@ function MembroLinha({
   const remove = useRemoveMembroMinisterio(membroId);
   return (
     <li className="flex items-center gap-3 py-2">
-      <div className="grid place-content-center h-8 w-8 rounded-full bg-amber-100 text-amber-800 font-serif">
+      <div className="grid place-content-center h-8 w-8 rounded-full bg-accent text-primary font-serif">
         {nome[0]?.toUpperCase()}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-serif truncate">{nome}</p>
-        <p className="text-xs text-stone-500 truncate">
+        <p className="text-xs text-muted-foreground truncate">
           {cargo ? `${cargo} · ` : ""}
           {telefone}
         </p>

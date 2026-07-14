@@ -20,11 +20,11 @@ import { useMembros, useExcluirMembro } from "./hooks";
 import { useMinisterios } from "@/paginas/ministerios/hooks";
 
 const STATUS_STYLES: Record<string, string> = {
-  ativo: "bg-amber-50 text-amber-800 border border-amber-200",
-  inativo: "bg-stone-100 text-stone-600 border border-stone-200",
+  ativo: "bg-amber-50 text-primary border border-amber-200",
+  inativo: "bg-muted text-muted-foreground border border-border",
   transferido: "bg-blue-50 text-blue-700 border border-blue-200",
-  falecido: "bg-stone-200 text-stone-500 border border-stone-300",
-  excluido: "bg-stone-200 text-stone-500 border border-stone-300",
+  falecido: "bg-stone-200 text-muted-foreground border border-border",
+  excluido: "bg-stone-200 text-muted-foreground border border-border",
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -50,11 +50,11 @@ function ContatoCell({ m }: { m: Membro }) {
     );
   if (dias > 60)
     return (
-      <Badge className="rounded-none bg-amber-50 text-amber-800 border border-amber-200 font-normal">
+      <Badge className="rounded-none bg-amber-50 text-primary border border-amber-200 font-normal">
         {dias} dias
       </Badge>
     );
-  return <span className="text-sm text-stone-600">{formatDate(m.ultimo_contato)}</span>;
+  return <span className="text-sm text-muted-foreground">{formatDate(m.ultimo_contato)}</span>;
 }
 
 export function MembrosPage() {
@@ -90,7 +90,7 @@ export function MembrosPage() {
   }
 
   return (
-    <div className="text-stone-900">
+    <div className="text-foreground">
       <PageHeader
         chapter="04"
         eyebrow="Pastoral · Cadastro"
@@ -111,8 +111,8 @@ export function MembrosPage() {
       />
 
       <div className="grid gap-3 sm:grid-cols-[1fr_200px_240px] mb-8 print:hidden">
-        <div className="flex items-center border-b border-stone-300 pb-2 gap-3">
-          <Search className="h-4 w-4 text-stone-500 shrink-0" />
+        <div className="flex items-center border-b border-border pb-2 gap-3">
+          <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <Input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
@@ -121,7 +121,7 @@ export function MembrosPage() {
           />
         </div>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="rounded-none border-stone-300 h-11">
+          <SelectTrigger className="rounded-none border-border h-11">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -133,7 +133,7 @@ export function MembrosPage() {
           </SelectContent>
         </Select>
         <Select value={ministerioId} onValueChange={setMinisterioId}>
-          <SelectTrigger className="rounded-none border-stone-300 h-11">
+          <SelectTrigger className="rounded-none border-border h-11">
             <SelectValue placeholder="Ministério" />
           </SelectTrigger>
           <SelectContent>
@@ -148,16 +148,16 @@ export function MembrosPage() {
       </div>
 
       {isLoading ? (
-        <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />
+        <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-muted-foreground" />
       ) : data.length === 0 ? (
-        <p className="text-center py-16 font-serif italic text-stone-500">
+        <p className="text-center py-16 font-serif italic text-muted-foreground">
           Nenhum membro encontrado — tente ajustar os filtros.
         </p>
       ) : (
-        <div className="border border-stone-200 bg-white overflow-x-auto">
+        <div className="border border-border bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-left text-[10px] tracking-[0.25em] uppercase text-stone-500">
+              <tr className="border-b border-border text-left text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
                 <th className="px-4 py-3 font-normal">Nome</th>
                 <th className="px-4 py-3 font-normal">Telefone</th>
                 <th className="px-4 py-3 font-normal">Entrada</th>
@@ -171,18 +171,18 @@ export function MembrosPage() {
               {data.map((m) => {
                 const mins = m.ministerios ?? [];
                 return (
-                  <tr key={m.id} className="border-b border-stone-100 hover:bg-amber-50/30">
+                  <tr key={m.id} className="border-b border-border hover:bg-amber-50/30">
                     <td className="px-4 py-3">
                       <Link
                         to="/membros/$id"
                         params={{ id: m.id }}
-                        className="font-serif text-base hover:text-amber-800"
+                        className="font-serif text-base hover:text-primary"
                       >
                         {m.nome}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-stone-600 tabular-nums">{m.telefone}</td>
-                    <td className="px-4 py-3 text-stone-600">{formatDate(m.data_entrada)}</td>
+                    <td className="px-4 py-3 text-muted-foreground tabular-nums">{m.telefone}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{formatDate(m.data_entrada)}</td>
                     <td className="px-4 py-3">
                       <ContatoCell m={m} />
                     </td>
@@ -191,16 +191,16 @@ export function MembrosPage() {
                         {mins.slice(0, 2).map((mm) => (
                           <span
                             key={mm.id}
-                            className="text-xs px-2 py-0.5 border border-stone-200 bg-stone-50 text-stone-700"
+                            className="text-xs px-2 py-0.5 border border-border bg-muted text-foreground"
                           >
                             {mm.ministerio_nome}
                           </span>
                         ))}
                         {mins.length > 2 && (
-                          <span className="text-xs text-stone-500">+{mins.length - 2}</span>
+                          <span className="text-xs text-muted-foreground">+{mins.length - 2}</span>
                         )}
                         {mins.length === 0 && (
-                          <span className="text-xs text-stone-400">—</span>
+                          <span className="text-xs text-muted-foreground">—</span>
                         )}
                       </div>
                     </td>
@@ -229,7 +229,7 @@ export function MembrosPage() {
                             onClick={() => onExcluir(m)}
                             disabled={excluir.isPending}
                           >
-                            <Trash2 className="h-3.5 w-3.5 text-stone-500 hover:text-red-700" />
+                            <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-700" />
                           </Button>
                         )}
                       </div>
@@ -243,7 +243,7 @@ export function MembrosPage() {
       )}
 
       {totalPaginas > 1 && (
-        <div className="flex items-center justify-between mt-6 text-sm text-stone-600">
+        <div className="flex items-center justify-between mt-6 text-sm text-muted-foreground">
           <span>
             Página {pagina} de {totalPaginas} · {resultado?.total} membros
           </span>
@@ -251,14 +251,14 @@ export function MembrosPage() {
             <button
               onClick={() => setPagina((p) => Math.max(1, p - 1))}
               disabled={pagina === 1}
-              className="px-3 py-1.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
+              className="px-3 py-1.5 border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
             >
               ← Anterior
             </button>
             <button
               onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
               disabled={pagina === totalPaginas}
-              className="px-3 py-1.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
+              className="px-3 py-1.5 border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed rounded-sm"
             >
               Próxima →
             </button>

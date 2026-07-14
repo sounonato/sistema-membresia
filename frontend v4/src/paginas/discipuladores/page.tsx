@@ -106,48 +106,48 @@ export function DiscipuladoresPage() {
         title="Discipuladores"
         lede="Os que caminham ao lado — cada nome aqui carrega um pequeno rebanho."
         actions={editor && (
-          <Button className="rounded-none border border-stone-900 bg-stone-900 hover:bg-stone-800" onClick={abrirNovo}>
+          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={abrirNovo}>
             <Plus className="h-4 w-4" /> Novo discipulador
           </Button>
         )}
       />
 
-      <div className="bg-white border border-stone-200">
+      <div className="bg-white border border-border">
         <div className="p-4 sm:p-6">
           {isLoading ? (
             <div className="grid place-content-center py-10 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : !data || data.length === 0 ? (
-            <p className="text-center py-10 text-sm text-stone-500 italic font-serif">Ninguém cadastrado ainda.</p>
+            <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Ninguém cadastrado ainda.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-stone-300">
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-10">Nº</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Nome</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Telefone</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">E-mail</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 text-right">Grupos</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Acesso</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Ativo</TableHead>
-                    {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-stone-500">Ações</TableHead>}
+                  <TableRow className="border-border">
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Nº</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Nome</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Telefone</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">E-mail</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Grupos</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Acesso</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Ativo</TableHead>
+                    {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ações</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((d, i) => (
-                    <TableRow key={d.id} className="border-stone-200 hover:bg-stone-50">
-                      <TableCell className="font-serif italic text-stone-400 tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
-                      <TableCell className="font-serif text-lg text-stone-900">{d.nome}</TableCell>
-                      <TableCell className="text-sm text-stone-700">{d.telefone ?? "—"}</TableCell>
-                      <TableCell className="text-sm italic text-stone-600">{d.email ?? "—"}</TableCell>
-                      <TableCell className="text-right font-serif text-lg tabular-nums text-stone-900">{d.qtd_grupos ?? 0}</TableCell>
+                    <TableRow key={d.id} className="border-border hover:bg-muted">
+                      <TableCell className="font-serif italic text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
+                      <TableCell className="font-serif text-lg text-foreground">{d.nome}</TableCell>
+                      <TableCell className="text-sm text-foreground">{d.telefone ?? "—"}</TableCell>
+                      <TableCell className="text-sm italic text-muted-foreground">{d.email ?? "—"}</TableCell>
+                      <TableCell className="text-right font-serif text-lg tabular-nums text-foreground">{d.qtd_grupos ?? 0}</TableCell>
                       <TableCell>
                         {d.usuario_email ? (
                           <div className="flex flex-col gap-0.5 items-start">
                             <span className="text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5 font-medium">
                               Com acesso
                             </span>
-                            <span className="text-xs text-stone-500 mt-1">{d.usuario_email}</span>
+                            <span className="text-xs text-muted-foreground mt-1">{d.usuario_email}</span>
                             {editor && (
                               <button
                                 onClick={() => revogarAcesso(d)}
@@ -159,13 +159,13 @@ export function DiscipuladoresPage() {
                           </div>
                         ) : (
                           <div className="flex flex-col gap-0.5 items-start">
-                            <span className="text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5">
+                            <span className="text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5">
                               Sem acesso
                             </span>
                             {editor && (
                               <button
                                 onClick={() => abrirCriarAcesso(d)}
-                                className="text-[10px] text-amber-700 hover:text-amber-900 underline mt-0.5 cursor-pointer bg-transparent border-0 p-0"
+                                className="text-[10px] text-primary hover:text-amber-900 underline mt-0.5 cursor-pointer bg-transparent border-0 p-0"
                               >
                                 Criar acesso
                               </button>
@@ -175,7 +175,7 @@ export function DiscipuladoresPage() {
                       </TableCell>
                       <TableCell>
                         <span className={d.ativo === false
-                          ? "text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5"
+                          ? "text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5"
                           : "text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5"}>
                           {d.ativo === false ? "inativo" : "ativo"}
                         </span>
@@ -228,7 +228,7 @@ export function DiscipuladoresPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <div className="text-sm text-stone-600">
+            <div className="text-sm text-muted-foreground">
               Crie uma conta de login para o discipulador <strong>{acessoDiscipulador?.nome}</strong>.
             </div>
             <Campo label="E-mail">

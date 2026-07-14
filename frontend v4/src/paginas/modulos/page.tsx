@@ -55,39 +55,39 @@ export function ModulosPage() {
         title="Módulos"
         lede="A partitura do curso — cada capítulo é uma passagem que preparamos para atravessar juntos."
         actions={editor && (
-          <Button className="rounded-none border border-stone-900 bg-stone-900 hover:bg-stone-800" onClick={abrirNovo}>
+          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={abrirNovo}>
             <Plus className="h-4 w-4" /> Novo módulo
           </Button>
         )}
       />
 
-      <div className="bg-white border border-stone-200">
+      <div className="bg-white border border-border">
         <div className="p-4 sm:p-6">
           {isLoading ? (
             <div className="grid place-content-center py-10 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : !data || data.length === 0 ? (
-            <p className="text-center py-10 text-sm text-stone-500 italic font-serif">Nenhum módulo cadastrado.</p>
+            <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhum módulo cadastrado.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-stone-300">
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-16">Cap.</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Módulo</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Descrição</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 text-right">Aulas</TableHead>
-                    {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-stone-500">Ações</TableHead>}
+                  <TableRow className="border-border">
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-16">Cap.</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Módulo</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Descrição</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Aulas</TableHead>
+                    {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ações</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((m, i) => (
-                    <TableRow key={m.id} className="border-stone-200 hover:bg-stone-50">
+                    <TableRow key={m.id} className="border-border hover:bg-muted">
                       <TableCell className="font-serif italic text-primary tabular-nums">
                         {String(m.ordem ?? i + 1).padStart(2, "0")}
                       </TableCell>
-                      <TableCell className="font-serif text-lg text-stone-900">{m.nome}</TableCell>
-                      <TableCell className="text-sm italic text-stone-600 max-w-md truncate">{m.descricao}</TableCell>
-                      <TableCell className="text-right font-serif text-lg tabular-nums text-stone-900">{m.total_aulas ?? 0}</TableCell>
+                      <TableCell className="font-serif text-lg text-foreground">{m.nome}</TableCell>
+                      <TableCell className="text-sm italic text-muted-foreground max-w-md truncate">{m.descricao}</TableCell>
+                      <TableCell className="text-right font-serif text-lg tabular-nums text-foreground">{m.total_aulas ?? 0}</TableCell>
                       {editor && (
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">

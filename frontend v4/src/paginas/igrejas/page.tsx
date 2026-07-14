@@ -178,14 +178,14 @@ export function IgrejasPage() {
         title="Igrejas da rede"
         lede="Cada linha aqui é uma comunidade viva — com sua cor, sua praça e seu próprio cheiro de café no domingo."
         actions={(
-          <Button className="rounded-none border border-stone-900 bg-stone-900 hover:bg-stone-800" onClick={openNova}>
+          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={openNova}>
             <Plus className="h-4 w-4" /> Nova igreja
           </Button>
         )}
       />
 
       <Tabs defaultValue="igrejas">
-        <TabsList className="rounded-none border border-stone-200 bg-white mb-0 h-10">
+        <TabsList className="rounded-none border border-border bg-white mb-0 h-10">
           <TabsTrigger value="igrejas" className="rounded-none text-xs uppercase tracking-widest">
             Igrejas ativas
           </TabsTrigger>
@@ -201,43 +201,43 @@ export function IgrejasPage() {
 
         {/* ABA IGREJAS */}
         <TabsContent value="igrejas" className="mt-0">
-          <div className="bg-white border border-stone-200 border-t-0">
+          <div className="bg-white border border-border border-t-0">
             <div className="p-4 sm:p-6">
               {isLoading ? (
                 <div className="grid place-content-center py-10 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
               ) : !data || data.length === 0 ? (
-                <p className="text-center py-10 text-sm text-stone-500 italic font-serif">Nenhuma igreja cadastrada ainda.</p>
+                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhuma igreja cadastrada ainda.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-stone-300">
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-10">Nº</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-10">Cor</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Igreja</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Slug</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Localização</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Status</TableHead>
-                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-stone-500">Ações</TableHead>
+                      <TableRow className="border-border">
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Nº</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Cor</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Igreja</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Slug</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Localização</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Status</TableHead>
+                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {data.map((ig, i) => (
-                        <TableRow key={ig.id} className="border-stone-200 hover:bg-stone-50">
-                          <TableCell className="font-serif italic text-stone-400 tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
+                        <TableRow key={ig.id} className="border-border hover:bg-muted">
+                          <TableCell className="font-serif italic text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
                           <TableCell>
-                            <span className="inline-block h-5 w-5 rounded-full border border-stone-300" style={{ backgroundColor: ig.cor_primaria ?? "#b45309" }} />
+                            <span className="inline-block h-5 w-5 rounded-full border border-border" style={{ backgroundColor: ig.cor_primaria ?? "#b45309" }} />
                           </TableCell>
-                          <TableCell className="font-serif text-lg text-stone-900">{ig.nome}</TableCell>
-                          <TableCell><code className="text-xs text-stone-500">/{ig.slug}</code></TableCell>
-                          <TableCell className="text-sm italic text-stone-600">
+                          <TableCell className="font-serif text-lg text-foreground">{ig.nome}</TableCell>
+                          <TableCell><code className="text-xs text-muted-foreground">/{ig.slug}</code></TableCell>
+                          <TableCell className="text-sm italic text-muted-foreground">
                             {[ig.cidade, ig.estado].filter(Boolean).join(", ") || "—"}
                           </TableCell>
                           <TableCell>
                             <span className={ig.ativa === false
-                              ? "text-[10px] uppercase tracking-widest text-stone-500 border-b border-stone-400 pb-0.5"
+                              ? "text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5"
                               : "text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5"}>
                               {ig.ativa === false ? "inativa" : "ativa"}
                             </span>
@@ -267,47 +267,47 @@ export function IgrejasPage() {
 
         {/* ABA SOLICITAÇÕES */}
         <TabsContent value="solicitacoes" className="mt-0">
-          <div className="bg-white border border-stone-200 border-t-0">
+          <div className="bg-white border border-border border-t-0">
             <div className="p-4 sm:p-6">
               {loadingSol ? (
                 <div className="grid place-content-center py-10 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
               ) : !solicitacoes || solicitacoes.length === 0 ? (
-                <p className="text-center py-10 text-sm text-stone-500 italic font-serif">Nenhuma solicitação pendente.</p>
+                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhuma solicitação pendente.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-stone-300">
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Igreja</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Slug</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Responsável</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Contato</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Plano</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Data</TableHead>
-                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-stone-500">Ação</TableHead>
+                      <TableRow className="border-border">
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Igreja</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Slug</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Responsável</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Contato</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Plano</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Data</TableHead>
+                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ação</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {solicitacoes.map((sol) => (
-                        <TableRow key={sol.id} className="border-stone-200 hover:bg-stone-50">
-                          <TableCell className="font-serif text-base text-stone-900">{sol.nome}</TableCell>
-                          <TableCell><code className="text-xs text-stone-500">/{sol.slug}</code></TableCell>
+                        <TableRow key={sol.id} className="border-border hover:bg-muted">
+                          <TableCell className="font-serif text-base text-foreground">{sol.nome}</TableCell>
+                          <TableCell><code className="text-xs text-muted-foreground">/{sol.slug}</code></TableCell>
                           <TableCell className="text-sm">
                             <div>{sol.responsavel_nome}</div>
-                            {sol.cargo_responsavel && <div className="text-xs text-stone-400">{sol.cargo_responsavel}</div>}
+                            {sol.cargo_responsavel && <div className="text-xs text-muted-foreground">{sol.cargo_responsavel}</div>}
                           </TableCell>
-                          <TableCell className="text-sm text-stone-600">
+                          <TableCell className="text-sm text-muted-foreground">
                             <div>{sol.responsavel_email}</div>
-                            {sol.responsavel_telefone && <div className="text-xs text-stone-400">{sol.responsavel_telefone}</div>}
+                            {sol.responsavel_telefone && <div className="text-xs text-muted-foreground">{sol.responsavel_telefone}</div>}
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="text-[10px] uppercase tracking-wide rounded-none">
                               {sol.plano}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-xs text-stone-400">
+                          <TableCell className="text-xs text-muted-foreground">
                             {new Date(sol.created_at).toLocaleDateString("pt-BR")}
                           </TableCell>
                           <TableCell className="text-right">
@@ -502,25 +502,25 @@ export function IgrejasPage() {
           </DialogHeader>
           {aprovacaoResult && (
             <div className="space-y-4 text-sm">
-              <p className="text-stone-600">
-                A igreja <strong className="font-serif text-stone-900">{aprovacaoResult.igreja.nome}</strong> foi criada com sucesso.
+              <p className="text-muted-foreground">
+                A igreja <strong className="font-serif text-foreground">{aprovacaoResult.igreja.nome}</strong> foi criada com sucesso.
               </p>
-              <div className="border border-stone-200 p-4 space-y-2 bg-stone-50">
-                <p className="text-[10px] uppercase tracking-widest text-stone-500 mb-2">Acesso do admin</p>
+              <div className="border border-border p-4 space-y-2 bg-muted">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Acesso do admin</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-stone-500">E-mail</span>
-                  <code className="text-stone-800">{aprovacaoResult.usuario.email}</code>
+                  <span className="text-muted-foreground">E-mail</span>
+                  <code className="text-foreground">{aprovacaoResult.usuario.email}</code>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-stone-500">Senha temporária</span>
-                  <code className="text-amber-800 font-bold tracking-widest">{aprovacaoResult.senha_temporaria}</code>
+                  <span className="text-muted-foreground">Senha temporária</span>
+                  <code className="text-primary font-bold tracking-widest">{aprovacaoResult.senha_temporaria}</code>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-stone-500">Acesso</span>
-                  <code className="text-stone-600">/{aprovacaoResult.igreja.slug}</code>
+                  <span className="text-muted-foreground">Acesso</span>
+                  <code className="text-muted-foreground">/{aprovacaoResult.igreja.slug}</code>
                 </div>
               </div>
-              <p className="text-xs text-stone-400">Anote ou copie a senha temporária — ela não será exibida novamente.</p>
+              <p className="text-xs text-muted-foreground">Anote ou copie a senha temporária — ela não será exibida novamente.</p>
             </div>
           )}
           <DialogFooter>
@@ -536,7 +536,7 @@ export function IgrejasPage() {
             <DialogTitle className="font-serif text-red-700">Rejeitar solicitação</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <p className="text-sm text-stone-600">Informe opcionalmente o motivo da rejeição.</p>
+            <p className="text-sm text-muted-foreground">Informe opcionalmente o motivo da rejeição.</p>
             <Textarea
               rows={3}
               value={motivoRejeicao}

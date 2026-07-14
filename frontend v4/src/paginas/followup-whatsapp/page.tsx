@@ -49,7 +49,7 @@ export function FollowupWhatsappPage() {
   }
 
   return (
-    <div className="text-stone-900 space-y-10">
+    <div className="text-foreground space-y-10">
       <PageHeader
         chapter="06"
         eyebrow="Pastoral · Cuidado"
@@ -110,7 +110,7 @@ export function FollowupWhatsappPage() {
           <DialogHeader>
             <DialogTitle>Confirmar disparo em massa</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-stone-700">
+          <p className="text-sm text-foreground">
             Você está prestes a enviar WhatsApp para {urg.length} membros sem
             contato há mais de 90 dias. Confirmar?
           </p>
@@ -147,7 +147,7 @@ function Kpi({
   const styles =
     tone === "red"
       ? "border-red-300 bg-red-50 text-red-800"
-      : "border-amber-300 bg-amber-50 text-amber-800";
+      : "border-amber-300 bg-amber-50 text-primary";
   return (
     <div className={`border ${styles} p-6`}>
       <p className="font-serif text-5xl tabular-nums">{n}</p>
@@ -171,15 +171,15 @@ function Section({
   return (
     <section>
       <div
-        className={`border-l-4 ${border} pl-4 mb-4 flex items-center gap-2 text-sm text-stone-700`}
+        className={`border-l-4 ${border} pl-4 mb-4 flex items-center gap-2 text-sm text-foreground`}
       >
         <AlertTriangle className="h-4 w-4" />
         <h2 className="font-serif text-lg">{label}</h2>
       </div>
       {loading ? (
-        <Loader2 className="h-6 w-6 animate-spin mx-auto my-8 text-stone-400" />
+        <Loader2 className="h-6 w-6 animate-spin mx-auto my-8 text-muted-foreground" />
       ) : membros.length === 0 ? (
-        <p className="text-sm text-stone-500 italic pl-4">
+        <p className="text-sm text-muted-foreground italic pl-4">
           Ninguém nesta categoria — glória a Deus.
         </p>
       ) : (
@@ -197,16 +197,16 @@ function MembroCard({ membro, tone }: { membro: Membro; tone: "red" | "amber" })
   const viHoje = useViHoje();
   const [waOpen, setWaOpen] = useState(false);
   const dias = membro.dias_sem_contato ?? 0;
-  const diasColor = tone === "red" ? "text-red-700" : "text-amber-800";
+  const diasColor = tone === "red" ? "text-red-700" : "text-primary";
 
   return (
-    <li className="border border-stone-200 bg-white p-4 flex items-center gap-4 flex-wrap">
+    <li className="border border-border bg-white p-4 flex items-center gap-4 flex-wrap">
       <div className="flex-1 min-w-0">
         <p className="font-serif text-lg truncate">{membro.nome}</p>
         <p className={`text-sm ${diasColor} ${dias > 90 ? "font-bold" : ""}`}>
           Sem contato há {dias} dias
         </p>
-        <p className="text-xs text-stone-500">{membro.telefone}</p>
+        <p className="text-xs text-muted-foreground">{membro.telefone}</p>
       </div>
       <div className="flex gap-2">
         <Button
@@ -228,7 +228,7 @@ function MembroCard({ membro, tone }: { membro: Membro; tone: "red" | "amber" })
           size="sm"
           variant="outline"
           onClick={() => setWaOpen(true)}
-          className="rounded-none border-stone-300 gap-2"
+          className="rounded-none border-border gap-2"
         >
           <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
         </Button>
@@ -254,7 +254,7 @@ function WhatsappMiniModal({
         <DialogHeader>
           <DialogTitle>Enviar WhatsApp para {membro.nome}?</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted-foreground">
           Será enviada uma mensagem de saudade para {membro.telefone}.
         </p>
         <DialogFooter>

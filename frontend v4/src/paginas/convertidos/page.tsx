@@ -43,20 +43,20 @@ export function ConvertidosPage() {
   }
 
   return (
-    <div className="space-y-12 text-stone-900">
-      <header className="border-b border-stone-300 pb-8">
-        <div className="flex items-baseline justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-6">
+    <div className="space-y-12 text-foreground">
+      <header className="border-b border-border pb-8">
+        <div className="flex items-baseline justify-between text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
           <span>Registro pastoral</span>
-          <span className="font-editorial italic normal-case tracking-normal text-stone-600 text-sm">
+          <span className="font-editorial italic normal-case tracking-normal text-muted-foreground text-sm">
             {filtrados.length} {filtrados.length === 1 ? "nome" : "nomes"} sob nossa mesa
           </span>
         </div>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <h1 className="font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[0.95] tracking-[-0.03em] font-light">
-              Convertidos<span className="font-editorial italic text-amber-800">.</span>
+              Convertidos<span className="font-editorial italic text-primary">.</span>
             </h1>
-            <p className="mt-4 max-w-lg text-stone-600 font-editorial italic text-lg">
+            <p className="mt-4 max-w-lg text-muted-foreground font-editorial italic text-lg">
               &mdash; cada linha, uma história que ainda está sendo escrita.
             </p>
           </div>
@@ -71,8 +71,8 @@ export function ConvertidosPage() {
       </header>
 
       {/* Search bar as editorial */}
-      <div className="flex items-center border-b border-stone-300 pb-3 gap-3">
-        <Search className="h-4 w-4 text-stone-500 shrink-0" />
+      <div className="flex items-center border-b border-border pb-3 gap-3">
+        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
         <Input
           value={busca}
           onChange={(e) => {
@@ -80,47 +80,47 @@ export function ConvertidosPage() {
             setPagina(1);
           }}
           placeholder="Buscar por nome ou telefone..."
-          className="border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 font-serif text-lg placeholder:text-stone-400 placeholder:italic"
+          className="border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 font-serif text-lg placeholder:text-muted-foreground placeholder:italic"
         />
       </div>
 
       {isLoading ? (
-        <div className="grid place-content-center py-20 text-stone-500">
+        <div className="grid place-content-center py-20 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
         </div>
       ) : itens.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="font-editorial italic text-2xl text-stone-500">
+          <p className="font-editorial italic text-2xl text-muted-foreground">
             &mdash; a mesa ainda está por ser posta.
           </p>
-          <p className="text-sm text-stone-500 mt-3">Nenhum convertido encontrado.</p>
+          <p className="text-sm text-muted-foreground mt-3">Nenhum convertido encontrado.</p>
         </div>
       ) : (
-        <ul className="border-t border-stone-900">
+        <ul className="border-t border-foreground">
           {itens.map((c, i) => (
             <li
               key={c.id}
-              className="group grid grid-cols-[3rem_1fr_auto] sm:grid-cols-[3rem_2fr_1.2fr_1fr_auto] gap-4 sm:gap-6 items-baseline py-5 border-b border-stone-200 hover:bg-amber-50/40 transition-colors -mx-4 sm:-mx-6 px-4 sm:px-6"
+              className="group grid grid-cols-[3rem_1fr_auto] sm:grid-cols-[3rem_2fr_1.2fr_1fr_auto] gap-4 sm:gap-6 items-baseline py-5 border-b border-border hover:bg-amber-50/40 transition-colors -mx-4 sm:-mx-6 px-4 sm:px-6"
             >
-              <span className="font-editorial italic text-amber-800/70 text-sm tabular-nums">
+              <span className="font-editorial italic text-primary/70 text-sm tabular-nums">
                 {String((pagSegura - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
               </span>
               <div>
                 <Link
                   to="/convertidos/$id"
                   params={{ id: c.id }}
-                  className="font-serif text-xl sm:text-2xl tracking-tight hover:text-amber-800 transition-colors"
+                  className="font-serif text-xl sm:text-2xl tracking-tight hover:text-primary transition-colors"
                 >
                   {c.nome}
                 </Link>
-                <p className="text-xs text-stone-500 mt-0.5 sm:hidden">
+                <p className="text-xs text-muted-foreground mt-0.5 sm:hidden">
                   {c.telefone ?? "—"} · {formatDate(c.data_conversao)}
                 </p>
               </div>
-              <span className="hidden sm:block text-sm text-stone-600 tabular-nums">
+              <span className="hidden sm:block text-sm text-muted-foreground tabular-nums">
                 {c.telefone ?? "—"}
               </span>
-              <span className="hidden sm:block text-sm font-editorial italic text-stone-500">
+              <span className="hidden sm:block text-sm font-editorial italic text-muted-foreground">
                 {formatDate(c.data_conversao)}
               </span>
               <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -143,7 +143,7 @@ export function ConvertidosPage() {
                       onClick={() => onExcluir(c.id, c.nome)}
                       disabled={del.isPending}
                     >
-                      <Trash2 className="h-3.5 w-3.5 text-stone-500 hover:text-red-700" />
+                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-700" />
                     </Button>
                   </>
                 )}
@@ -154,20 +154,20 @@ export function ConvertidosPage() {
       )}
 
       {filtrados.length > PAGE_SIZE && (
-        <div className="flex items-baseline justify-between border-t border-stone-300 pt-4">
-          <p className="text-xs text-stone-500 font-editorial italic">
+        <div className="flex items-baseline justify-between border-t border-border pt-4">
+          <p className="text-xs text-muted-foreground font-editorial italic">
             Fólio {pagSegura} de {totalPag} &middot; {filtrados.length} registros
           </p>
           <div className="flex gap-6 text-sm">
             <button
-              className="hover:text-amber-800 disabled:opacity-30"
+              className="hover:text-primary disabled:opacity-30"
               disabled={pagSegura === 1}
               onClick={() => setPagina((p) => Math.max(1, p - 1))}
             >
               &larr; Anterior
             </button>
             <button
-              className="hover:text-amber-800 disabled:opacity-30"
+              className="hover:text-primary disabled:opacity-30"
               disabled={pagSegura === totalPag}
               onClick={() => setPagina((p) => Math.min(totalPag, p + 1))}
             >

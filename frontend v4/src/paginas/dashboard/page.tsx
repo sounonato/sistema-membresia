@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats, useMembrosStats } from "./hooks";
 import DashboardDiscipulador from "./dashboard-discipulador";
 
-const PIE_COLORS = ["#b45309", "#d97706", "#f59e0b", "#fbbf24"];
+const PIE_COLORS = ["#7c2150", "#a83d6d", "#c96b8e", "#e0c9b5"];
 
 export function DashboardPage() {
   const { usuario, igreja } = useAuth();
@@ -27,7 +27,7 @@ export function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="grid place-content-center py-32 text-stone-500">
+      <div className="grid place-content-center py-32 text-muted-foreground">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
@@ -52,20 +52,20 @@ export function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-16 text-stone-900">
+    <div className="space-y-16 text-foreground">
       {/* Editorial masthead */}
-      <header className="border-b border-stone-300 pb-8">
-        <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-6">
+      <header className="border-b border-border pb-8">
+        <div className="flex items-center justify-between text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
           <span>Panorama pastoral</span>
-          <span className="font-editorial italic normal-case tracking-normal text-stone-600 text-sm">
+          <span className="font-editorial italic normal-case tracking-normal text-muted-foreground text-sm">
             {dateLabel}
           </span>
         </div>
-        <h1 className="font-serif text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.03em] font-light">
+        <h1 className="font-serif text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.03em] font-light text-foreground">
           Bom te ver,<br />
-          <span className="font-editorial italic text-amber-800">{usuario?.nome?.split(" ")[0] ?? "irmão"}</span>.
+          <span className="font-editorial italic text-primary">{usuario?.nome?.split(" ")[0] ?? "irmão"}</span>.
         </h1>
-        <p className="mt-6 max-w-xl text-stone-600 leading-relaxed">
+        <p className="mt-6 max-w-xl text-muted-foreground leading-relaxed">
           Um retrato honesto de como {igreja?.nome ?? "a casa"} tem crescido &mdash;
           em pessoas, em jornadas, em decisões.
         </p>
@@ -73,27 +73,27 @@ export function DashboardPage() {
 
       {/* KPIs — editorial table row */}
       <section>
-        <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-6 flex items-center gap-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6 flex items-center gap-3">
           <span className="tabular-nums">I.</span>
-          <span className="h-px w-8 bg-stone-400" />
+          <span className="h-px w-8 bg-border" />
           Números da casa
         </p>
-        <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-stone-900">
+        <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-foreground">
           {kpis.map((k, i) => (
             <div
               key={k.label}
               className={
-                "py-8 pr-4 border-b border-stone-300 " +
-                (i < 3 ? "lg:border-r lg:border-stone-200 lg:pr-8 " : "") +
-                (i % 2 === 0 ? "border-r border-stone-200 pr-6 lg:pr-8" : "")
+                "py-8 pr-4 border-b border-border " +
+                (i < 3 ? "lg:border-r lg:border-border lg:pr-8 " : "") +
+                (i % 2 === 0 ? "border-r border-border pr-6 lg:pr-8" : "")
               }
             >
-              <p className="font-editorial italic text-amber-800 text-sm mb-3">{k.n}</p>
-              <p className="font-serif text-[clamp(3rem,6vw,5rem)] leading-none tabular-nums text-stone-900 font-light">
+              <p className="font-editorial italic text-primary text-sm mb-3">{k.n}</p>
+              <p className="font-serif text-[clamp(3rem,6vw,5rem)] leading-none tabular-nums text-foreground font-light">
                 {k.value}
               </p>
-              <p className="mt-4 text-sm text-stone-900 font-medium">{k.label}</p>
-              <p className="text-xs text-stone-500 mt-1">{k.note}</p>
+              <p className="mt-4 text-sm text-foreground font-medium">{k.label}</p>
+              <p className="text-xs text-muted-foreground mt-1">{k.note}</p>
             </div>
           ))}
         </div>
@@ -102,14 +102,14 @@ export function DashboardPage() {
       {/* Chart section — editorial two-column */}
       <section className="grid lg:grid-cols-12 gap-x-8 gap-y-12">
         <div className="lg:col-span-8">
-          <div className="flex items-baseline justify-between mb-6 border-b border-stone-300 pb-4">
+          <div className="flex items-baseline justify-between mb-6 border-b border-border pb-4">
             <div>
-              <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-1">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-1">
                 <span className="tabular-nums">II.</span> — Colheita mensal
               </p>
-              <h2 className="font-serif text-3xl tracking-tight">Novos convertidos por mês</h2>
+              <h2 className="font-serif text-3xl tracking-tight text-foreground">Novos convertidos por mês</h2>
             </div>
-            <p className="font-editorial italic text-stone-500 text-sm hidden sm:block">
+            <p className="font-editorial italic text-muted-foreground text-sm hidden sm:block">
               &mdash; os últimos 12 meses
             </p>
           </div>
@@ -118,40 +118,40 @@ export function DashboardPage() {
               <BarChart data={porMes} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                 <XAxis
                   dataKey="mes"
-                  stroke="#78716c"
+                  stroke="var(--color-muted-foreground, #78716c)"
                   fontSize={11}
                   tickLine={false}
-                  axisLine={{ stroke: "#e7e5e4" }}
+                  axisLine={{ stroke: "var(--color-border, #e7e5e4)" }}
                 />
                 <YAxis
-                  stroke="#78716c"
+                  stroke="var(--color-muted-foreground, #78716c)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                 />
                 <Tooltip
-                  cursor={{ fill: "rgba(180, 83, 9, 0.06)" }}
+                  cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.06))" }}
                   contentStyle={{
-                    background: "#0c0a09",
-                    border: "none",
+                    background: "var(--color-card, #1e0812)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: 0,
-                    color: "#fef3c7",
+                    color: "var(--color-card-foreground, #e8dcc8)",
                     fontFamily: "Instrument Sans, sans-serif",
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="total" fill="#b45309" radius={[0, 0, 0, 0]} maxBarSize={48} />
+                <Bar dataKey="total" fill="var(--color-primary, #4a0e2e)" radius={[0, 0, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="lg:col-span-4">
-          <div className="mb-6 border-b border-stone-300 pb-4">
-            <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-1">
+          <div className="mb-6 border-b border-border pb-4">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-1">
               <span className="tabular-nums">III.</span> — Retrato
             </p>
-            <h2 className="font-serif text-3xl tracking-tight">Por gênero</h2>
+            <h2 className="font-serif text-3xl tracking-tight text-foreground">Por gênero</h2>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -163,7 +163,7 @@ export function DashboardPage() {
                   innerRadius={60}
                   outerRadius={100}
                   paddingAngle={2}
-                  stroke="#faf7f2"
+                  stroke="var(--color-background)"
                   strokeWidth={3}
                 >
                   {porGenero.map((_, i) => (
@@ -172,10 +172,10 @@ export function DashboardPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "#0c0a09",
-                    border: "none",
+                    background: "var(--color-card, #1e0812)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: 0,
-                    color: "#fef3c7",
+                    color: "var(--color-card-foreground, #e8dcc8)",
                     fontFamily: "Instrument Sans, sans-serif",
                     fontSize: 12,
                   }}
@@ -187,7 +187,7 @@ export function DashboardPage() {
             {porGenero.map((g, i) => (
               <li
                 key={g.genero}
-                className="flex items-baseline justify-between border-b border-stone-200 py-2 text-sm"
+                className="flex items-baseline justify-between border-b border-border py-2 text-sm text-foreground"
               >
                 <span className="flex items-center gap-3">
                   <span
@@ -206,12 +206,12 @@ export function DashboardPage() {
       {/* Membresia stats */}
       {membrosStats && membrosStats.total > 0 && (
         <section>
-          <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-6 flex items-center gap-3">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6 flex items-center gap-3">
             <span className="tabular-nums">IV.</span>
-            <span className="h-px w-8 bg-stone-400" />
+            <span className="h-px w-8 bg-border" />
             Membresia
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-stone-900">
+          <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-foreground">
             {[
               { label: "Total de membros", value: membrosStats.total, note: "Ativos + inativos" },
               { label: "Membros ativos", value: membrosStats.ativos, note: "Em comunhão" },
@@ -221,16 +221,16 @@ export function DashboardPage() {
               <div
                 key={k.label}
                 className={
-                  "py-8 pr-4 border-b border-stone-300 " +
-                  (i < 3 ? "lg:border-r lg:border-stone-200 lg:pr-8 " : "") +
-                  (i % 2 === 0 ? "border-r border-stone-200 pr-6 lg:pr-8" : "")
+                  "py-8 pr-4 border-b border-border " +
+                  (i < 3 ? "lg:border-r lg:border-border lg:pr-8 " : "") +
+                  (i % 2 === 0 ? "border-r border-border pr-6 lg:pr-8" : "")
                 }
               >
-                <p className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-none tabular-nums text-stone-900 font-light">
+                <p className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-none tabular-nums text-foreground font-light">
                   {k.value}
                 </p>
-                <p className="mt-4 text-sm text-stone-900 font-medium">{k.label}</p>
-                <p className="text-xs text-stone-500 mt-1">{k.note}</p>
+                <p className="mt-4 text-sm text-foreground font-medium">{k.label}</p>
+                <p className="text-xs text-muted-foreground mt-1">{k.note}</p>
               </div>
             ))}
           </div>
@@ -238,13 +238,13 @@ export function DashboardPage() {
       )}
 
       {/* Editorial pull quote */}
-      <section className="border-y border-stone-900 py-16">
-        <p className="font-editorial italic text-amber-800 text-sm mb-6 tracking-widest uppercase text-[10px] not-italic">
+      <section className="border-y border-foreground py-16">
+        <p className="text-primary text-sm mb-6 tracking-widest uppercase text-[10px]">
           &mdash; Palavra da semana
         </p>
-        <p className="font-serif text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.15] tracking-[-0.02em] font-light max-w-4xl">
+        <p className="font-serif text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.15] tracking-[-0.02em] font-light max-w-4xl text-foreground">
           &ldquo;Não somos administradores de&nbsp;
-          <span className="font-editorial italic text-amber-800">números</span>.
+          <span className="font-editorial italic text-primary">números</span>.
           Cada linha desta tabela é um nome que Deus conhece.&rdquo;
         </p>
       </section>

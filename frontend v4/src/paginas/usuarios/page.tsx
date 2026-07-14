@@ -56,36 +56,36 @@ export function UsuariosPage() {
         title="Usuários"
         lede="As chaves de casa — quem entra pela porta dos fundos do sistema."
         actions={(
-          <Button className="rounded-none border border-stone-900 bg-stone-900 hover:bg-stone-800" onClick={() => setOpen(true)}>
+          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={() => setOpen(true)}>
             <Plus className="h-4 w-4" /> Criar usuário
           </Button>
         )}
       />
 
-      <div className="bg-white border border-stone-200">
+      <div className="bg-white border border-border">
         <div className="p-4 sm:p-6">
           {isLoading ? (
             <div className="grid place-content-center py-10 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : !data || data.length === 0 ? (
-            <p className="text-center py-10 text-sm text-stone-500 italic font-serif">Nenhum usuário cadastrado.</p>
+            <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhum usuário cadastrado.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-stone-300">
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 w-10">Nº</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Nome</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">E-mail</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500">Perfil</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-stone-500 text-right">Ativo</TableHead>
+                  <TableRow className="border-border">
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Nº</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Nome</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">E-mail</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Perfil</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Ativo</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((u, i) => (
-                    <TableRow key={u.id} className="border-stone-200 hover:bg-stone-50">
-                      <TableCell className="font-serif italic text-stone-400 tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
-                      <TableCell className="font-serif text-lg text-stone-900">{u.nome}</TableCell>
-                      <TableCell className="text-sm italic text-stone-600">{u.email}</TableCell>
+                    <TableRow key={u.id} className="border-border hover:bg-muted">
+                      <TableCell className="font-serif italic text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
+                      <TableCell className="font-serif text-lg text-foreground">{u.nome}</TableCell>
+                      <TableCell className="text-sm italic text-muted-foreground">{u.email}</TableCell>
                       <TableCell>
                         <span className="text-[10px] uppercase tracking-widest text-primary border-b border-primary/60 pb-0.5 capitalize">
                           {u.perfil}

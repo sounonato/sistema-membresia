@@ -274,18 +274,18 @@ export function RelatoriosPage() {
         lede="Números vira memória — memória vira estratégia. Escolha o intervalo e exporte a página do livro."
       />
 
-      <div className="flex flex-wrap items-end gap-6 pb-6 mb-8 border-b border-stone-300/70">
+      <div className="flex flex-wrap items-end gap-6 pb-6 mb-8 border-b border-border/70">
         <div>
-          <Label className="text-[10px] uppercase tracking-widest text-stone-500">Início</Label>
+          <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Início</Label>
           <Input type="date" value={ini} onChange={(e) => setIni(e.target.value)}
             className="mt-1 rounded-none border-0 border-b border-stone-400 focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
         </div>
         <div>
-          <Label className="text-[10px] uppercase tracking-widest text-stone-500">Fim</Label>
+          <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Fim</Label>
           <Input type="date" value={fim} onChange={(e) => setFim(e.target.value)}
             className="mt-1 rounded-none border-0 border-b border-stone-400 focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
         </div>
-        <p className="text-[10px] uppercase tracking-widest text-stone-500 ml-auto max-w-xs italic font-serif normal-case tracking-normal text-sm">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground ml-auto max-w-xs italic font-serif normal-case tracking-normal text-sm">
           Filtros aplicam-se aos relatórios com período.
         </p>
       </div>
@@ -297,7 +297,7 @@ export function RelatoriosPage() {
           navigate({ search: { tab: val } as any });
         }}
       >
-        <TabsList className="rounded-none bg-transparent border-b border-stone-300 p-0 h-auto gap-6 flex-wrap justify-start">
+        <TabsList className="rounded-none bg-transparent border-b border-border p-0 h-auto gap-6 flex-wrap justify-start">
           {[
             ["convertidos", "Convertidos"],
             ["aniversariantes", "Aniversariantes (Conv.)"],
@@ -352,7 +352,7 @@ export function RelatoriosPage() {
         </TabsContent>
         <TabsContent value="membros" className="mt-6">
           {membrosQuery.isLoading ? (
-            <div className="grid place-content-center py-12 text-stone-500">
+            <div className="grid place-content-center py-12 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : (
@@ -365,7 +365,7 @@ export function RelatoriosPage() {
         </TabsContent>
         <TabsContent value="aniversariantes-membros" className="mt-6">
           {metricasQuery.isLoading ? (
-            <div className="grid place-content-center py-12 text-stone-500">
+            <div className="grid place-content-center py-12 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : (
@@ -377,12 +377,12 @@ export function RelatoriosPage() {
           )}
         </TabsContent>
         <TabsContent value="sem-contato" className="mt-6">
-          <div className="bg-white border border-stone-200 p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
-            <Label className="text-xs uppercase tracking-wider text-stone-500 shrink-0">Período sem contato:</Label>
+          <div className="bg-white border border-border p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">Período sem contato:</Label>
             <select
               value={diasSemContato}
               onChange={(e) => setDiasSemContato(Number(e.target.value))}
-              className="w-full rounded-none border border-stone-300 bg-transparent px-3 py-1.5 text-sm focus:outline-none focus:border-amber-800"
+              className="w-full rounded-none border border-border bg-transparent px-3 py-1.5 text-sm focus:outline-none focus:border-amber-800"
             >
               <option value={30}>Mais de 30 dias</option>
               <option value={60}>Mais de 60 dias</option>
@@ -390,7 +390,7 @@ export function RelatoriosPage() {
             </select>
           </div>
           {semContatoQuery.isLoading ? (
-            <div className="grid place-content-center py-12 text-stone-500">
+            <div className="grid place-content-center py-12 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : (
@@ -403,7 +403,7 @@ export function RelatoriosPage() {
         </TabsContent>
         <TabsContent value="por-ministerio" className="mt-6">
           {metricasQuery.isLoading ? (
-            <div className="grid place-content-center py-12 text-stone-500">
+            <div className="grid place-content-center py-12 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : (
@@ -430,12 +430,12 @@ function RelatorioTabela({
 }) {
   const colunas = linhas.length > 0 ? Object.keys(linhas[0]) : [];
   return (
-    <div className="bg-white border border-stone-200">
-      <div className="flex flex-row items-end justify-between gap-3 flex-wrap p-6 border-b border-stone-200">
+    <div className="bg-white border border-border">
+      <div className="flex flex-row items-end justify-between gap-3 flex-wrap p-6 border-b border-border">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500">Folha</p>
-          <h2 className="mt-1 font-serif text-2xl text-stone-900">{titulo}</h2>
-          <p className="text-xs italic text-stone-500 mt-1">{linhas.length} registro(s)</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Folha</p>
+          <h2 className="mt-1 font-serif text-2xl text-foreground">{titulo}</h2>
+          <p className="text-xs italic text-muted-foreground mt-1">{linhas.length} registro(s)</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -459,16 +459,16 @@ function RelatorioTabela({
       </div>
       <div className="p-6">
         {linhas.length === 0 ? (
-          <p className="text-sm italic font-serif text-stone-500 text-center py-12">
+          <p className="text-sm italic font-serif text-muted-foreground text-center py-12">
             Nenhum dado para o período selecionado.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-stone-300">
+                <tr className="border-b border-border">
                   {colunas.map((c) => (
-                    <th key={c} className="text-left px-3 py-2 text-[10px] uppercase tracking-widest text-stone-500 font-normal">
+                    <th key={c} className="text-left px-3 py-2 text-[10px] uppercase tracking-widest text-muted-foreground font-normal">
                       {c}
                     </th>
                   ))}
@@ -476,9 +476,9 @@ function RelatorioTabela({
               </thead>
               <tbody>
                 {linhas.slice(0, 50).map((r, i) => (
-                  <tr key={i} className="border-b border-stone-100 hover:bg-stone-50">
+                  <tr key={i} className="border-b border-border hover:bg-muted">
                     {colunas.map((c) => (
-                      <td key={c} className="px-3 py-2.5 text-stone-800">
+                      <td key={c} className="px-3 py-2.5 text-foreground">
                         {String(r[c] ?? "")}
                       </td>
                     ))}
@@ -487,7 +487,7 @@ function RelatorioTabela({
               </tbody>
             </table>
             {linhas.length > 50 && (
-              <p className="text-xs italic text-stone-500 px-3 py-3 border-t border-stone-200">
+              <p className="text-xs italic text-muted-foreground px-3 py-3 border-t border-border">
                 Mostrando 50 de {linhas.length}. Exporte para ver todos.
               </p>
             )}
