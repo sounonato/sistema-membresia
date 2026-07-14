@@ -63,74 +63,76 @@
 
 :root {
   --radius: 0.625rem;
-  /* Amber/dourado sobre fundo pedra — Igreja do Nazareno */
-  --background: oklch(0.99 0.005 80);     /* #fafaf9 */
-  --foreground: oklch(0.24 0.04 50);       /* dark amber-brown */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.04 50);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.04 50);
-  --primary: oklch(0.58 0.13 60);          /* #b45309 amber-700 */
-  --primary-foreground: oklch(0.99 0.005 80);
-  --secondary: oklch(0.96 0.02 80);        /* #f5f5f4 stone-100 */
-  --secondary-foreground: oklch(0.38 0.1 55); /* #92400e amber-800 */
-  --muted: oklch(0.96 0.015 80);
-  --muted-foreground: oklch(0.5 0.04 60);
-  --accent: oklch(0.94 0.04 75);           /* amber-100 */
-  --accent-foreground: oklch(0.38 0.1 55);
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.99 0.005 80);
-  --border: oklch(0.9 0.02 75);
-  --input: oklch(0.9 0.02 75);
-  --ring: oklch(0.65 0.14 65);             /* #d97706 amber-600 */
-  --chart-1: oklch(0.65 0.14 65);
-  --chart-2: oklch(0.58 0.13 60);
-  --chart-3: oklch(0.38 0.1 55);
-  --chart-4: oklch(0.78 0.12 80);
-  --chart-5: oklch(0.45 0.08 50);
-  --sidebar: oklch(0.97 0.012 80);
-  --sidebar-foreground: oklch(0.24 0.04 50);
-  --sidebar-primary: oklch(0.58 0.13 60);
-  --sidebar-primary-foreground: oklch(0.99 0.005 80);
-  --sidebar-accent: oklch(0.94 0.04 75);
-  --sidebar-accent-foreground: oklch(0.38 0.1 55);
-  --sidebar-border: oklch(0.9 0.02 75);
-  --sidebar-ring: oklch(0.65 0.14 65);
+
+  /* ── Paleta Velvet + Bone (modo claro) ─────────────────────────────── */
+  --background: oklch(0.95 0.022 78);      /* bone claro #f2ebe0      */
+  --foreground: oklch(0.14 0.08 349);      /* velvet profundo #1c0510 */
+  --card: oklch(0.98 0.010 78);            /* branco quente           */
+  --card-foreground: oklch(0.14 0.08 349);
+  --popover: oklch(0.98 0.010 78);
+  --popover-foreground: oklch(0.14 0.08 349);
+  --primary: oklch(0.22 0.12 349);         /* velvet #4a0e2e          */
+  --primary-foreground: oklch(0.89 0.030 75); /* bone #e8dcc8         */
+  --secondary: oklch(0.89 0.030 75);       /* bone #e8dcc8            */
+  --secondary-foreground: oklch(0.22 0.12 349);
+  --muted: oklch(0.92 0.018 78);
+  --muted-foreground: oklch(0.48 0.07 349);
+  --accent: oklch(0.91 0.025 78);
+  --accent-foreground: oklch(0.22 0.12 349);
+  --destructive: oklch(0.55 0.20 25);
+  --destructive-foreground: oklch(0.98 0.010 78);
+  --border: oklch(0.84 0.025 75);
+  --input: oklch(0.84 0.025 75);
+  --ring: oklch(0.35 0.12 349);
+  --chart-1: oklch(0.22 0.12 349);         /* velvet                  */
+  --chart-2: oklch(0.40 0.13 349);         /* vinho médio             */
+  --chart-3: oklch(0.57 0.12 349);         /* rose                    */
+  --chart-4: oklch(0.75 0.08 75);          /* bone escuro             */
+  --chart-5: oklch(0.89 0.030 75);         /* bone claro              */
+  --sidebar: oklch(0.15 0.09 349);         /* velvet sidebar escuro   */
+  --sidebar-foreground: oklch(0.89 0.030 75);
+  --sidebar-primary: oklch(0.40 0.13 349);
+  --sidebar-primary-foreground: oklch(0.89 0.030 75);
+  --sidebar-accent: oklch(0.22 0.11 349);
+  --sidebar-accent-foreground: oklch(0.89 0.030 75);
+  --sidebar-border: oklch(0.26 0.09 349);
+  --sidebar-ring: oklch(0.40 0.13 349);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* ── Paleta Velvet + Bone (modo escuro) ─────────────────────────────── */
+  --background: oklch(0.11 0.07 349);      /* velvet quase-preto #120308 */
+  --foreground: oklch(0.89 0.030 75);      /* bone #e8dcc8               */
+  --card: oklch(0.16 0.08 349);            /* velvet card #1e0812        */
+  --card-foreground: oklch(0.89 0.030 75);
+  --popover: oklch(0.16 0.08 349);
+  --popover-foreground: oklch(0.89 0.030 75);
+  --primary: oklch(0.52 0.14 349);         /* vinho médio para dark bg   */
+  --primary-foreground: oklch(0.95 0.020 78);
+  --secondary: oklch(0.22 0.10 349);
+  --secondary-foreground: oklch(0.89 0.030 75);
+  --muted: oklch(0.20 0.09 349);
+  --muted-foreground: oklch(0.62 0.08 349);
+  --accent: oklch(0.22 0.10 349);
+  --accent-foreground: oklch(0.89 0.030 75);
+  --destructive: oklch(0.65 0.20 25);
+  --destructive-foreground: oklch(0.95 0.020 78);
+  --border: oklch(0.26 0.09 349);
+  --input: oklch(0.26 0.09 349);
+  --ring: oklch(0.52 0.14 349);
+  --chart-1: oklch(0.65 0.15 349);         /* rose claro               */
+  --chart-2: oklch(0.52 0.14 349);         /* vinho médio              */
+  --chart-3: oklch(0.89 0.030 75);         /* bone                     */
+  --chart-4: oklch(0.75 0.08 75);          /* bone escuro              */
+  --chart-5: oklch(0.35 0.12 349);         /* velvet médio             */
+  --sidebar: oklch(0.08 0.05 349);         /* velvet sidebar mais escuro */
+  --sidebar-foreground: oklch(0.89 0.030 75);
+  --sidebar-primary: oklch(0.52 0.14 349);
+  --sidebar-primary-foreground: oklch(0.95 0.020 78);
+  --sidebar-accent: oklch(0.18 0.09 349);
+  --sidebar-accent-foreground: oklch(0.89 0.030 75);
+  --sidebar-border: oklch(0.22 0.08 349);
+  --sidebar-ring: oklch(0.52 0.14 349);
 }
 
 @layer base {

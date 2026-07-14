@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3031;
 // Configuração do CORS
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
-  : ['http://localhost:8080', 'http://localhost:5175'];
+  : ['http://localhost:8080', 'http://localhost:5175', 'http://localhost:8085'];
 
 app.use(cors({
   origin: (origin, callback) => {

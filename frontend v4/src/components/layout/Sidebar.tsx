@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
 
 type Section = {
@@ -56,6 +57,7 @@ const sections: Section[] = [
 
 export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { usuario, igreja, logout } = useAuth();
+  const { isDark, toggle } = useTheme();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const igrejaSlug = igreja?.slug ?? "";
@@ -70,9 +72,13 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     }))
     .filter((s) => s.items.length > 0);
 
+  // Cor de acento da sidebar: usa --primary da igreja ou velvet padrão
+  const accentColor = "var(--primary, #4a0e2e)";
+
   return (
-    <div className="flex h-full flex-col bg-stone-950 text-stone-200">
-      <div className="px-6 pt-7 pb-6 border-b border-white/10">
+    <div className="flex h-full flex-col" style={{ background: "var(--color-sidebar, #150918)", color: "var(--color-sidebar-foreground, #e8dcc8)" }}>
+      {/* Logo / Nome da igreja */}
+      <div className="px-6 pt-7 pb-6" style={{ borderBottom: "1px solid oklch(1 0 0 / 10%)" }}>
         {usuario?.igreja_logo ? (
           <img
             src={usuario.igreja_logo}
@@ -80,11 +86,11 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             className="h-8 w-auto object-contain mt-1"
           />
         ) : (
-          <p className="font-serif text-xl leading-tight text-white mt-1 truncate">
-            {usuario?.igreja_nome ?? "Ovile"}<span style={{ color: "var(--primary, #b45309)" }}>.</span>
+          <p className="font-serif text-xl leading-tight mt-1 truncate" style={{ color: "var(--color-sidebar-foreground, #e8dcc8)" }}>
+            {usuario?.igreja_nome ?? "Ovile"}<span style={{ color: accentColor }}>.</span>
           </p>
         )}
-        <p className="text-[10px] tracking-[0.3em] uppercase text-stone-500 mt-2 truncate">
+        <p className="text-[10px] tracking-[0.3em] uppercase mt-2 truncate" style={{ color: "oklch(0.55 0.06 349)" }}>
           {usuario?.perfil === "superadmin"
             ? "— Painel superadmin"
             : igreja?.slug
@@ -93,12 +99,13 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </p>
       </div>
 
+      {/* Navegação */}
       <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-7">
         {visibleSections.map((section, idx) => (
           <div key={section.label}>
-            <p className="px-2 text-[10px] tracking-[0.3em] uppercase text-stone-500 mb-2 flex items-center gap-2">
+            <p className="px-2 text-[10px] tracking-[0.3em] uppercase mb-2 flex items-center gap-2" style={{ color: "oklch(0.45 0.06 349)" }}>
               <span className="tabular-nums">0{idx + 1}</span>
-              <span className="h-px flex-1 bg-white/10" />
+              <span className="h-px flex-1" style={{ background: "oklch(1 0 0 / 10%)" }} />
               {section.label}
             </p>
             <ul className="space-y-0.5">
@@ -112,16 +119,18 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       onClick={onNavigate}
                       className={cn(
                         "group flex items-baseline gap-3 px-2 py-2 text-sm border-l-2 transition-colors",
-                        active
-                          ? "border-amber-300 text-white font-medium"
-                          : "border-transparent text-stone-400 hover:text-white hover:border-white/30",
+                        active ? "font-medium" : "",
                       )}
+                      style={{
+                        borderLeftColor: active ? accentColor : "transparent",
+                        color: active
+                          ? "var(--color-sidebar-foreground, #e8dcc8)"
+                          : "oklch(0.55 0.06 349)",
+                      }}
                     >
                       <span
-                        className={cn(
-                          "font-editorial italic text-xs w-4 tabular-nums transition-colors",
-                          active ? "text-amber-300" : "text-stone-600 group-hover:text-stone-400",
-                        )}
+                        className="font-editorial italic text-xs w-4 tabular-nums transition-colors"
+                        style={{ color: active ? accentColor : "oklch(0.38 0.06 349)" }}
                       >
                         &mdash;
                       </span>
@@ -135,18 +144,31 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="border-t border-white/10 p-4 space-y-3">
+      {/* Rodapé: usuário + toggle + sair */}
+      <div className="p-4 space-y-3" style={{ borderTop: "1px solid oklch(1 0 0 / 10%)" }}>
         {usuario && (
           <div className="flex items-center gap-3 px-2">
-            <div className="grid place-content-center h-10 w-10 rounded-full bg-amber-300 text-stone-950 font-serif text-lg">
+            <div
+              className="grid place-content-center h-10 w-10 rounded-full font-serif text-lg shrink-0"
+              style={{ background: accentColor, color: "var(--color-sidebar-foreground, #e8dcc8)" }}
+            >
               {usuario.nome?.[0]?.toUpperCase() ?? "?"}
             </div>
-            <div className="min-w-0">
-              <p className="text-sm text-white truncate">{usuario.nome}</p>
-              <p className="text-[10px] uppercase tracking-widest text-stone-500">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm truncate" style={{ color: "var(--color-sidebar-foreground, #e8dcc8)" }}>{usuario.nome}</p>
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: "oklch(0.45 0.06 349)" }}>
                 {usuario.perfil}
               </p>
             </div>
+            {/* Toggle dark mode */}
+            <button
+              onClick={toggle}
+              title={isDark ? "Modo claro" : "Modo escuro"}
+              className="shrink-0 p-1.5 rounded-md transition-colors hover:opacity-80"
+              style={{ color: "oklch(0.55 0.06 349)" }}
+            >
+              {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+            </button>
           </div>
         )}
         <button
@@ -154,7 +176,8 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             logout();
             onNavigate?.();
           }}
-          className="flex w-full items-center justify-between gap-2 px-2 py-2 text-xs uppercase tracking-widest text-stone-400 hover:text-white transition-colors border-t border-white/5"
+          className="flex w-full items-center justify-between gap-2 px-2 py-2 text-xs uppercase tracking-widest transition-colors hover:opacity-80"
+          style={{ borderTop: "1px solid oklch(1 0 0 / 5%)", color: "oklch(0.45 0.06 349)" }}
         >
           <span>Encerrar sessão</span>
           <LogOut className="h-3.5 w-3.5" />
