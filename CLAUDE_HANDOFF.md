@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-14 (sessão 13)
+Atualizado em: 2026-07-14 (sessão 14)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,43 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 14 (2026-07-14)
+
+### Paleta Velvet+Bone + Dark Mode — deployado em produção ✅
+
+**Contexto:** mudança visual completa da paleta âmbar/stone para velvet (#4a0e2e) + bone (#e8dcc8), com modo escuro ativável pelo usuário.
+
+**`frontend v4/src/styles.css`** — paleta oklch refeita do zero
+- Light: `--background: oklch(0.95 0.022 78)` (bone), `--primary: oklch(0.22 0.12 349)` (velvet)
+- Dark (`.dark`): `--background: oklch(0.11 0.07 349)` (velvet quasi-preto), `--primary: oklch(0.52 0.14 349)` (vinho médio)
+- Sidebar: sempre velvet escuro — `oklch(0.15 0.09 349)` em light, `oklch(0.08 0.05 349)` em dark
+- Charts usam família velvet (0.22 → 0.89 lightness)
+
+**`frontend v4/src/hooks/useTheme.ts`** — novo hook
+- Estado `light | dark` com `getInitialTheme()` lendo `localStorage` + `prefers-color-scheme`
+- `applyTheme()` adiciona/remove classe `.dark` no `<html>`
+- Persiste em `localStorage.theme`
+
+**`frontend v4/src/components/layout/Sidebar.tsx`** — toggle de tema
+- Usa `var(--color-sidebar, #150918)` em vez de `bg-stone-950` hardcoded
+- Botão Moon/Sun no rodapé ao lado do avatar — chama `useTheme().toggle`
+- `accentColor = "var(--primary, #4a0e2e)"` para borda active e avatar
+
+**`frontend v4/src/components/layout/AppShell.tsx`** — corrigido dark mode
+- `bg-[#faf7f2]` → `bg-background` (respeitava a variável CSS, ativando dark mode no conteúdo)
+- Header mobile: `border-stone-200` → `border-border`, `bg-[#faf7f2]` → `bg-background`
+- SheetContent mobile: `bg-stone-950` → `style={{ background: "var(--color-sidebar)" }}`
+
+**`frontend v4/src/routes/__root.tsx`** — inicialização de tema
+- `useEffect` no `RootComponent` aplica o tema salvo antes do primeiro render (evita flash)
+
+**`backend/src/index.js`** — CORS
+- `http://localhost:8085` adicionado ao allowlist local (porta do Vite dev server desta sessão)
+
+**Commit:** `9a00e39` — push em `main` → Cloudflare Pages auto-deploy
 
 ---
 
