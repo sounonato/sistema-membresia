@@ -61,11 +61,11 @@ import {
 } from "../hooks";
 
 const STATUS_STYLES: Record<string, string> = {
-  ativo: "bg-amber-50 text-amber-800 border border-amber-200",
-  inativo: "bg-stone-100 text-stone-600 border border-stone-200",
-  transferido: "bg-blue-50 text-blue-700 border border-blue-200",
-  falecido: "bg-stone-200 text-stone-500 border border-stone-300",
-  excluido: "bg-stone-200 text-stone-500 border border-stone-300",
+  ativo: "bg-primary/10 text-primary border border-primary/20",
+  inativo: "bg-muted text-muted-foreground border border-border",
+  transferido: "bg-blue-500/10 text-blue-500 border border-blue-500/20",
+  falecido: "bg-muted text-muted-foreground border border-border",
+  excluido: "bg-muted text-muted-foreground border border-border",
 };
 
 export function MembroDetalhe() {
@@ -164,7 +164,7 @@ export function MembroDetalhe() {
                 }
               }}
               disabled={viHoje.isPending}
-              className="rounded-none bg-amber-800 hover:bg-amber-900 text-white h-11 px-5 gap-2"
+              className="rounded-none bg-primary text-primary-foreground hover:opacity-90 h-11 px-5 gap-2"
             >
               {viHoje.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -214,7 +214,7 @@ export function MembroDetalhe() {
         <div className="space-y-6">
           <Card title="Contato">
             <div className="flex items-center gap-4 mb-4">
-              <div className="grid place-content-center h-20 w-20 rounded-full bg-amber-100 text-amber-800 font-serif text-3xl">
+              <div className="grid place-content-center h-20 w-20 rounded-full bg-primary/10 text-primary font-serif text-3xl">
                 {m.nome?.[0]?.toUpperCase() ?? "?"}
               </div>
             </div>
@@ -222,7 +222,7 @@ export function MembroDetalhe() {
               <Info label="Telefone">
                 <a
                   href={`tel:${m.telefone}`}
-                  className="flex items-center gap-2 hover:text-amber-800"
+                  className="flex items-center gap-2 hover:text-primary"
                 >
                   <Phone className="h-3.5 w-3.5" /> {m.telefone}
                 </a>
@@ -231,7 +231,7 @@ export function MembroDetalhe() {
                 <Info label="E-mail">
                   <a
                     href={`mailto:${m.email}`}
-                    className="flex items-center gap-2 hover:text-amber-800"
+                    className="flex items-center gap-2 hover:text-primary"
                   >
                     <Mail className="h-3.5 w-3.5" /> {m.email}
                   </a>
@@ -268,7 +268,7 @@ export function MembroDetalhe() {
                   <Link
                     to="/convertidos/$id"
                     params={{ id: m.convertido_id }}
-                    className="text-amber-800 hover:underline"
+                    className="text-primary hover:underline"
                   >
                     Ver convertido
                   </Link>
@@ -309,7 +309,7 @@ export function MembroDetalhe() {
                   </div>
 
                   {m.discipulador_id && (
-                    <div className="bg-amber-50 border border-amber-200 p-3 flex gap-2 items-start text-xs text-amber-900 leading-normal">
+                    <div className="bg-amber-500/10 border border-amber-500/20 p-3 flex gap-2 items-start text-xs text-amber-600 dark:text-amber-400 leading-normal">
                       <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                       <div>
                         Este membro também está cadastrado como discipulador.
@@ -323,7 +323,7 @@ export function MembroDetalhe() {
                       Perfil de acesso
                     </Label>
                     <Select value={perfilSel} onValueChange={setPerfilSel}>
-                      <SelectTrigger className="rounded-none border-stone-300 w-full bg-white h-9">
+                      <SelectTrigger className="rounded-none border-border w-full bg-card h-9">
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
@@ -340,7 +340,7 @@ export function MembroDetalhe() {
                       onClick={onSalvarPerfil}
                       disabled={alterarPerfil.isPending}
                       size="sm"
-                      className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50 text-xs px-3 h-8"
+                      className="rounded-none bg-primary text-primary-foreground hover:opacity-90 text-xs px-3 h-8"
                     >
                       {alterarPerfil.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1.5" />}
                       Salvar perfil
@@ -374,7 +374,7 @@ export function MembroDetalhe() {
                       setAcessoPerfil("discipulador");
                       setAcessoOpen(true);
                     }}
-                    className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50 text-xs px-4 h-9 w-full"
+                    className="rounded-none bg-primary text-primary-foreground hover:opacity-90 text-xs px-4 h-9 w-full"
                   >
                     Criar acesso
                   </Button>
@@ -386,7 +386,7 @@ export function MembroDetalhe() {
 
         <div className="lg:col-span-2">
           <Tabs defaultValue="eclesiastico">
-            <TabsList className="rounded-none border border-stone-200 bg-white h-auto p-0">
+            <TabsList className="rounded-none border border-border bg-card h-auto p-0">
               <TabsTrigger value="eclesiastico" className="rounded-none">
                 Eclesiástico
               </TabsTrigger>
@@ -472,7 +472,7 @@ export function MembroDetalhe() {
           </DialogHeader>
           <form onSubmit={onCriarAcesso} className="space-y-4 pt-2">
             {m.discipulador_id && (
-              <div className="bg-amber-50 border border-amber-200 p-3 flex gap-2 items-start text-xs text-amber-900 leading-normal">
+              <div className="bg-amber-500/10 border border-amber-500/20 p-3 flex gap-2 items-start text-xs text-amber-600 dark:text-amber-400 leading-normal">
                 <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                 <div>
                   Este membro também é discipulador. O acesso criado será compartilhado com o registro de discipulador.
@@ -505,7 +505,7 @@ export function MembroDetalhe() {
             <div>
               <Label className="text-xs uppercase tracking-widest text-stone-500">Perfil</Label>
               <Select value={acessoPerfil} onValueChange={setAcessoPerfil}>
-                <SelectTrigger className="rounded-none border-stone-300 mt-1 bg-white">
+                <SelectTrigger className="rounded-none border-border mt-1 bg-card">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -520,7 +520,7 @@ export function MembroDetalhe() {
               <Button type="button" variant="outline" onClick={() => setAcessoOpen(false)} className="rounded-none">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={criarAcesso.isPending} className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50">
+              <Button type="submit" disabled={criarAcesso.isPending} className="rounded-none bg-primary text-primary-foreground hover:opacity-90">
                 {criarAcesso.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                 Criar acesso
               </Button>
@@ -536,7 +536,7 @@ export function MembroDetalhe() {
 
 function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <section className="border border-stone-200 bg-white p-6">
+    <section className="border border-border bg-card p-6">
       {title && (
         <h3 className="text-[10px] tracking-widest uppercase text-stone-500 mb-4">
           {title}
@@ -685,7 +685,7 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
                   toast.error(e instanceof Error ? e.message : "Erro");
                 }
               }}
-              className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50"
+              className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
             >
               Salvar
             </Button>
@@ -820,7 +820,7 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
                   toast.error(e instanceof Error ? e.message : "Erro");
                 }
               }}
-              className="rounded-none bg-stone-900 hover:bg-amber-800 text-amber-50"
+              className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
             >
               Salvar
             </Button>
@@ -869,7 +869,7 @@ function WhatsappModal({
           <p className="text-[10px] tracking-widest uppercase text-stone-500 pt-2">
             {inativo ? "Mensagem de saudade" : "Mensagem de contato"}
           </p>
-          <blockquote className="border-l-2 border-amber-400 pl-4 py-2 bg-amber-50 font-serif italic text-stone-700 whitespace-pre-line">
+          <blockquote className="border-l-2 border-primary pl-4 py-2 bg-muted font-serif italic text-foreground whitespace-pre-line">
             {template}
           </blockquote>
           <p className="text-xs text-stone-500">
@@ -898,7 +898,7 @@ function WhatsappModal({
                 toast.error(e instanceof Error ? e.message : "Erro ao enviar");
               }
             }}
-            className="rounded-none bg-amber-800 hover:bg-amber-900 text-white gap-2"
+            className="rounded-none bg-primary text-primary-foreground hover:opacity-90 gap-2"
           >
             {enviar.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             Confirmar envio

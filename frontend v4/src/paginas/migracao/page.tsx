@@ -96,7 +96,7 @@ export function MigracaoPage() {
           {/* Passo 1 — Sistema de Origem */}
           <div className="md:col-span-3 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-stone-900 text-white text-xs font-sans">1</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">1</span>
               Selecione o sistema de origem
             </h2>
             
@@ -111,7 +111,7 @@ export function MigracaoPage() {
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-3">
-                  <span className="font-serif text-lg font-medium text-stone-950">InChurch</span>
+                  <span className="font-serif text-lg font-medium text-foreground">InChurch</span>
                   <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sistema === "inchurch" ? "bg-primary" : "border border-border"}`}>
                     {sistema === "inchurch" && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                   </span>
@@ -137,11 +137,11 @@ export function MigracaoPage() {
           {/* Passo 2 — Instruções de Exportação */}
           <div className="md:col-span-1 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-stone-900 text-white text-xs font-sans">2</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">2</span>
               Instruções de exportação
             </h2>
             
-            <Card className="border-border bg-white">
+            <Card className="border-border bg-card">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-start gap-2.5">
                   <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -171,7 +171,7 @@ export function MigracaoPage() {
           {/* Passo 3 — Envio e Upload */}
           <div className="md:col-span-2 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-stone-900 text-white text-xs font-sans">3</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">3</span>
               Envie o arquivo exportado
             </h2>
 
@@ -239,7 +239,7 @@ export function MigracaoPage() {
                 <Button
                   onClick={handleImport}
                   disabled={!file || mutation.isPending}
-                  className="rounded-none border border-foreground bg-stone-900 text-white hover:bg-stone-800 px-6 py-2 h-auto"
+                  className="rounded-none bg-primary text-primary-foreground hover:opacity-90 px-6 py-2 h-auto"
                 >
                   {mutation.isPending ? (
                     <>
@@ -260,12 +260,12 @@ export function MigracaoPage() {
       ) : (
         /* Tela de Resultados da Importação */
         <div className="space-y-6">
-          <h2 className="font-serif text-2xl text-stone-950">Resultado da Importação</h2>
+          <h2 className="font-serif text-2xl text-foreground">Resultado da Importação</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Sucesso */}
-            <div className="flex items-center gap-4 p-5 border border-border bg-white">
-              <div className="p-3 bg-emerald-100 rounded-full text-emerald-600">
+            <div className="flex items-center gap-4 p-5 border border-border bg-card">
+              <div className="p-3 bg-emerald-500/10 rounded-full text-emerald-500">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div>
@@ -277,8 +277,8 @@ export function MigracaoPage() {
             </div>
 
             {/* Ignorados */}
-            <div className="flex items-center gap-4 p-5 border border-border bg-white">
-              <div className="p-3 bg-accent rounded-full text-primary">
+            <div className="flex items-center gap-4 p-5 border border-border bg-card">
+              <div className="p-3 bg-primary/10 rounded-full text-primary">
                 <AlertTriangle className="h-6 w-6" />
               </div>
               <div>
@@ -290,8 +290,8 @@ export function MigracaoPage() {
             </div>
 
             {/* Erros */}
-            <div className="flex items-center gap-4 p-5 border border-border bg-white">
-              <div className={`p-3 rounded-full ${resultado.erros.length > 0 ? "bg-red-100 text-red-600" : "bg-muted text-muted-foreground"}`}>
+            <div className="flex items-center gap-4 p-5 border border-border bg-card">
+              <div className={`p-3 rounded-full ${resultado.erros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
                 <XCircle className="h-6 w-6" />
               </div>
               <div>
@@ -304,9 +304,9 @@ export function MigracaoPage() {
           </div>
 
           {resultado.erros.length > 0 && (
-            <div className="border border-border bg-white">
-              <div className="px-5 py-4 border-b border-stone-150">
-                <h3 className="font-serif text-lg text-stone-950">Log detalhado de inconsistências</h3>
+            <div className="border border-border bg-card">
+              <div className="px-5 py-4 border-b border-border">
+                <h3 className="font-serif text-lg text-foreground">Log detalhado de inconsistências</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">As linhas abaixo continham inconsistências e foram puladas.</p>
               </div>
               
@@ -345,7 +345,7 @@ export function MigracaoPage() {
             </Button>
             <Button
               onClick={() => window.location.href = "/membros"}
-              className="rounded-none border border-foreground bg-stone-900 text-white hover:bg-stone-800"
+              className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
             >
               Ver Membros
             </Button>

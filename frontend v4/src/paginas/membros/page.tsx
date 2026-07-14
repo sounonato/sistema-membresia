@@ -20,11 +20,11 @@ import { useMembros, useExcluirMembro } from "./hooks";
 import { useMinisterios } from "@/paginas/ministerios/hooks";
 
 const STATUS_STYLES: Record<string, string> = {
-  ativo: "bg-amber-50 text-primary border border-amber-200",
+  ativo: "bg-primary/10 text-primary border border-primary/20",
   inativo: "bg-muted text-muted-foreground border border-border",
-  transferido: "bg-blue-50 text-blue-700 border border-blue-200",
-  falecido: "bg-stone-200 text-muted-foreground border border-border",
-  excluido: "bg-stone-200 text-muted-foreground border border-border",
+  transferido: "bg-blue-500/10 text-blue-500 border border-blue-500/20",
+  falecido: "bg-muted text-muted-foreground border border-border",
+  excluido: "bg-muted text-muted-foreground border border-border",
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -44,13 +44,13 @@ function ContatoCell({ m }: { m: Membro }) {
   const dias = m.dias_sem_contato ?? 0;
   if (dias > 90)
     return (
-      <Badge className="rounded-none bg-red-50 text-red-700 border border-red-200 font-normal">
+      <Badge className="rounded-none bg-destructive/10 text-destructive border border-destructive/20 font-normal">
         {dias} dias — urgente
       </Badge>
     );
   if (dias > 60)
     return (
-      <Badge className="rounded-none bg-amber-50 text-primary border border-amber-200 font-normal">
+      <Badge className="rounded-none bg-primary/10 text-primary border border-primary/20 font-normal">
         {dias} dias
       </Badge>
     );
@@ -100,7 +100,7 @@ export function MembrosPage() {
           editor && (
             <Button
               asChild
-              className="rounded-none bg-stone-900 text-amber-50 hover:bg-amber-800 h-11 px-5 gap-2"
+              className="rounded-none bg-primary text-primary-foreground hover:opacity-90 h-11 px-5 gap-2"
             >
               <Link to="/membros/novo">
                 <Plus className="h-4 w-4" /> Novo membro
@@ -154,7 +154,7 @@ export function MembrosPage() {
           Nenhum membro encontrado — tente ajustar os filtros.
         </p>
       ) : (
-        <div className="border border-border bg-white overflow-x-auto">
+        <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
@@ -171,12 +171,12 @@ export function MembrosPage() {
               {data.map((m) => {
                 const mins = m.ministerios ?? [];
                 return (
-                  <tr key={m.id} className="border-b border-border hover:bg-amber-50/30">
+                  <tr key={m.id} className="border-b border-border hover:bg-muted/50">
                     <td className="px-4 py-3">
                       <Link
                         to="/membros/$id"
                         params={{ id: m.id }}
-                        className="font-serif text-base hover:text-primary"
+                        className="font-serif text-base text-foreground hover:text-primary"
                       >
                         {m.nome}
                       </Link>

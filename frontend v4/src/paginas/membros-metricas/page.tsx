@@ -15,22 +15,22 @@ import { Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useMembrosMetricas } from "./hooks";
 
-const PIE_COLORS = {
-  feminino: "#b45309",
-  masculino: "#78716c",
-  nao_informado: "#d6d3d1",
-  outro: "#a8a29e",
+const GENDER_OPACITIES: Record<string, string> = {
+  feminino: "1.0",
+  masculino: "0.6",
+  nao_informado: "0.2",
+  outro: "0.4",
 };
 
-const FAIXA_ETARIA_COLORS = {
-  "0-17": "#f59e0b",
-  "18-24": "#3b82f6",
-  "25-34": "#8b5cf6",
-  "35-44": "#22c55e",
-  "45-54": "#f97316",
-  "55-64": "#06b6d4",
-  "65+": "#ef4444",
-  "Não informado": "#d6d3d1",
+const FAIXA_ETARIA_OPACITIES: Record<string, string> = {
+  "0-17": "0.3",
+  "18-24": "0.4",
+  "25-34": "0.5",
+  "35-44": "0.6",
+  "45-54": "0.7",
+  "55-64": "0.8",
+  "65+": "1.0",
+  "Não informado": "0.2",
 };
 
 function formatGender(g: string) {
@@ -158,17 +158,17 @@ export function MembrosMetricasPage() {
                 axisLine={false}
               />
               <Tooltip
-                cursor={{ fill: "rgba(180, 83, 9, 0.06)" }}
+                cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.06))" }}
                 contentStyle={{
-                  background: "#0c0a09",
-                  border: "none",
+                  background: "var(--color-card, #1e0812)",
+                  border: "1px solid var(--color-border)",
                   borderRadius: 0,
-                  color: "#fef3c7",
+                  color: "var(--color-card-foreground, #e8dcc8)",
                   fontFamily: "Instrument Sans, sans-serif",
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="entradas" fill="#b45309" radius={[0, 0, 0, 0]} maxBarSize={48} name="Entradas" />
+              <Bar dataKey="entradas" fill="var(--color-primary)" radius={[0, 0, 0, 0]} maxBarSize={48} name="Entradas" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -204,16 +204,17 @@ export function MembrosMetricasPage() {
                         {genero.map((entry: any, index: number) => (
                           <Cell
                             key={`cell-${index}`}
-                            fill={PIE_COLORS[entry.genero as keyof typeof PIE_COLORS] || PIE_COLORS.nao_informado}
+                            fill="var(--color-primary)"
+                            fillOpacity={GENDER_OPACITIES[entry.genero as keyof typeof GENDER_OPACITIES] ?? "0.5"}
                           />
                         ))}
                       </Pie>
                       <Tooltip
                         contentStyle={{
-                          background: "#0c0a09",
-                          border: "none",
+                          background: "var(--color-card, #1e0812)",
+                          border: "1px solid var(--color-border)",
                           borderRadius: 0,
-                          color: "#fef3c7",
+                          color: "var(--color-card-foreground, #e8dcc8)",
                           fontFamily: "Instrument Sans, sans-serif",
                           fontSize: 12,
                         }}
@@ -271,19 +272,19 @@ export function MembrosMetricasPage() {
                     tickFormatter={formatCivilState}
                   />
                   <Tooltip
-                    cursor={{ fill: "rgba(180, 83, 9, 0.04)" }}
+                    cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.04))" }}
                     contentStyle={{
-                      background: "#0c0a09",
-                      border: "none",
+                      background: "var(--color-card, #1e0812)",
+                      border: "1px solid var(--color-border)",
                       borderRadius: 0,
-                      color: "#fef3c7",
+                      color: "var(--color-card-foreground, #e8dcc8)",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontSize: 12,
                     }}
                     formatter={(val: number) => [val, "Quantidade"]}
                     labelFormatter={formatCivilState}
                   />
-                  <Bar dataKey="quantidade" fill="#78716c" maxBarSize={20} />
+                  <Bar dataKey="quantidade" fill="var(--color-muted-foreground)" maxBarSize={20} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -315,12 +316,12 @@ export function MembrosMetricasPage() {
                 />
                 <YAxis stroke="#78716c" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
-                  cursor={{ fill: "rgba(180, 83, 9, 0.06)" }}
+                  cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.06))" }}
                   contentStyle={{
-                    background: "#0c0a09",
-                    border: "none",
+                    background: "var(--color-card, #1e0812)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: 0,
-                    color: "#fef3c7",
+                    color: "var(--color-card-foreground, #e8dcc8)",
                     fontFamily: "Instrument Sans, sans-serif",
                     fontSize: 12,
                   }}
@@ -330,10 +331,8 @@ export function MembrosMetricasPage() {
                   {faixaEtaria.map((entry: any, index: number) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={
-                        FAIXA_ETARIA_COLORS[entry.faixa as keyof typeof FAIXA_ETARIA_COLORS] ||
-                        FAIXA_ETARIA_COLORS["Não informado"]
-                      }
+                      fill="var(--color-primary)"
+                      fillOpacity={FAIXA_ETARIA_OPACITIES[entry.faixa as keyof typeof FAIXA_ETARIA_OPACITIES] ?? "0.5"}
                     />
                   ))}
                 </Bar>
@@ -373,18 +372,18 @@ export function MembrosMetricasPage() {
                     axisLine={false}
                   />
                   <Tooltip
-                    cursor={{ fill: "rgba(180, 83, 9, 0.04)" }}
+                    cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.04))" }}
                     contentStyle={{
-                      background: "#0c0a09",
-                      border: "none",
+                      background: "var(--color-card, #1e0812)",
+                      border: "1px solid var(--color-border)",
                       borderRadius: 0,
-                      color: "#fef3c7",
+                      color: "var(--color-card-foreground, #e8dcc8)",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontSize: 12,
                     }}
                     formatter={(val: number) => [val, "Voluntários"]}
                   />
-                  <Bar dataKey="quantidade" fill="#b45309" maxBarSize={16} />
+                  <Bar dataKey="quantidade" fill="var(--color-primary)" maxBarSize={16} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -413,7 +412,7 @@ export function MembrosMetricasPage() {
                       </span>
                     </div>
                     <div className="h-2 w-full bg-muted rounded-none overflow-hidden">
-                      <div className="h-full bg-stone-600" style={{ width: `${percentage}%` }} />
+                      <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
                     </div>
                   </div>
                 );
@@ -440,7 +439,7 @@ export function MembrosMetricasPage() {
             Nenhum aniversariante de membresia neste mês.
           </p>
         ) : (
-          <div className="bg-white border border-border rounded-none overflow-hidden">
+          <div className="bg-card border border-border rounded-none overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead>
@@ -451,7 +450,7 @@ export function MembrosMetricasPage() {
                     <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-48">Contato</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100">
+                <tbody className="divide-y divide-border">
                   {aniversariantes.map((m: any, index: number) => {
                     const dia = m.data_nascimento ? new Date(m.data_nascimento).getDate() : "—";
                     return (
@@ -499,15 +498,15 @@ export function MembrosMetricasPage() {
 
         <div className="grid sm:grid-cols-3 gap-4">
           {[
-            { dias: 30, value: semContato.sem_contato_30 ?? 0, title: "Há 30+ dias", color: "border-yellow-200 hover:border-yellow-400" },
-            { dias: 60, value: semContato.sem_contato_60 ?? 0, title: "Há 60+ dias", color: "border-orange-200 hover:border-orange-400" },
-            { dias: 90, value: semContato.sem_contato_90 ?? 0, title: "Há 90+ dias", color: "border-red-200 hover:border-red-400" },
+            { dias: 30, value: semContato.sem_contato_30 ?? 0, title: "Há 30+ dias", color: "border-yellow-500/30 hover:border-yellow-500" },
+            { dias: 60, value: semContato.sem_contato_60 ?? 0, title: "Há 60+ dias", color: "border-orange-500/30 hover:border-orange-500" },
+            { dias: 90, value: semContato.sem_contato_90 ?? 0, title: "Há 90+ dias", color: "border-red-500/30 hover:border-red-500" },
           ].map((card) => (
             <Link
               key={card.dias}
               to="/relatorios"
               search={{ tab: "sem-contato" }}
-              className={`p-5 bg-white border ${card.color} flex flex-col justify-between transition-colors`}
+              className={`p-5 bg-card border ${card.color} flex flex-col justify-between transition-colors`}
             >
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{card.title}</p>

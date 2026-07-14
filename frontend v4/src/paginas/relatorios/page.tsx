@@ -278,12 +278,12 @@ export function RelatoriosPage() {
         <div>
           <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Início</Label>
           <Input type="date" value={ini} onChange={(e) => setIni(e.target.value)}
-            className="mt-1 rounded-none border-0 border-b border-stone-400 focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
+            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
         </div>
         <div>
           <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Fim</Label>
           <Input type="date" value={fim} onChange={(e) => setFim(e.target.value)}
-            className="mt-1 rounded-none border-0 border-b border-stone-400 focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
+            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
         </div>
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground ml-auto max-w-xs italic font-serif normal-case tracking-normal text-sm">
           Filtros aplicam-se aos relatórios com período.
@@ -377,12 +377,12 @@ export function RelatoriosPage() {
           )}
         </TabsContent>
         <TabsContent value="sem-contato" className="mt-6">
-          <div className="bg-white border border-border p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
+          <div className="bg-card border border-border p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">Período sem contato:</Label>
             <select
               value={diasSemContato}
               onChange={(e) => setDiasSemContato(Number(e.target.value))}
-              className="w-full rounded-none border border-border bg-transparent px-3 py-1.5 text-sm focus:outline-none focus:border-amber-800"
+              className="w-full rounded-none border border-border bg-card text-foreground px-3 py-1.5 text-sm focus:outline-none focus:border-primary"
             >
               <option value={30}>Mais de 30 dias</option>
               <option value={60}>Mais de 60 dias</option>
@@ -430,7 +430,7 @@ function RelatorioTabela({
 }) {
   const colunas = linhas.length > 0 ? Object.keys(linhas[0]) : [];
   return (
-    <div className="bg-white border border-border">
+    <div className="bg-card border border-border">
       <div className="flex flex-row items-end justify-between gap-3 flex-wrap p-6 border-b border-border">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Folha</p>
@@ -441,7 +441,7 @@ function RelatorioTabela({
           <Button
             variant="outline"
             size="sm"
-            className="rounded-none border-stone-400"
+            className="rounded-none border-border hover:bg-muted"
             onClick={() => exportExcel(titulo.replace(/\s+/g, "_").toLowerCase(), linhas)}
             disabled={linhas.length === 0}
           >

@@ -119,17 +119,17 @@ export default function DashboardDiscipulador() {
               placeholder="Buscar por nome..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="pl-9 bg-white border-border rounded-lg text-sm"
+              className="pl-9 bg-card border-border rounded-lg text-sm"
             />
           </div>
         </div>
 
         {filtrados.length === 0 ? (
-          <div className="bg-white border border-border p-12 text-center">
+          <div className="bg-card border border-border p-12 text-center">
             <p className="text-muted-foreground font-serif italic text-sm">Nenhum convertido sob sua responsabilidade encontrado.</p>
           </div>
         ) : (
-          <div className="bg-white border border-border overflow-x-auto">
+          <div className="bg-card border border-border overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-muted">
@@ -154,8 +154,8 @@ export default function DashboardDiscipulador() {
                           className={
                             "text-[10px] uppercase tracking-widest pb-0.5 border-b " +
                             (c.fez_discipulado
-                              ? "text-emerald-700 border-emerald-600"
-                              : "text-primary border-amber-600")
+                              ? "text-emerald-500 border-emerald-500/30"
+                              : "text-primary border-primary/30")
                           }
                         >
                           {c.fez_discipulado ? "Concluído" : "Em andamento"}

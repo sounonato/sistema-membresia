@@ -129,7 +129,7 @@ export function ManualPage() {
               )}
             </aside>
 
-            <div className="bg-white border border-border p-8 md:p-12 h-[calc(100vh-18rem)] overflow-y-auto">
+            <div className="bg-card border border-border p-8 md:p-12 h-[calc(100vh-18rem)] overflow-y-auto">
               {secao ? (
                 <article className="prose prose-stone max-w-2xl mx-auto prose-headings:font-serif prose-headings:text-foreground prose-h2:text-4xl prose-h2:leading-tight prose-p:font-[Instrument_Sans,sans-serif] prose-p:text-foreground">
                   <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground m-0 flex items-center gap-3">
@@ -214,7 +214,7 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
   function onSubmit(e: FormEvent) { e.preventDefault(); enviar(texto); }
 
   return (
-    <div className="bg-white border border-border flex flex-col h-[calc(100vh-18rem)] overflow-hidden">
+    <div className="bg-card border border-border flex flex-col h-[calc(100vh-18rem)] overflow-hidden">
       <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-4">
         {msgs.length === 0 && (
           <div className="text-center py-16">
@@ -230,7 +230,7 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
                 className={cn(
                   "max-w-[80%] px-5 py-3 text-sm whitespace-pre-wrap",
                   m.role === "user"
-                    ? "bg-stone-900 text-stone-50"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-muted text-foreground border-l-2 border-primary",
                 )}
               >
@@ -270,7 +270,7 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
               type="button"
               onClick={() => enviar(s)}
               disabled={loading}
-              className="text-[11px] italic font-serif border border-border bg-white px-3 py-1.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+              className="text-[11px] italic font-serif border border-border bg-card px-3 py-1.5 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
             >
               "{s}"
             </button>

@@ -185,7 +185,7 @@ export function IgrejasPage() {
       />
 
       <Tabs defaultValue="igrejas">
-        <TabsList className="rounded-none border border-border bg-white mb-0 h-10">
+        <TabsList className="rounded-none border border-border bg-card mb-0 h-10">
           <TabsTrigger value="igrejas" className="rounded-none text-xs uppercase tracking-widest">
             Igrejas ativas
           </TabsTrigger>
@@ -201,7 +201,7 @@ export function IgrejasPage() {
 
         {/* ABA IGREJAS */}
         <TabsContent value="igrejas" className="mt-0">
-          <div className="bg-white border border-border border-t-0">
+          <div className="bg-card border border-border border-t-0">
             <div className="p-4 sm:p-6">
               {isLoading ? (
                 <div className="grid place-content-center py-10 text-muted-foreground">
@@ -267,7 +267,7 @@ export function IgrejasPage() {
 
         {/* ABA SOLICITAÇÕES */}
         <TabsContent value="solicitacoes" className="mt-0">
-          <div className="bg-white border border-border border-t-0">
+          <div className="bg-card border border-border border-t-0">
             <div className="p-4 sm:p-6">
               {loadingSol ? (
                 <div className="grid place-content-center py-10 text-muted-foreground">
@@ -401,7 +401,7 @@ export function IgrejasPage() {
                 <Label>Logo</Label>
                 <div className="flex items-center gap-3">
                   {logoPreview ? (
-                    <img src={logoPreview} alt="Logo" className="h-16 w-16 rounded-md object-contain border border-border bg-white" />
+                    <img src={logoPreview} alt="Logo" className="h-16 w-16 rounded-md object-contain border border-border bg-card" />
                   ) : (
                     <div className="h-16 w-16 rounded-md border border-dashed border-border grid place-content-center text-xs text-muted-foreground">sem logo</div>
                   )}

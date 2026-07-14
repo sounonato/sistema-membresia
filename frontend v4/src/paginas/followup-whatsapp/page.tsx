@@ -200,7 +200,7 @@ function MembroCard({ membro, tone }: { membro: Membro; tone: "red" | "amber" })
   const diasColor = tone === "red" ? "text-red-700" : "text-primary";
 
   return (
-    <li className="border border-border bg-white p-4 flex items-center gap-4 flex-wrap">
+    <li className="border border-border bg-card p-4 flex items-center gap-4 flex-wrap">
       <div className="flex-1 min-w-0">
         <p className="font-serif text-lg truncate">{membro.nome}</p>
         <p className={`text-sm ${diasColor} ${dias > 90 ? "font-bold" : ""}`}>
@@ -219,7 +219,7 @@ function MembroCard({ membro, tone }: { membro: Membro; tone: "red" | "amber" })
               toast.error(e instanceof Error ? e.message : "Erro");
             }
           }}
-          className="rounded-none bg-amber-800 hover:bg-amber-900 text-white gap-2"
+          className="rounded-none bg-primary text-primary-foreground hover:opacity-90 gap-2"
           disabled={viHoje.isPending}
         >
           <Check className="h-3.5 w-3.5" /> Vi hoje
@@ -279,7 +279,7 @@ function WhatsappMiniModal({
                 setSending(false);
               }
             }}
-            className="rounded-none bg-amber-800 hover:bg-amber-900 text-white"
+            className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
           >
             {sending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             Enviar

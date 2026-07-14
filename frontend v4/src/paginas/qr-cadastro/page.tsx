@@ -55,7 +55,7 @@ function QrCard({
   const label = tipo === "convertido" ? "Novo Convertido" : "Cadastro de Membro";
 
   return (
-    <div className="bg-white border border-border flex flex-col">
+    <div className="bg-card border border-border flex flex-col">
       {/* Header do card */}
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{label}</span>

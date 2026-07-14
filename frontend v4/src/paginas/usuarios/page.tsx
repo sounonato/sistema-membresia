@@ -56,13 +56,13 @@ export function UsuariosPage() {
         title="Usuários"
         lede="As chaves de casa — quem entra pela porta dos fundos do sistema."
         actions={(
-          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={() => setOpen(true)}>
+          <Button className="rounded-none bg-primary text-primary-foreground hover:opacity-90" onClick={() => setOpen(true)}>
             <Plus className="h-4 w-4" /> Criar usuário
           </Button>
         )}
       />
 
-      <div className="bg-white border border-border">
+      <div className="bg-card border border-border">
         <div className="p-4 sm:p-6">
           {isLoading ? (
             <div className="grid place-content-center py-10 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>

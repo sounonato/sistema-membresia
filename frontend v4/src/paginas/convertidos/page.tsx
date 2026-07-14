@@ -61,7 +61,7 @@ export function ConvertidosPage() {
             </p>
           </div>
           {editor && (
-            <Button asChild className="rounded-none bg-stone-900 text-amber-50 hover:bg-amber-800 h-12 px-6 gap-3">
+            <Button asChild className="rounded-none bg-primary text-primary-foreground hover:opacity-90 h-12 px-6 gap-3">
               <Link to="/convertidos/novo">
                 <Plus className="h-4 w-4" /> Registrar convertido
               </Link>
@@ -100,7 +100,7 @@ export function ConvertidosPage() {
           {itens.map((c, i) => (
             <li
               key={c.id}
-              className="group grid grid-cols-[3rem_1fr_auto] sm:grid-cols-[3rem_2fr_1.2fr_1fr_auto] gap-4 sm:gap-6 items-baseline py-5 border-b border-border hover:bg-amber-50/40 transition-colors -mx-4 sm:-mx-6 px-4 sm:px-6"
+              className="group grid grid-cols-[3rem_1fr_auto] sm:grid-cols-[3rem_2fr_1.2fr_1fr_auto] gap-4 sm:gap-6 items-baseline py-5 border-b border-border hover:bg-muted/50 transition-colors -mx-4 sm:-mx-6 px-4 sm:px-6"
             >
               <span className="font-editorial italic text-primary/70 text-sm tabular-nums">
                 {String((pagSegura - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
@@ -109,7 +109,7 @@ export function ConvertidosPage() {
                 <Link
                   to="/convertidos/$id"
                   params={{ id: c.id }}
-                  className="font-serif text-xl sm:text-2xl tracking-tight hover:text-primary transition-colors"
+                  className="font-serif text-xl sm:text-2xl tracking-tight text-foreground hover:text-primary transition-colors"
                 >
                   {c.nome}
                 </Link>

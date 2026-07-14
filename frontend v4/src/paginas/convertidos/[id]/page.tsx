@@ -129,7 +129,7 @@ export function ConvertidoDetalhePage() {
             <>
               <Button
                 variant="outline"
-                className="rounded-xl border-amber-600 text-amber-700 hover:bg-amber-50"
+                className="rounded-xl border-primary text-primary hover:bg-primary/10"
                 onClick={onPromover}
                 disabled={criarMembro.isPending}
               >
@@ -195,7 +195,7 @@ export function ConvertidoDetalhePage() {
             <select
               value={selectedDiscId}
               onChange={(e) => setSelectedDiscId(e.target.value)}
-              className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm focus:border-stone-400 focus:outline-none"
+              className="w-full rounded-lg border border-border bg-card text-foreground px-3 py-2 text-sm focus:border-primary focus:outline-none"
               disabled={!editor || saving}
             >
               <option value="">Sem responsável atribuído</option>
