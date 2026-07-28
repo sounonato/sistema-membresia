@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats, useMembrosStats } from "./hooks";
 import DashboardDiscipulador from "./dashboard-discipulador";
 
-const PIE_COLORS = ["#7c2150", "#a83d6d", "#c96b8e", "#e0c9b5"];
+const PIE_COLORS = ["#1e3a8a", "#2563eb", "#60a5fa", "#bfdbfe"];
 
 export function DashboardPage() {
   const { usuario, igreja } = useAuth();
