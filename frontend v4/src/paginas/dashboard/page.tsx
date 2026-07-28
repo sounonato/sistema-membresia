@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardStats, useMembrosStats } from "./hooks";
 import DashboardDiscipulador from "./dashboard-discipulador";
 
-const PIE_COLORS = ["#1e3a8a", "#2563eb", "#60a5fa", "#bfdbfe"];
+const PIE_COLORS = ["#3b82f6", "#60a5fa", "#93c5fd", "#1d4ed8"];
 
 export function DashboardPage() {
   const { usuario, igreja } = useAuth();
@@ -118,29 +118,29 @@ export function DashboardPage() {
               <BarChart data={porMes} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                 <XAxis
                   dataKey="mes"
-                  stroke="var(--color-muted-foreground, #78716c)"
+                  stroke="var(--color-muted-foreground, #64748b)"
                   fontSize={11}
                   tickLine={false}
-                  axisLine={{ stroke: "var(--color-border, #e7e5e4)" }}
+                  axisLine={{ stroke: "var(--color-border, #cbd5e1)" }}
                 />
                 <YAxis
-                  stroke="var(--color-muted-foreground, #78716c)"
+                  stroke="var(--color-muted-foreground, #64748b)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                 />
                 <Tooltip
-                  cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.06))" }}
+                  cursor={{ fill: "rgba(59,130,246,0.08)" }}
                   contentStyle={{
-                    background: "var(--color-card, #1e0812)",
+                    background: "var(--color-card, #1e293b)",
                     border: "1px solid var(--color-border)",
                     borderRadius: 0,
-                    color: "var(--color-card-foreground, #e8dcc8)",
+                    color: "var(--color-card-foreground, #f1f5f9)",
                     fontFamily: "Instrument Sans, sans-serif",
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="total" fill="var(--color-primary, #4a0e2e)" radius={[0, 0, 0, 0]} maxBarSize={48} />
+                <Bar dataKey="total" fill="var(--color-primary, #3b82f6)" radius={[0, 0, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -172,10 +172,10 @@ export function DashboardPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "var(--color-card, #1e0812)",
+                    background: "var(--color-card, #1e293b)",
                     border: "1px solid var(--color-border)",
                     borderRadius: 0,
-                    color: "var(--color-card-foreground, #e8dcc8)",
+                    color: "var(--color-card-foreground, #f1f5f9)",
                     fontFamily: "Instrument Sans, sans-serif",
                     fontSize: 12,
                   }}
