@@ -224,6 +224,8 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
 router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
   const { id } = req.params;
   try {
+    const safeQuery = (sql, params) => db.query(sql, params).catch(() => ({ rows: [] }));
+
     const [membroRes, ministeriosRes, cargosRes, logRes] = await Promise.all([
       db.query(
         `SELECT
@@ -235,7 +237,7 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
           u.perfil AS usuario_perfil,
           u.ativo AS usuario_ativo,
           (
-            SELECT id FROM discipuladores 
+            SELECT id FROM discipuladores
             WHERE (usuario_id = m.usuario_id OR (m.email IS NOT NULL AND email = m.email))
             AND igreja_id = m.igreja_id
             LIMIT 1
@@ -247,7 +249,7 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
         WHERE m.id = $1 AND m.igreja_id = $2`,
         [id, req.igrejaId]
       ),
-      db.query(
+      safeQuery(
         `SELECT
           mm.id,
           mm.cargo,
@@ -261,13 +263,13 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
         ORDER BY mm.ativo DESC, mn.nome ASC`,
         [id]
       ),
-      db.query(
+      safeQuery(
         `SELECT * FROM cargos_membros
         WHERE membro_id = $1
         ORDER BY ativo DESC, data_posse DESC`,
         [id]
       ),
-      db.query(
+      safeQuery(
         `SELECT tipo, enviado_em, sucesso
         FROM whatsapp_followup_log
         WHERE membro_id = $1
