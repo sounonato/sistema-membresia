@@ -39,6 +39,7 @@ export function CadastroPublicoPage() {
     bairro: "",
     cidade: "",
     como_conheceu: "",
+    culto_conversao: "",
     batizado: "",           // "sim" | "nao"
     ja_frequentava_igreja: "", // "sim" | "nao"
     igreja_anterior: "",
@@ -54,6 +55,7 @@ export function CadastroPublicoPage() {
   const m = useMutation({
     mutationFn: () => api.cadastroPublico(slug, {
       ...form,
+      culto_conversao: form.culto_conversao || undefined,
       batizado: form.batizado === "sim",
       quer_batismo: false,
       ja_frequentava_igreja: form.ja_frequentava_igreja === "sim",
@@ -224,6 +226,23 @@ export function CadastroPublicoPage() {
                     <SelectItem value="evento">Evento / Culto especial</SelectItem>
                     <SelectItem value="passando">Passando em frente</SelectItem>
                     <SelectItem value="outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field label="Em qual culto você entregou sua vida a Jesus?">
+                <Select value={form.culto_conversao} onValueChange={(v) => up("culto_conversao", v)}>
+                  <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
+                    <SelectValue placeholder="Selecionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="domingo">Domingo</SelectItem>
+                    <SelectItem value="culto_oracao">Culto de oração</SelectItem>
+                    <SelectItem value="overflow">Over Flow</SelectItem>
+                    <SelectItem value="encontro_homens">Encontro dos Homens de Honra</SelectItem>
+                    <SelectItem value="encontro_mulheres">Encontro das Mulheres</SelectItem>
+                    <SelectItem value="culto_jni">Culto de JNI</SelectItem>
+                    <SelectItem value="evangelismo">Evangelismo</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

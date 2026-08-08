@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { Pencil, Trash2, ArrowLeft, Loader2, Sparkles, UserCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -23,7 +23,9 @@ export function ConvertidoDetalhePage() {
   const { data: discipuladores } = useDiscipuladores();
 
   const [selectedDiscId, setSelectedDiscId] = useState<string>("");
+  const [situacao, setSituacao] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [savingSituacao, setSavingSituacao] = useState(false);
 
   useEffect(() => {
     if (data?.discipulador_id) {
@@ -31,7 +33,20 @@ export function ConvertidoDetalhePage() {
     } else {
       setSelectedDiscId("");
     }
-  }, [data?.discipulador_id]);
+    setSituacao((data as Record<string, unknown>)?.situacao as string ?? "");
+  }, [data?.discipulador_id, data]);
+
+  const idade = useMemo(() => {
+    if (!data?.data_nascimento) return null;
+    const nasc = new Date(data.data_nascimento);
+    if (isNaN(nasc.getTime())) return null;
+    const hoje = new Date();
+    let anos = hoje.getFullYear() - nasc.getFullYear();
+    if (hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) {
+      anos--;
+    }
+    return anos;
+  }, [data?.data_nascimento]);
 
   if (isLoading || !data) {
     return (
@@ -53,6 +68,19 @@ export function ConvertidoDetalhePage() {
       toast.error(e instanceof Error ? e.message : "Erro ao salvar");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function onSalvarSituacao() {
+    setSavingSituacao(true);
+    try {
+      await api.updateConvertido(id, { situacao });
+      toast.success("Situação atualizada");
+      qc.invalidateQueries({ queryKey: ["convertidos", id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao salvar");
+    } finally {
+      setSavingSituacao(false);
     }
   }
 
@@ -157,6 +185,7 @@ export function ConvertidoDetalhePage() {
         <Info label="Telefone" value={data.telefone} />
         <Info label="E-mail" value={data.email} />
         <Info label="Nascimento" value={fmt(data.data_nascimento)} />
+        <Info label="Idade" value={idade !== null ? `${idade} anos` : undefined} />
         <Info label="Estado civil" value={data.estado_civil} />
         <Info label="Gênero" value={data.genero} />
         <Info label="Profissão" value={data.profissao} />
@@ -184,6 +213,34 @@ export function ConvertidoDetalhePage() {
         <Info label="Já fez discipulado" value={data.fez_discipulado ? "Sim" : "Não"} />
         <Info label="Observações" value={data.observacoes} full />
       </Section>
+
+      <Card className="rounded-2xl">
+        <CardHeader>
+          <CardTitle className="font-serif text-primary">Situação atual</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-1.5 max-w-md">
+            <label className="text-xs uppercase tracking-wide text-muted-foreground">Status de acompanhamento</label>
+            <select
+              value={situacao}
+              onChange={(e) => setSituacao(e.target.value)}
+              className="w-full rounded-lg border border-border bg-card text-foreground px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              disabled={!editor || savingSituacao}
+            >
+              <option value="">Sem status definido</option>
+              <option value="frequentando">Frequentando</option>
+              <option value="membro">Membro</option>
+              <option value="nao_frequenta">Não está mais frequentando</option>
+            </select>
+          </div>
+          {editor && (
+            <Button onClick={onSalvarSituacao} disabled={savingSituacao} size="sm" className="rounded-xl">
+              {savingSituacao && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Salvar situação
+            </Button>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className="rounded-2xl">
         <CardHeader>

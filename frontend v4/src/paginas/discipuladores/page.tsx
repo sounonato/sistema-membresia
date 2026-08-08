@@ -127,7 +127,7 @@ export function DiscipuladoresPage() {
                     <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Nome</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Telefone</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">E-mail</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Grupos</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground text-right">Discipulado</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Acesso</TableHead>
                     <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Ativo</TableHead>
                     {editor && <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ações</TableHead>}

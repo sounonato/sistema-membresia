@@ -46,7 +46,7 @@ export function DashboardPage() {
 
   const kpis = [
     { n: "01", label: "Convertidos", value: stats.total_convertidos ?? 0, note: "Total registrado" },
-    { n: "02", label: "Grupos ativos", value: stats.grupos_ativos ?? 0, note: "Em andamento" },
+    { n: "02", label: "Discipulados ativos", value: stats.grupos_ativos ?? 0, note: "Em andamento" },
     { n: "03", label: "Batizados", value: stats.batizados ?? 0, note: "Testemunho público" },
     { n: "04", label: "Aguardando", value: stats.aguardando_discipulado ?? 0, note: "Sem discipulador" },
   ];

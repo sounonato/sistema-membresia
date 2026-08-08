@@ -1,18 +1,15 @@
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Plus, Trash2, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { podeEditar } from "@/lib/api";
 import { useConvertidos } from "@/paginas/convertidos/hooks";
 import {
   useAddMembro,
-  useAddProgresso,
   useGrupo,
   useProgresso,
   useRemoveMembro,
@@ -30,10 +27,8 @@ export function GrupoDetalhePage() {
 
   const addMembro = useAddMembro(id);
   const removeMembro = useRemoveMembro(id);
-  const addAula = useAddProgresso(id);
 
   const [busca, setBusca] = useState("");
-  const [novaAula, setNovaAula] = useState({ numero: 1, data: "", concluida: false, observacoes: "" });
 
   const candidatos = useMemo(() => {
     const t = busca.toLowerCase().trim();
@@ -181,62 +176,6 @@ export function GrupoDetalhePage() {
             </ul>
           )}
 
-          {editor && (
-            <div className="mt-6 border-t border-stone-300 pt-6 space-y-4">
-              <p className="text-[10px] uppercase tracking-widest text-stone-500">Nova aula</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] uppercase tracking-widest text-stone-500">Número</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={novaAula.numero}
-                    onChange={(e) => setNovaAula({ ...novaAula, numero: Number(e.target.value) })}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] uppercase tracking-widest text-stone-500">Data</Label>
-                  <Input
-                    type="date"
-                    value={novaAula.data}
-                    onChange={(e) => setNovaAula({ ...novaAula, data: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-2 mt-6 text-sm text-stone-700">
-                    <Checkbox
-                      checked={novaAula.concluida}
-                      onCheckedChange={(v) => setNovaAula({ ...novaAula, concluida: !!v })}
-                    />
-                    Concluída
-                  </Label>
-                </div>
-              </div>
-              <Textarea
-                placeholder="Observações"
-                value={novaAula.observacoes}
-                onChange={(e) => setNovaAula({ ...novaAula, observacoes: e.target.value })}
-              />
-              <div className="flex justify-end">
-                <Button
-                  className="rounded-none bg-stone-900 hover:bg-stone-800"
-                  onClick={async () => {
-                    try {
-                      await addAula.mutateAsync(novaAula);
-                      toast.success("Aula registrada");
-                      setNovaAula({ numero: novaAula.numero + 1, data: "", concluida: false, observacoes: "" });
-                    } catch (e) {
-                      toast.error(e instanceof Error ? e.message : "Erro");
-                    }
-                  }}
-                  disabled={addAula.isPending}
-                >
-                  {addAula.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                  Registrar aula
-                </Button>
-              </div>
-            </div>
-          )}
       </section>
     </div>
   );
