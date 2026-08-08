@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -36,16 +35,14 @@ export function CadastroPublicoPage() {
     data_nascimento: "",
     estado_civil: "",
     genero: "",
-    profissao: "",
-    tem_filhos: false,
     endereco: "",
     bairro: "",
     cidade: "",
     como_conheceu: "",
-    batizado: false,
-    quer_batismo: false,
-    ja_frequentava_igreja: false,
-    ja_fez_discipulado: false,
+    batizado: "",           // "sim" | "nao"
+    ja_frequentava_igreja: "", // "sim" | "nao"
+    igreja_anterior: "",
+    ja_fez_discipulado: "", // "sim" | "nao"
     pedido_oracao: "",
     grupo_id: grupoInicial,
   });
@@ -55,7 +52,14 @@ export function CadastroPublicoPage() {
   }
 
   const m = useMutation({
-    mutationFn: () => api.cadastroPublico(slug, form),
+    mutationFn: () => api.cadastroPublico(slug, {
+      ...form,
+      batizado: form.batizado === "sim",
+      quer_batismo: false,
+      ja_frequentava_igreja: form.ja_frequentava_igreja === "sim",
+      ja_fez_discipulado: form.ja_fez_discipulado === "sim",
+      tem_filhos: false,
+    }),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -103,6 +107,29 @@ export function CadastroPublicoPage() {
 
   const igreja = igrejaQ.data;
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const erros: string[] = [];
+    if (!form.nome.trim()) erros.push("Nome completo");
+    if (!form.telefone.trim()) erros.push("WhatsApp");
+    if (!form.data_nascimento) erros.push("Data de nascimento");
+    if (!form.estado_civil) erros.push("Estado civil");
+    if (!form.genero) erros.push("Gênero");
+    if (!form.endereco.trim()) erros.push("Endereço");
+    if (!form.bairro.trim()) erros.push("Bairro");
+    if (!form.cidade.trim()) erros.push("Cidade");
+    if (!form.como_conheceu) erros.push("Como conheceu a igreja");
+    if (!form.batizado) erros.push("Batizado nas águas");
+    if (!form.ja_frequentava_igreja) erros.push("Frequentava outra igreja");
+    if (!form.ja_fez_discipulado) erros.push("Já fez discipulado");
+
+    if (erros.length > 0) {
+      toast.error(`Preencha os campos obrigatórios: ${erros.join(", ")}`);
+      return;
+    }
+    m.mutate();
+  }
+
   return (
     <div className="min-h-screen bg-stone-50">
       <header className="bg-stone-950 text-stone-100">
@@ -121,17 +148,8 @@ export function CadastroPublicoPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!form.nome || !form.telefone) {
-              toast.error("Nome e WhatsApp são obrigatórios");
-              return;
-            }
-            m.mutate();
-          }}
-          className="space-y-14"
-        >
+        <form onSubmit={handleSubmit} className="space-y-14">
+
           {/* Capítulo I — Dados pessoais */}
           <Chapter n="I" title="Seus dados" lede="O básico para achar você quando a próxima carta chegar.">
             <div className="grid sm:grid-cols-2 gap-4">
@@ -144,47 +162,33 @@ export function CadastroPublicoPage() {
               <Field label="E-mail">
                 <Input type="email" value={form.email} onChange={(e) => up("email", e.target.value)} />
               </Field>
-              <Field label="Data de nascimento">
-                <Input type="date" value={form.data_nascimento} onChange={(e) => up("data_nascimento", e.target.value)} />
+              <Field label="Data de nascimento *">
+                <Input type="date" value={form.data_nascimento} onChange={(e) => up("data_nascimento", e.target.value)} required />
               </Field>
-              <Field label="Estado civil">
-                <Select value={form.estado_civil} onValueChange={(v) => up("estado_civil", v)}>
+              <Field label="Estado civil *">
+                <Select value={form.estado_civil} onValueChange={(v) => up("estado_civil", v)} required>
                   <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="solteiro">Solteiro(a)</SelectItem>
+                    <SelectItem value="noivo">Noivo(a)</SelectItem>
                     <SelectItem value="casado">Casado(a)</SelectItem>
                     <SelectItem value="divorciado">Divorciado(a)</SelectItem>
-                    <SelectItem value="viuvo">Viúvo(a)</SelectItem>
-                    <SelectItem value="uniao_estavel">União estável</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Gênero">
-                <Select value={form.genero} onValueChange={(v) => up("genero", v)}>
+              <Field label="Gênero *">
+                <Select value={form.genero} onValueChange={(v) => up("genero", v)} required>
                   <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="masculino">Masculino</SelectItem>
                     <SelectItem value="feminino">Feminino</SelectItem>
-                    <SelectItem value="outro">Outro</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Profissão">
-                <Input value={form.profissao} onChange={(e) => up("profissao", e.target.value)} placeholder="Sua profissão" />
-              </Field>
-            </div>
-            <div className="mt-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <Checkbox
-                  checked={form.tem_filhos}
-                  onCheckedChange={(v) => up("tem_filhos", !!v)}
-                />
-                <span className="text-sm text-stone-700">Tem filhos?</span>
-              </label>
             </div>
           </Chapter>
 
@@ -192,24 +196,24 @@ export function CadastroPublicoPage() {
           <Chapter n="II" title="Onde você mora" lede="Para sabermos de onde vem esta história.">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <Field label="Endereço">
-                  <Input value={form.endereco} onChange={(e) => up("endereco", e.target.value)} placeholder="Rua, número" />
+                <Field label="Endereço *">
+                  <Input value={form.endereco} onChange={(e) => up("endereco", e.target.value)} placeholder="Rua, número" required />
                 </Field>
               </div>
-              <Field label="Bairro">
-                <Input value={form.bairro} onChange={(e) => up("bairro", e.target.value)} placeholder="Seu bairro" />
+              <Field label="Bairro *">
+                <Input value={form.bairro} onChange={(e) => up("bairro", e.target.value)} placeholder="Seu bairro" required />
               </Field>
-              <Field label="Cidade">
-                <Input value={form.cidade} onChange={(e) => up("cidade", e.target.value)} placeholder="Sua cidade" />
+              <Field label="Cidade *">
+                <Input value={form.cidade} onChange={(e) => up("cidade", e.target.value)} placeholder="Sua cidade" required />
               </Field>
             </div>
           </Chapter>
 
-          {/* Capítulo III — Informações de fé */}
+          {/* Capítulo III — Sua história */}
           <Chapter n="III" title="Sua história" lede="Nada aqui é prova — é conversa. Responda como se contasse a alguém que te espera.">
             <div className="space-y-6">
-              <Field label="Como conheceu nossa igreja?">
-                <Select value={form.como_conheceu} onValueChange={(v) => up("como_conheceu", v)}>
+              <Field label="Como conheceu nossa igreja? *">
+                <Select value={form.como_conheceu} onValueChange={(v) => up("como_conheceu", v)} required>
                   <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
@@ -224,26 +228,58 @@ export function CadastroPublicoPage() {
                 </Select>
               </Field>
 
-              <div className="grid sm:grid-cols-2 gap-3">
-                <label className="flex items-center gap-3 cursor-pointer border border-stone-200 bg-white px-4 py-3">
-                  <Checkbox checked={form.batizado} onCheckedChange={(v) => up("batizado", !!v)} />
-                  <span className="text-sm text-stone-700">Sou batizado(a)</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer border border-stone-200 bg-white px-4 py-3">
-                  <Checkbox checked={form.quer_batismo} onCheckedChange={(v) => up("quer_batismo", !!v)} />
-                  <span className="text-sm text-stone-700">Quero me batizar</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer border border-stone-200 bg-white px-4 py-3">
-                  <Checkbox checked={form.ja_frequentava_igreja} onCheckedChange={(v) => up("ja_frequentava_igreja", !!v)} />
-                  <span className="text-sm text-stone-700">Frequentava outra igreja</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer border border-stone-200 bg-white px-4 py-3">
-                  <Checkbox checked={form.ja_fez_discipulado} onCheckedChange={(v) => up("ja_fez_discipulado", !!v)} />
-                  <span className="text-sm text-stone-700">Já fiz discipulado</span>
-                </label>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Field label="Batizado nas águas? *">
+                  <Select value={form.batizado} onValueChange={(v) => up("batizado", v)} required>
+                    <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                      <SelectValue placeholder="Selecionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sim">Sim</SelectItem>
+                      <SelectItem value="nao">Não</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field label="Já fez discipulado? *">
+                  <Select value={form.ja_fez_discipulado} onValueChange={(v) => up("ja_fez_discipulado", v)} required>
+                    <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                      <SelectValue placeholder="Selecionar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sim">Sim</SelectItem>
+                      <SelectItem value="nao">Não</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <div className="sm:col-span-2">
+                  <Field label="Frequentava outra igreja? *">
+                    <Select value={form.ja_frequentava_igreja} onValueChange={(v) => up("ja_frequentava_igreja", v)} required>
+                      <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                        <SelectValue placeholder="Selecionar..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sim">Sim</SelectItem>
+                        <SelectItem value="nao">Não</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  {form.ja_frequentava_igreja === "sim" && (
+                    <div className="mt-3">
+                      <Field label="Qual igreja?">
+                        <Input
+                          value={form.igreja_anterior}
+                          onChange={(e) => up("igreja_anterior", e.target.value)}
+                          placeholder="Nome da igreja anterior"
+                        />
+                      </Field>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <Field label="Pedido de oração (opcional)">
+              <Field label="Pedido de oração">
                 <Textarea
                   value={form.pedido_oracao}
                   onChange={(e) => up("pedido_oracao", e.target.value)}
