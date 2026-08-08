@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-08-08 (sessão 17 — patch)
+Atualizado em: 2026-08-08 (sessão 17 — testado em produção)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -146,6 +146,13 @@ sistema-membresia/
 #### Patch pós-sessão 17 — botão do formulário público
 - **`frontend v4/src/paginas/cadastro-publico/page.tsx`** — texto do botão de envio: **"Enviar meu nome" → "ENVIAR"**
 - **Commit:** `ae5cc35`
+
+#### Testado em produção (`sistema-membresia.pages.dev`) ✅
+- Dashboard: KPI "Discipulados ativos" correto
+- Convertidos: eyebrow "DISCIPULADO" correto
+- Detalhe convertido: idade calculada + card "Situação atual" funcionando
+- Formulário público (`/cadastro/igreja-nazareno-janga`): campo "Em qual culto" presente, botão "ENVIAR", contraste correto
+- Fluxo completo testado localmente: preenchimento → submit → confirmação → registro na lista → exclusão
 
 ---
 
