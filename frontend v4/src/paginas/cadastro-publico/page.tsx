@@ -314,7 +314,7 @@ export function CadastroPublicoPage() {
           <div className="border-t border-stone-300 pt-6">
             <Button type="submit" size="lg" className="w-full rounded-none bg-stone-950 hover:bg-stone-900 h-14 text-base tracking-wide" disabled={m.isPending}>
               {m.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              Enviar meu nome
+              ENVIAR
             </Button>
             <p className="mt-3 text-center text-[10px] uppercase tracking-widest text-stone-500">
               Fim · página {igreja.nome}
