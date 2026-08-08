@@ -90,7 +90,34 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ error: 'Ocorreu um erro interno no servidor' });
 });
 
+// Auto-migration: executa arquivos .sql em migracoes/ em ordem ao subir
+async function runMigrations() {
+  const fs = require('fs');
+  const path = require('path');
+  const db = require('./conexao');
+  const dir = path.join(__dirname, '../migracoes');
+  const files = fs.readdirSync(dir)
+    .filter(f => f.endsWith('.sql') && /^\d/.test(f))
+    .sort();
+  for (const file of files) {
+    try {
+      const sql = fs.readFileSync(path.join(dir, file), 'utf8');
+      await db.query(sql);
+      console.log(`Migration OK: ${file}`);
+    } catch (err) {
+      console.error(`Migration WARN (${file}):`, err.message);
+    }
+  }
+}
+
 // Inicialização do Servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando com sucesso na porta ${PORT}`);
+runMigrations().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando com sucesso na porta ${PORT}`);
+  });
+}).catch(err => {
+  console.error('Erro nas migrations:', err);
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando com sucesso na porta ${PORT}`);
+  });
 });
