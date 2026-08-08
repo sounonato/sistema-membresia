@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-08-08 (sessão 17)
+Atualizado em: 2026-08-08 (sessão 17 — patch)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -142,6 +142,10 @@ sistema-membresia/
 #### Dashboard — KPI renomeado
 - **`frontend v4/src/paginas/dashboard/page.tsx`**
   - KPI `n: "02"`: **"Grupos ativos" → "Discipulados ativos"**
+
+#### Patch pós-sessão 17 — botão do formulário público
+- **`frontend v4/src/paginas/cadastro-publico/page.tsx`** — texto do botão de envio: **"Enviar meu nome" → "ENVIAR"**
+- **Commit:** `ae5cc35`
 
 ---
 
