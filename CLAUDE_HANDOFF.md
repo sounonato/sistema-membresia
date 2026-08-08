@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-14 (sessão 16)
+Atualizado em: 2026-08-08 (sessão 17)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,40 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 17 (2026-08-08)
+
+### Múltiplas melhorias de UX ✅
+
+**Commit:** `7c0bac2`
+
+#### Detalhe do convertido — flag de situação + idade
+- **`frontend v4/src/paginas/convertidos/[id]/page.tsx`**
+  - Novo card "Situação atual" com select: **Frequentando / Membro / Não está mais frequentando**
+  - Salva via `api.updateConvertido(id, { situacao })` com botão inline (mesmo padrão do discipulador)
+  - **Idade calculada automaticamente** a partir de `data_nascimento` e exibida em "Dados Pessoais"
+
+#### Formulário público de cadastro — novo campo de culto
+- **`frontend v4/src/paginas/cadastro-publico/page.tsx`**
+  - Adicionado campo **"Em qual culto você entregou sua vida a Jesus?"** (select, opcional)
+  - Opções: Domingo, Culto de oração, Over Flow, Encontro dos Homens de Honra, Encontro das Mulheres, Culto de JNI, Evangelismo
+  - Salvo no campo `culto_conversao` (enviado como `undefined` se não preenchido)
+
+#### Grupo de discipulado — formulário "Nova Aula" removido
+- **`frontend v4/src/paginas/discipulado/[id]/page.tsx`**
+  - Removido bloco de formulário "Nova aula" (campos Número, Data, Concluída, Observações + botão Registrar aula)
+  - Seção "Progresso das aulas" (read-only) permanece — só exibe aulas já registradas
+  - Imports de `Textarea`, `Checkbox`, `useAddProgresso` também removidos
+
+#### Discipuladores — coluna renomeada
+- **`frontend v4/src/paginas/discipuladores/page.tsx`**
+  - Cabeçalho da tabela: **"Grupos" → "Discipulado"**
+
+#### Dashboard — KPI renomeado
+- **`frontend v4/src/paginas/dashboard/page.tsx`**
+  - KPI `n: "02"`: **"Grupos ativos" → "Discipulados ativos"**
 
 ---
 
