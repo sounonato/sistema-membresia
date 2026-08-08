@@ -46,7 +46,7 @@ export function ConvertidosPage() {
     <div className="space-y-12 text-foreground">
       <header className="border-b border-border pb-8">
         <div className="flex items-baseline justify-between text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-6">
-          <span>Registro pastoral</span>
+          <span>Discipulado</span>
           <span className="font-editorial italic normal-case tracking-normal text-muted-foreground text-sm">
             {filtrados.length} {filtrados.length === 1 ? "nome" : "nomes"} sob nossa mesa
           </span>
