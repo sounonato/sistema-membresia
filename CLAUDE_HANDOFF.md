@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-08-08 (sessão 18 — bug /membros/:id corrigido em produção)
+Atualizado em: 2026-08-08 (sessão 18 — bug /membros/:id + contraste dark mode corrigidos)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -184,6 +184,14 @@ sistema-membresia/
    - **Commit:** `ff9ea8b`
 
 **Testado em produção:** página `/membros/:id` carrega corretamente ✅
+
+### Bug fix: contraste dark mode no detalhe do membro ✅
+
+- **`frontend v4/src/paginas/membros/[id]/page.tsx`**
+  - `text-stone-800` / `text-stone-900` → `text-foreground` (valores dos campos `Info`)
+  - `border-stone-100` → `border-border` (separadores internos dos cards)
+- **Causa:** cores hardcoded `stone-*` não adaptam ao tema dark — texto sumia no fundo escuro do card
+- **Commit:** `dadd856`
 
 ### Bug fix: GET /membros/:id retornava 500 em produção (sessão 16) ✅
 
