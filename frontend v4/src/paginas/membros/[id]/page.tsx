@@ -146,7 +146,7 @@ export function MembroDetalhe() {
   const alerta = dias > 60;
 
   return (
-    <div className="text-stone-900 space-y-10">
+    <div className="text-foreground space-y-10">
       <PageHeader
         chapter="04"
         eyebrow="Membro"
@@ -335,7 +335,7 @@ export function MembroDetalhe() {
                     </Select>
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-stone-100">
+                  <div className="flex gap-2 pt-2 border-t border-border">
                     <Button
                       onClick={onSalvarPerfil}
                       disabled={alterarPerfil.isPending}
@@ -551,7 +551,7 @@ function Info({ label, children }: { label: string; children: React.ReactNode })
   return (
     <div className="grid grid-cols-[130px_1fr] gap-2 items-baseline">
       <dt className="text-[10px] tracking-widest uppercase text-stone-500">{label}</dt>
-      <dd className="text-stone-800">{children}</dd>
+      <dd className="text-foreground">{children}</dd>
     </div>
   );
 }
@@ -575,7 +575,7 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
           {lista.map((mm) => (
             <li
               key={mm.id}
-              className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+              className="flex items-center justify-between gap-3 border-b border-border pb-2"
             >
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-serif">{mm.ministerio_nome}</span>
@@ -712,7 +712,7 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
           {(membro.cargos ?? []).map((c) => (
             <li
               key={c.id}
-              className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+              className="flex items-center justify-between gap-3 border-b border-border pb-2"
             >
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-serif">{c.cargo}</span>
