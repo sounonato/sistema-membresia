@@ -235,13 +235,7 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
           u.id AS usuario_id_vinculado,
           u.email AS usuario_email,
           u.perfil AS usuario_perfil,
-          u.ativo AS usuario_ativo,
-          (
-            SELECT id FROM discipuladores
-            WHERE (usuario_id = m.usuario_id OR (m.email IS NOT NULL AND email = m.email))
-            AND igreja_id = m.igreja_id
-            LIMIT 1
-          ) AS discipulador_id
+          u.ativo AS usuario_ativo
         FROM membros m
         LEFT JOIN membros c ON m.conjuge_id = c.id
         LEFT JOIN novos_convertidos nc ON m.convertido_id = nc.id
@@ -284,6 +278,16 @@ router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), as
     }
 
     const membro = membroRes.rows[0];
+
+    const discipuladorRes = await safeQuery(
+      `SELECT id FROM discipuladores
+       WHERE (usuario_id = $1 OR ($2::text IS NOT NULL AND email = $2))
+       AND igreja_id = $3
+       LIMIT 1`,
+      [membro.usuario_id_vinculado, membro.email, req.igrejaId]
+    );
+    membro.discipulador_id = discipuladorRes.rows[0]?.id ?? null;
+
     membro.ministerios = ministeriosRes.rows;
     membro.cargos = cargosRes.rows;
     membro.followup_historico = logRes.rows;
