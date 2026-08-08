@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-07-14 (sessão 14)
+Atualizado em: 2026-07-14 (sessão 16)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -108,6 +108,39 @@ sistema-membresia/
 - **Login por email** — sistema identifica a igreja automaticamente pelo email
 - JWT contém `igrejaId` e `perfil`
 - Superadmin não tem `igreja_id` (gerencia todas as igrejas)
+
+---
+
+## Mudanças — Sessão 16 (2026-07-14)
+
+### Paleta Azul Institucional (navy) — substituiu Velvet+Bone ✅
+
+- **`frontend v4/src/styles.css`** — paleta completamente refeita com navy como cor primária
+  - Light: `--background: oklch(0.97 0.005 240)` (branco frio), `--primary: oklch(0.32 0.16 255)` (navy profundo)
+  - Dark: `--background: oklch(0.14 0.04 255)` (navy escuro), `--primary: oklch(0.62 0.16 255)` (azul médio)
+  - Sidebar: navy escuro em ambos os modos
+- **`frontend v4/src/paginas/dashboard/page.tsx`** — `PIE_COLORS` e fallbacks Recharts atualizados para blues (`#3b82f6`, `#60a5fa`, `#93c5fd`)
+
+### Bug fix: GET /membros/:id retornava 500 em produção ✅
+
+- **`backend/src/rotas/membros.js`** — `Promise.all` na rota de detalhe do membro falhava silenciosamente quando tabelas `cargos_membros` ou `whatsapp_followup_log` não existiam no Railway
+- Solução: `safeQuery()` — queries secundárias retornam `[]` em caso de erro em vez de travar o endpoint
+
+### Formulário público de cadastro de convertido atualizado ✅
+
+- **`frontend v4/src/paginas/cadastro-publico/page.tsx`** — form reformulado
+  - **Removido:** Profissão, Tem filhos, Quero me batizar, Quer participar de grupo
+  - **Novos obrigatórios:** Data de nascimento, Estado civil, Gênero, Endereço, Bairro, Cidade, Como conheceu
+  - **Estado civil:** Solteiro / Noivo / Casado / Divorciado
+  - **Gênero:** Masculino / Feminino (removido "Outro")
+  - **Perguntas de fé** viram select Sim/Não obrigatório: Batizado nas águas, Frequentava outra igreja (+ campo "Qual?" condicional), Já fez discipulado
+  - **Contraste:** inputs e selects com `bg-white`, `border-stone-300`, `text-stone-900` — legíveis em mobile
+
+### Matt Pocock Skills configurado ✅
+
+- `CLAUDE.md` criado na raiz com config de issue tracker e domain docs
+- `docs/agents/issue-tracker.md` — GitHub Issues via `gh` CLI
+- `docs/agents/domain.md` — single-context, lê `CONTEXT.md` + `docs/adr/`
 
 ---
 
