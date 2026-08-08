@@ -1,6 +1,6 @@
 # CLAUDE_HANDOFF — Sistema Membresia
 
-Atualizado em: 2026-08-08 (sessão 17 — testado em produção)
+Atualizado em: 2026-08-08 (sessão 18 — bug /membros/:id corrigido em produção)
 
 ## Estado atual: FUNCIONANDO ✅
 
@@ -166,7 +166,26 @@ sistema-membresia/
   - Sidebar: navy escuro em ambos os modos
 - **`frontend v4/src/paginas/dashboard/page.tsx`** — `PIE_COLORS` e fallbacks Recharts atualizados para blues (`#3b82f6`, `#60a5fa`, `#93c5fd`)
 
+---
+
+## Mudanças — Sessão 18 (2026-08-08)
+
 ### Bug fix: GET /membros/:id retornava 500 em produção ✅
+
+**Causa raiz (2 camadas):**
+
+1. **Subquery inline quebrando a main query** — `GET /membros/:id` tinha uma subquery correlated para `discipuladores` dentro da query principal (`db.query`). Se essa tabela faltasse ou tivesse schema diferente no Railway, derrubava o endpoint inteiro com 500.
+   - **Fix:** removida a subquery do SQL principal; `discipulador_id` agora é buscado em `safeQuery` separada após a main query.
+   - **Commit:** `a55fb40`
+
+2. **Coluna `usuario_id` inexistente na tabela `membros` no Railway** — a query faz `LEFT JOIN usuarios u ON m.usuario_id = u.id`, mas a coluna nunca foi criada via migration no Railway (foi adicionada manualmente ao banco local sem criar migration).
+   - **Fix:** criada `migracoes/008_membros_usuario_id.sql` com `ALTER TABLE membros ADD COLUMN IF NOT EXISTS usuario_id UUID REFERENCES usuarios(id) ON DELETE SET NULL`
+   - **Fix adicional:** adicionado auto-migration runner no startup (`src/index.js`) que lê e executa todos os arquivos `.sql` de `migracoes/` em ordem ao subir — garante que futuras migrations sejam aplicadas automaticamente no Railway.
+   - **Commit:** `ff9ea8b`
+
+**Testado em produção:** página `/membros/:id` carrega corretamente ✅
+
+### Bug fix: GET /membros/:id retornava 500 em produção (sessão 16) ✅
 
 - **`backend/src/rotas/membros.js`** — `Promise.all` na rota de detalhe do membro falhava silenciosamente quando tabelas `cargos_membros` ou `whatsapp_followup_log` não existiam no Railway
 - Solução: `safeQuery()` — queries secundárias retornam `[]` em caso de erro em vez de travar o endpoint
