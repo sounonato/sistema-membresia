@@ -154,20 +154,20 @@ export function CadastroPublicoPage() {
           <Chapter n="I" title="Seus dados" lede="O básico para achar você quando a próxima carta chegar.">
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Nome completo *">
-                <Input value={form.nome} onChange={(e) => up("nome", e.target.value)} required />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.nome} onChange={(e) => up("nome", e.target.value)} required />
               </Field>
               <Field label="WhatsApp *">
-                <Input value={form.telefone} onChange={(e) => up("telefone", e.target.value)} placeholder="(88) 99999-9999" required />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.telefone} onChange={(e) => up("telefone", e.target.value)} placeholder="(88) 99999-9999" required />
               </Field>
               <Field label="E-mail">
-                <Input type="email" value={form.email} onChange={(e) => up("email", e.target.value)} />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" type="email" value={form.email} onChange={(e) => up("email", e.target.value)} />
               </Field>
               <Field label="Data de nascimento *">
-                <Input type="date" value={form.data_nascimento} onChange={(e) => up("data_nascimento", e.target.value)} required />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 h-11" type="date" value={form.data_nascimento} onChange={(e) => up("data_nascimento", e.target.value)} required />
               </Field>
               <Field label="Estado civil *">
                 <Select value={form.estado_civil} onValueChange={(v) => up("estado_civil", v)} required>
-                  <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                  <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -180,7 +180,7 @@ export function CadastroPublicoPage() {
               </Field>
               <Field label="Gênero *">
                 <Select value={form.genero} onValueChange={(v) => up("genero", v)} required>
-                  <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                  <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,14 +197,14 @@ export function CadastroPublicoPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <Field label="Endereço *">
-                  <Input value={form.endereco} onChange={(e) => up("endereco", e.target.value)} placeholder="Rua, número" required />
+                  <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.endereco} onChange={(e) => up("endereco", e.target.value)} placeholder="Rua, número" required />
                 </Field>
               </div>
               <Field label="Bairro *">
-                <Input value={form.bairro} onChange={(e) => up("bairro", e.target.value)} placeholder="Seu bairro" required />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.bairro} onChange={(e) => up("bairro", e.target.value)} placeholder="Seu bairro" required />
               </Field>
               <Field label="Cidade *">
-                <Input value={form.cidade} onChange={(e) => up("cidade", e.target.value)} placeholder="Sua cidade" required />
+                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.cidade} onChange={(e) => up("cidade", e.target.value)} placeholder="Sua cidade" required />
               </Field>
             </div>
           </Chapter>
@@ -214,7 +214,7 @@ export function CadastroPublicoPage() {
             <div className="space-y-6">
               <Field label="Como conheceu nossa igreja? *">
                 <Select value={form.como_conheceu} onValueChange={(v) => up("como_conheceu", v)} required>
-                  <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                  <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -231,7 +231,7 @@ export function CadastroPublicoPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Batizado nas águas? *">
                   <Select value={form.batizado} onValueChange={(v) => up("batizado", v)} required>
-                    <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                    <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                       <SelectValue placeholder="Selecionar..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -243,7 +243,7 @@ export function CadastroPublicoPage() {
 
                 <Field label="Já fez discipulado? *">
                   <Select value={form.ja_fez_discipulado} onValueChange={(v) => up("ja_fez_discipulado", v)} required>
-                    <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                    <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                       <SelectValue placeholder="Selecionar..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -256,7 +256,7 @@ export function CadastroPublicoPage() {
                 <div className="sm:col-span-2">
                   <Field label="Frequentava outra igreja? *">
                     <Select value={form.ja_frequentava_igreja} onValueChange={(v) => up("ja_frequentava_igreja", v)} required>
-                      <SelectTrigger className="rounded-none border-0 border-b border-stone-400 focus:ring-0 focus:border-primary bg-transparent">
+                      <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                         <SelectValue placeholder="Selecionar..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -269,6 +269,7 @@ export function CadastroPublicoPage() {
                     <div className="mt-3">
                       <Field label="Qual igreja?">
                         <Input
+                          className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
                           value={form.igreja_anterior}
                           onChange={(e) => up("igreja_anterior", e.target.value)}
                           placeholder="Nome da igreja anterior"
@@ -281,6 +282,7 @@ export function CadastroPublicoPage() {
 
               <Field label="Pedido de oração">
                 <Textarea
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400"
                   value={form.pedido_oracao}
                   onChange={(e) => up("pedido_oracao", e.target.value)}
                   placeholder="Deixe aqui seu pedido de oração..."
@@ -326,8 +328,8 @@ function Chapter({ n, title, lede, children }: { n: string; title: string; lede?
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-2">
-      <Label className="text-[10px] uppercase tracking-widest text-stone-500">{label}</Label>
+    <div className="space-y-1.5">
+      <Label className="text-[10px] uppercase tracking-widest text-stone-600 font-semibold">{label}</Label>
       {children}
     </div>
   );
