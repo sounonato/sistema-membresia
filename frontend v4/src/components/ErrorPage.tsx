@@ -80,7 +80,13 @@ function ErrorGlyph({ code }: { code: number }) {
   return <span aria-hidden>⚠️</span>;
 }
 
-export function ErrorPage({ code = 500, title, description, detail, showBack = true }: ErrorPageProps) {
+export function ErrorPage({
+  code = 500,
+  title,
+  description,
+  detail,
+  showBack = true,
+}: ErrorPageProps) {
   const config = ERROR_CONFIGS[code] ?? ERROR_CONFIGS[500];
   const displayTitle = title ?? config.title;
   const displayDescription = description ?? config.description;
@@ -91,10 +97,7 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted px-4 py-16 font-sans">
       {/* Decorative top line */}
-      <div
-        className="mb-10 h-px w-24"
-        style={{ background: "var(--primary, #b45309)" }}
-      />
+      <div className="mb-10 h-px w-24" style={{ background: "var(--primary, #b45309)" }} />
 
       <div className="max-w-md text-center">
         {/* Code */}
@@ -111,9 +114,7 @@ export function ErrorPage({ code = 500, title, description, detail, showBack = t
         </div>
 
         {/* Title */}
-        <h1 className="font-editorial text-2xl font-semibold text-foreground">
-          {displayTitle}
-        </h1>
+        <h1 className="font-editorial text-2xl font-semibold text-foreground">{displayTitle}</h1>
 
         {/* Description */}
         <p className="mt-3 text-base text-muted-foreground">{displayDescription}</p>

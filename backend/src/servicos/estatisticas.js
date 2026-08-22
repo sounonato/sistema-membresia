@@ -89,6 +89,27 @@ async function obterEstatisticas(igrejaId, usuarioPerfil, discipuladorId) {
       WHERE gd.discipulador_id = $1 AND nc.igreja_id = $2
       GROUP BY nc.genero
     `;
+
+    porFaixaEtariaQuery = `
+      SELECT
+        CASE
+          WHEN nc.data_nascimento IS NULL THEN 'Não informado'
+          WHEN EXTRACT(YEAR FROM AGE(nc.data_nascimento)) < 18 THEN '< 18'
+          WHEN EXTRACT(YEAR FROM AGE(nc.data_nascimento)) BETWEEN 18 AND 25 THEN '18-25'
+          WHEN EXTRACT(YEAR FROM AGE(nc.data_nascimento)) BETWEEN 26 AND 35 THEN '26-35'
+          WHEN EXTRACT(YEAR FROM AGE(nc.data_nascimento)) BETWEEN 36 AND 45 THEN '36-45'
+          WHEN EXTRACT(YEAR FROM AGE(nc.data_nascimento)) BETWEEN 46 AND 60 THEN '46-60'
+          ELSE '> 60'
+        END as faixa,
+        COUNT(DISTINCT nc.id) as quantidade,
+        ARRAY_AGG(DISTINCT nc.nome ORDER BY nc.nome) as nomes
+      FROM novos_convertidos nc
+      JOIN grupo_membros gm ON nc.id = gm.convertido_id
+      JOIN grupos_discipulado gd ON gm.grupo_id = gd.id
+      WHERE gd.discipulador_id = $1 AND nc.igreja_id = $2
+      GROUP BY faixa
+      ORDER BY faixa
+    `;
     
     // Para o caso de discipulador, os parâmetros serão [discipuladorId, igrejaId]
     params.length = 0; // Limpa os parâmetros
@@ -117,6 +138,23 @@ async function obterEstatisticas(igrejaId, usuarioPerfil, discipuladorId) {
       FROM novos_convertidos 
       GROUP BY genero
     `;
+    porFaixaEtariaQuery = `
+      SELECT
+        CASE
+          WHEN data_nascimento IS NULL THEN 'Não informado'
+          WHEN EXTRACT(YEAR FROM AGE(data_nascimento)) < 18 THEN '< 18'
+          WHEN EXTRACT(YEAR FROM AGE(data_nascimento)) BETWEEN 18 AND 25 THEN '18-25'
+          WHEN EXTRACT(YEAR FROM AGE(data_nascimento)) BETWEEN 26 AND 35 THEN '26-35'
+          WHEN EXTRACT(YEAR FROM AGE(data_nascimento)) BETWEEN 36 AND 45 THEN '36-45'
+          WHEN EXTRACT(YEAR FROM AGE(data_nascimento)) BETWEEN 46 AND 60 THEN '46-60'
+          ELSE '> 60'
+        END as faixa,
+        COUNT(*) as quantidade,
+        ARRAY_AGG(nome ORDER BY nome) as nomes
+      FROM novos_convertidos
+      GROUP BY faixa
+      ORDER BY faixa
+    `;
     params.length = 0; // Sem parâmetros
   }
 
@@ -144,8 +182,18 @@ async function obterEstatisticas(igrejaId, usuarioPerfil, discipuladorId) {
     batizados: parseInt(batizadosRes.rows[0].count || 0, 10),
     aguardando_discipulado: parseInt(aguardandoRes.rows[0].count || 0, 10),
     convertidos_por_mes: mesesRes.rows,
-    por_genero: generoRes.rows,
-    por_faixa_etaria: faixaRes.rows
+    por_mes: mesesRes.rows.map((item) => ({ mes: item.mes, total: Number(item.quantidade) })),
+    por_genero: generoRes.rows.map((item) => ({
+      genero: item.genero,
+      total: Number(item.quantidade),
+      quantidade: Number(item.quantidade),
+    })),
+    por_faixa_etaria: faixaRes.rows.map((item) => ({
+      faixa: item.faixa,
+      total: Number(item.quantidade),
+      quantidade: Number(item.quantidade),
+      nomes: item.nomes,
+    }))
   };
 }
 

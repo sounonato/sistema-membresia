@@ -1,12 +1,37 @@
 const express = require('express');
+const crypto = require('crypto');
 const db = require('../conexao');
+const autenticar = require('../middlewares/autenticacao');
+const { checkPerfil } = require('../middlewares/perfil');
 const identificarTenant = require('../middlewares/tenant');
 
 const router = express.Router();
 
+function gerarToken(igrejaId, email) {
+  const segredo = process.env.PORTAL_SECRET;
+  if (!segredo) return null;
+  return crypto.createHmac('sha256', segredo)
+    .update(`${igrejaId}:${email.trim().toLowerCase()}`)
+    .digest('hex');
+}
+
+// Gera um link de portal para um convertido sem expor a informação por e-mail.
+router.post('/link', autenticar, identificarTenant, checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
+  const { email } = req.body;
+  if (!email || !req.igrejaId) return res.status(400).json({ error: 'E-mail e igreja são obrigatórios' });
+  const token = gerarToken(req.igrejaId, email);
+  if (!token) return res.status(503).json({ error: 'Portal indisponível: PORTAL_SECRET não configurado' });
+  const igrejaRes = await db.query('SELECT slug FROM igrejas WHERE id = $1', [req.igrejaId]);
+  const slug = igrejaRes.rows[0]?.slug;
+  if (!slug) return res.status(404).json({ error: 'Igreja não encontrada' });
+  const baseUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
+  return res.json({ url: `${baseUrl}/portal/${slug}/${encodeURIComponent(email)}?token=${token}` });
+});
+
 // GET /api/portal/:slug/:email - Portal público do convertido filtrado por igreja (slug) e e-mail
 router.get('/:slug/:email', identificarTenant, async (req, res) => {
   const { email } = req.params;
+  const token = req.query.token;
 
   if (!email) {
     return res.status(400).json({ error: 'E-mail é obrigatório' });
@@ -16,6 +41,13 @@ router.get('/:slug/:email', identificarTenant, async (req, res) => {
 
   if (!igrejaId) {
     return res.status(404).json({ error: 'Igreja não encontrada ou inativa' });
+  }
+
+  const esperado = gerarToken(igrejaId, email);
+  if (!esperado || typeof token !== 'string' || token.length !== esperado.length ||
+      !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(esperado))) {
+    // Resposta indistinguível de cadastro inexistente reduz enumeração de dados pastorais.
+    return res.status(404).json({ error: 'Portal não encontrado' });
   }
 
   try {

@@ -1,9 +1,9 @@
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DIST = path.join(__dirname, '.output/public');
+const DIST = path.join(__dirname, ".output/public");
 
 app.use(express.static(DIST));
-app.get('/{*splat}', (_req, res) => res.sendFile(path.join(DIST, 'index.html')));
+app.get("/{*splat}", (_req, res) => res.sendFile(path.join(DIST, "index.html")));
 app.listen(PORT, () => console.log(`Frontend na porta ${PORT}`));

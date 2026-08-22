@@ -23,7 +23,13 @@ type Props = {
   submitLabel?: string;
 };
 
-export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submitLabel = "Salvar" }: Props) {
+export function ConvertidoForm({
+  initial,
+  submitting,
+  onSubmit,
+  onCancel,
+  submitLabel = "Salvar",
+}: Props) {
   const [form, setForm] = useState<Partial<Convertido>>(initial ?? {});
   function set<K extends keyof Convertido>(k: K, v: Convertido[K] | undefined) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -45,10 +51,18 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
             <Input required value={form.nome ?? ""} onChange={(e) => set("nome", e.target.value)} />
           </Field>
           <Field label="Telefone / WhatsApp *">
-            <Input required value={form.telefone ?? ""} onChange={(e) => set("telefone", e.target.value)} />
+            <Input
+              required
+              value={form.telefone ?? ""}
+              onChange={(e) => set("telefone", e.target.value)}
+            />
           </Field>
           <Field label="E-mail">
-            <Input type="email" value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} />
+            <Input
+              type="email"
+              value={form.email ?? ""}
+              onChange={(e) => set("email", e.target.value)}
+            />
           </Field>
           <Field label="Data de nascimento">
             <Input
@@ -59,17 +73,23 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
           </Field>
           <Field label="Estado civil">
             <Select value={form.estado_civil} onValueChange={(v) => set("estado_civil", v)}>
-              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
               <SelectContent>
                 {["Solteiro", "Casado", "Divorciado", "Viúvo", "União Estável"].map((v) => (
-                  <SelectItem key={v} value={v}>{v}</SelectItem>
+                  <SelectItem key={v} value={v}>
+                    {v}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
           <Field label="Gênero">
             <Select value={form.genero} onValueChange={(v) => set("genero", v)}>
-              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Masculino">Masculino</SelectItem>
                 <SelectItem value="Feminino">Feminino</SelectItem>
@@ -77,7 +97,10 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
             </Select>
           </Field>
           <Field label="Profissão">
-            <Input value={form.profissao ?? ""} onChange={(e) => set("profissao", e.target.value)} />
+            <Input
+              value={form.profissao ?? ""}
+              onChange={(e) => set("profissao", e.target.value)}
+            />
           </Field>
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
@@ -132,11 +155,32 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
           </Field>
           <Field label="Como conheceu a igreja">
             <Select value={form.como_conheceu} onValueChange={(v) => set("como_conheceu", v)}>
-              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
               <SelectContent>
                 {["Amigo", "Familiar", "Redes Sociais", "Evento", "Culto", "Outro"].map((v) => (
-                  <SelectItem key={v} value={v}>{v}</SelectItem>
+                  <SelectItem key={v} value={v}>
+                    {v}
+                  </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Em qual culto entregou a vida a Jesus?">
+            <Select value={form.culto_conversao} onValueChange={(v) => set("culto_conversao", v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o culto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="domingo">Domingo</SelectItem>
+                <SelectItem value="culto_oracao">Culto de oração</SelectItem>
+                <SelectItem value="overflow">Over Flow</SelectItem>
+                <SelectItem value="encontro_homens">Encontro dos Homens de Honra</SelectItem>
+                <SelectItem value="encontro_mulheres">Encontro das Mulheres</SelectItem>
+                <SelectItem value="culto_jni">Culto de JNI</SelectItem>
+                <SelectItem value="evangelismo">Evangelismo</SelectItem>
+                <SelectItem value="outro">Outro</SelectItem>
               </SelectContent>
             </Select>
           </Field>
@@ -149,8 +193,16 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <CheckRow checked={!!form.batizado} onChange={(v) => set("batizado", v)} label="É batizado?" />
-            <CheckRow checked={!!form.quer_batizar} onChange={(v) => set("quer_batizar", v)} label="Quer se batizar?" />
+            <CheckRow
+              checked={!!form.batizado}
+              onChange={(v) => set("batizado", v)}
+              label="É batizado?"
+            />
+            <CheckRow
+              checked={!!form.quer_batizar}
+              onChange={(v) => set("quer_batizar", v)}
+              label="Quer se batizar?"
+            />
             <div className="space-y-2">
               <CheckRow
                 checked={!!form.frequentava_outra_igreja}
@@ -165,7 +217,11 @@ export function ConvertidoForm({ initial, submitting, onSubmit, onCancel, submit
                 />
               )}
             </div>
-            <CheckRow checked={!!form.fez_discipulado} onChange={(v) => set("fez_discipulado", v)} label="Já fez discipulado?" />
+            <CheckRow
+              checked={!!form.fez_discipulado}
+              onChange={(v) => set("fez_discipulado", v)}
+              label="Já fez discipulado?"
+            />
           </div>
           <Field label="Observações / Pedido de oração">
             <Textarea

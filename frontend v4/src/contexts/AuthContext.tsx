@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { api, type Igreja, type Usuario } from "@/lib/api";
+import { api, ApiError, type Igreja, type Usuario } from "@/lib/api";
 
 type AuthCtx = {
   usuario: Usuario | null;
@@ -36,10 +36,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((u: Usuario) => {
         if (alive) setUsuario(u);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
         if (!alive) return;
+        if (!(err instanceof ApiError) || ![401, 403].includes(err.status)) return;
         localStorage.removeItem("token");
+        localStorage.removeItem("slug");
         setToken(null);
+        setSlug(null);
         setUsuario(null);
       })
       .finally(() => alive && setLoading(false));

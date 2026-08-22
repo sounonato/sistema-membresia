@@ -65,7 +65,7 @@ router.post('/igrejas/:slug/cadastro', async (req, res) => {
     nome, telefone, email, data_nascimento,
     genero, estado_civil, profissao, tem_filhos,
     endereco, bairro, cidade,
-    como_conheceu, batizado, quer_batismo,
+    como_conheceu, culto_conversao, batizado, quer_batismo,
     ja_frequentava_igreja, ja_fez_discipulado,
     pedido_oracao, grupo_id,
   } = req.body;
@@ -86,36 +86,56 @@ router.post('/igrejas/:slug/cadastro', async (req, res) => {
 
     const observacoes = pedido_oracao ? `Pedido de oração: ${pedido_oracao}` : null;
 
-    const resultado = await db.query(
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const resultado = await client.query(
       `INSERT INTO novos_convertidos
          (nome, telefone, email, data_nascimento,
           genero, estado_civil, profissao, tem_filhos,
           endereco, bairro, cidade,
-          como_conheceu, batizado, quer_batismo,
+          como_conheceu, culto_conversao, batizado, quer_batismo,
           ja_frequentava_igreja, ja_fez_discipulado,
           observacoes, data_conversao, igreja_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,CURRENT_DATE,$18)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,CURRENT_DATE,$19)
        RETURNING id`,
       [
         nome, telefone, email ?? null, data_nascimento ?? null,
         genero ?? null, estado_civil ?? null, profissao ?? null, tem_filhos ?? false,
         endereco ?? null, bairro ?? null, cidade ?? null,
-        como_conheceu ?? null, batizado ?? false, quer_batismo ?? false,
+        como_conheceu ?? null, culto_conversao ?? null, batizado ?? false, quer_batismo ?? false,
         ja_frequentava_igreja ?? false, ja_fez_discipulado ?? false,
         observacoes, igrejaId,
       ]
-    );
-
-    const convertidoId = resultado.rows[0].id;
-
-    if (grupo_id) {
-      await db.query(
-        `INSERT INTO grupo_membros (grupo_id, convertido_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-        [grupo_id, convertidoId]
       );
-    }
 
-    return res.status(201).json({ id: convertidoId, message: 'Cadastro realizado com sucesso' });
+      const convertidoId = resultado.rows[0].id;
+
+      if (grupo_id) {
+        const grupoRes = await client.query(
+          `SELECT id FROM grupos_discipulado
+           WHERE id = $1 AND igreja_id = $2 AND status = 'ativo'`,
+          [grupo_id, igrejaId]
+        );
+        if (grupoRes.rows.length === 0) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: 'Grupo inválido para esta igreja' });
+        }
+        await client.query(
+          `INSERT INTO grupo_membros (grupo_id, convertido_id, igreja_id)
+           VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+          [grupo_id, convertidoId, igrejaId]
+        );
+      }
+      await client.query('COMMIT');
+
+      return res.status(201).json({ id: convertidoId, message: 'Cadastro realizado com sucesso' });
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error('Erro no cadastro público:', err);
     return res.status(500).json({ error: 'Erro interno ao registrar cadastro' });

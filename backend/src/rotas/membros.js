@@ -11,7 +11,7 @@ router.use(autenticar);
 router.use(identificarTenant);
 
 // 7.1 GET /api/membros/stats
-router.get('/stats', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/stats', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   try {
     const igrejaId = req.igrejaId;
 
@@ -96,7 +96,7 @@ router.get('/stats', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), 
 });
 
 // 7.2 GET /api/membros/sem-contato
-router.get('/sem-contato', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/sem-contato', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const dias = parseInt(req.query.dias) || 60;
   try {
     const resultado = await db.query(
@@ -131,7 +131,7 @@ router.get('/sem-contato', checkPerfil(['admin', 'lider', 'pastor', 'discipulado
 });
 
 // 7.3 GET /api/membros
-router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const { status, busca, ministerio_id, sem_ministerio } = req.query;
   const pagina = parseInt(req.query.pagina) || 1;
   const porPagina = Math.min(parseInt(req.query.por_pagina) || 50, 100);
@@ -221,7 +221,7 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
 });
 
 // 7.4 GET /api/membros/:id
-router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/:id', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const { id } = req.params;
   try {
     const safeQuery = (sql, params) => db.query(sql, params).catch(() => ({ rows: [] }));
@@ -550,7 +550,7 @@ router.delete('/:id', checkPerfil(['admin']), async (req, res) => {
 });
 
 // 7.8 PATCH /api/membros/:id/vi-hoje
-router.patch('/:id/vi-hoje', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.patch('/:id/vi-hoje', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const { id } = req.params;
   try {
     const resultado = await db.query(
@@ -649,7 +649,7 @@ router.delete('/:id/ministerios/:ministerioId', checkPerfil(['admin', 'lider']),
 });
 
 // 7.11 GET /api/membros/:id/cargos
-router.get('/:id/cargos', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/:id/cargos', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const { id } = req.params;
   try {
     // Verificar se o membro pertence à igreja
@@ -877,23 +877,34 @@ router.post('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) => 
     const bcrypt = require('bcrypt');
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    const usuarioResult = await db.query(
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const usuarioResult = await client.query(
       `INSERT INTO usuarios (nome, email, senha_hash, perfil, igreja_id)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, nome, email, perfil, ativo`,
       [membro.nome, email, senhaHash, perfil, req.igrejaId]
-    );
-    const usuario = usuarioResult.rows[0];
+      );
+      const usuario = usuarioResult.rows[0];
 
-    await db.query(
-      'UPDATE membros SET usuario_id = $1 WHERE id = $2',
-      [usuario.id, id]
-    );
+      const vinculo = await client.query(
+        'UPDATE membros SET usuario_id = $1 WHERE id = $2 AND igreja_id = $3',
+        [usuario.id, id, req.igrejaId]
+      );
+      if (vinculo.rowCount !== 1) throw new Error('Membro não está mais disponível para vinculação');
+      await client.query('COMMIT');
 
-    return res.status(201).json({
-      message: 'Acesso created com sucesso',
-      usuario: { id: usuario.id, email: usuario.email, perfil: usuario.perfil }
-    });
+      return res.status(201).json({
+        message: 'Acesso criado com sucesso',
+        usuario: { id: usuario.id, email: usuario.email, perfil: usuario.perfil }
+      });
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error('Erro ao criar acesso do membro:', err);
     return res.status(500).json({ error: 'Erro interno ao criar acesso' });
@@ -912,10 +923,27 @@ router.delete('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) =
     const { usuario_id } = membroRes.rows[0];
     if (!usuario_id) return res.status(404).json({ error: 'Membro não possui acesso' });
 
-    // Desativar a conta (não deleta para preservar histórico)
-    await db.query('UPDATE usuarios SET ativo = false WHERE id = $1', [usuario_id]);
-    // Desvincular
-    await db.query('UPDATE membros SET usuario_id = NULL WHERE id = $1', [id]);
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const usuarioUpdate = await client.query(
+        'UPDATE usuarios SET ativo = false WHERE id = $1 AND igreja_id = $2',
+        [usuario_id, req.igrejaId]
+      );
+      const vinculoUpdate = await client.query(
+        'UPDATE membros SET usuario_id = NULL WHERE id = $1 AND igreja_id = $2 AND usuario_id = $3',
+        [id, req.igrejaId, usuario_id]
+      );
+      if (usuarioUpdate.rowCount !== 1 || vinculoUpdate.rowCount !== 1) {
+        throw new Error('Acesso mudou durante a revogação');
+      }
+      await client.query('COMMIT');
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
 
     return res.json({ message: 'Acesso revogado com sucesso' });
   } catch (err) {

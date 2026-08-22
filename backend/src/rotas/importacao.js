@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 const db = require('../conexao');
 const autenticar = require('../middlewares/autenticacao');
 const { checkPerfil } = require('../middlewares/perfil');
@@ -41,6 +41,15 @@ function parseExcelDate(val) {
   }
   
   return null;
+}
+
+function valorDaCelula(valor) {
+  if (valor && typeof valor === 'object') {
+    if ('result' in valor) return valor.result;
+    if ('text' in valor) return valor.text;
+    if (Array.isArray(valor.richText)) return valor.richText.map((parte) => parte.text).join('');
+  }
+  return valor;
 }
 
 // Auxiliar para normalizar Gênero
@@ -131,11 +140,25 @@ router.post('/membros/importar', autenticar, checkPerfil(['admin', 'lider']), id
     const limiteMaximo = LIMITES[plano] ?? 100;
     let totalAtivos = parseInt(total);
 
-    // 2. Ler planilha excel do buffer
-    const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(worksheet);
+    // 2. Ler planilha Excel do buffer com limites antes de materializar as linhas
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(req.file.buffer);
+    const worksheet = workbook.worksheets[0];
+    const maxRows = 5000;
+    const maxColumns = 50;
+    if (!worksheet || worksheet.rowCount <= 1 || worksheet.rowCount - 1 > maxRows || worksheet.columnCount > maxColumns) {
+      return res.status(400).json({ error: `Planilha excede o limite de ${maxRows} linhas e ${maxColumns} colunas.` });
+    }
+    const cabecalhos = worksheet.getRow(1).values.slice(1).map((valor) => String(valorDaCelula(valor) ?? '').trim());
+    const rows = [];
+    for (let numeroLinha = 2; numeroLinha <= worksheet.rowCount; numeroLinha += 1) {
+      const linha = worksheet.getRow(numeroLinha);
+      const objeto = {};
+      cabecalhos.forEach((cabecalho, indice) => {
+        if (cabecalho) objeto[cabecalho] = valorDaCelula(linha.getCell(indice + 1).value);
+      });
+      rows.push(objeto);
+    }
 
     if (rows.length === 0) {
       return res.status(400).json({ error: 'A planilha enviada está vazia.' });

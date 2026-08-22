@@ -10,7 +10,7 @@ router.use(autenticar);
 router.use(identificarTenant);
 
 // GET /api/discipuladores - Listar discipuladores
-router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/', checkPerfil(['admin', 'lider']), async (req, res) => {
   try {
     let queryText = `
       SELECT d.*, u.nome as usuario_nome, u.email as usuario_email 
@@ -35,7 +35,7 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
 });
 
 // GET /api/discipuladores/:id - Detalhes do discipulador
-router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -210,25 +210,36 @@ router.post('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) => 
     const bcrypt = require('bcrypt');
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    // Criar usuário com perfil discipulador
-    const usuarioResult = await db.query(
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Criar usuário com perfil discipulador
+      const usuarioResult = await client.query(
       `INSERT INTO usuarios (nome, email, senha_hash, perfil, igreja_id)
        VALUES ($1, $2, $3, 'discipulador', $4)
        RETURNING id, nome, email, perfil, ativo`,
       [disc.nome, email, senhaHash, req.igrejaId]
-    );
-    const usuario = usuarioResult.rows[0];
+      );
+      const usuario = usuarioResult.rows[0];
 
-    // Vincular usuário ao discipulador
-    await db.query(
-      'UPDATE discipuladores SET usuario_id = $1 WHERE id = $2',
-      [usuario.id, id]
-    );
+      // Vincular usuário ao discipulador na mesma transação
+      const vinculo = await client.query(
+        'UPDATE discipuladores SET usuario_id = $1 WHERE id = $2 AND igreja_id = $3',
+        [usuario.id, id, req.igrejaId]
+      );
+      if (vinculo.rowCount !== 1) throw new Error('Discipulador não está mais disponível para vinculação');
+      await client.query('COMMIT');
 
-    return res.status(201).json({
-      message: 'Acesso criado com sucesso',
-      usuario: { id: usuario.id, email: usuario.email, perfil: usuario.perfil }
-    });
+      return res.status(201).json({
+        message: 'Acesso criado com sucesso',
+        usuario: { id: usuario.id, email: usuario.email, perfil: usuario.perfil }
+      });
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error('Erro ao criar acesso do discipulador:', err);
     return res.status(500).json({ error: 'Erro interno ao criar acesso' });
@@ -247,10 +258,27 @@ router.delete('/:id/acesso', checkPerfil(['admin', 'lider']), async (req, res) =
     const { usuario_id } = discResult.rows[0];
     if (!usuario_id) return res.status(404).json({ error: 'Discipulador não possui acesso' });
 
-    // Desativar a conta (não deleta)
-    await db.query('UPDATE usuarios SET ativo = false WHERE id = $1', [usuario_id]);
-    // Desvincular
-    await db.query('UPDATE discipuladores SET usuario_id = NULL WHERE id = $1', [id]);
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const usuarioUpdate = await client.query(
+        'UPDATE usuarios SET ativo = false WHERE id = $1 AND igreja_id = $2',
+        [usuario_id, req.igrejaId]
+      );
+      const vinculoUpdate = await client.query(
+        'UPDATE discipuladores SET usuario_id = NULL WHERE id = $1 AND igreja_id = $2 AND usuario_id = $3',
+        [id, req.igrejaId, usuario_id]
+      );
+      if (usuarioUpdate.rowCount !== 1 || vinculoUpdate.rowCount !== 1) {
+        throw new Error('Acesso mudou durante a revogação');
+      }
+      await client.query('COMMIT');
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
 
     return res.json({ message: 'Acesso revogado com sucesso' });
   } catch (err) {

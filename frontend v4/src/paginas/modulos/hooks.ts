@@ -22,8 +22,7 @@ export function useCreateModulo() {
 export function useUpdateModulo() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Modulo> }) =>
-      api.updateModulo(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Modulo> }) => api.updateModulo(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["modulos"] }),
   });
 }

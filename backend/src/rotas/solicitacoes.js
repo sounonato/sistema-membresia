@@ -170,6 +170,16 @@ adminRouter.post('/solicitacoes/:id/aprovar', checkPerfil(['superadmin']), async
 
     const novoUsuario = usuarioRes.rows[0];
 
+    // Criar os módulos padrão de discipulado para a nova igreja
+    await client.query(
+      `INSERT INTO modulos_discipulado (igreja_id, nome, descricao, total_aulas, ordem) VALUES
+       ($1, 'Discipulado Fundamentos', 'Fundamentos essenciais da caminhada cristã', 9, 1),
+       ($1, 'Discipulado Recomeço', 'Um novo começo na caminhada com Cristo', 4, 2),
+       ($1, 'Discipulado de Outro Mundo', 'Vivendo os valores e princípios do Reino', 5, 3)
+       ON CONFLICT DO NOTHING`,
+      [novaIgreja.id]
+    );
+
     // Atualizar status da solicitação
     await client.query(
       `UPDATE solicitacoes_igreja

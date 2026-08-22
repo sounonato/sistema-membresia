@@ -31,19 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  cn,
-  formatDate,
-  calcularIdade,
-  formatTipoEntrada,
-  formatEstadoCivil,
-} from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn, formatDate, calcularIdade, formatTipoEntrada, formatEstadoCivil } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { podeEditar, type Membro } from "@/lib/api";
 import { useMinisterios } from "@/paginas/ministerios/hooks";
@@ -78,12 +67,10 @@ export function MembroDetalhe() {
   const viHoje = useViHoje();
   const [waOpen, setWaOpen] = useState(false);
 
-  // Mutations para acesso membro
   const criarAcesso = useCriarAcessoMembro(id);
   const revogarAcesso = useRevogarAcessoMembro(id);
   const alterarPerfil = useAlterarPerfilUsuario(id);
 
-  // States para acesso
   const [acessoOpen, setAcessoOpen] = useState(false);
   const [acessoEmail, setAcessoEmail] = useState("");
   const [acessoSenha, setAcessoSenha] = useState("");
@@ -110,7 +97,10 @@ export function MembroDetalhe() {
   }
 
   async function onRevogarAcesso() {
-    if (!window.confirm("Deseja revogar o acesso deste membro? A conta do usuário será desativada.")) return;
+    if (
+      !window.confirm("Deseja revogar o acesso deste membro? A conta do usuário será desativada.")
+    )
+      return;
     try {
       await revogarAcesso.mutateAsync();
       toast.success("Acesso revogado");
@@ -139,32 +129,35 @@ export function MembroDetalhe() {
     }
   }
 
-  if (isLoading || !m)
-    return <Loader2 className="h-6 w-6 animate-spin mx-auto my-16 text-stone-400" />;
+  if (isLoading || !m) {
+    return <Loader2 className="mx-auto my-16 h-6 w-6 animate-spin text-stone-400" />;
+  }
 
   const dias = m.dias_sem_contato ?? 0;
   const alerta = dias > 60;
+  const ministeriosAtivos = (m.ministerios ?? []).filter((mm) => mm.ativo).length;
+  const cargosAtivos = (m.cargos ?? []).filter((c) => c.ativo).length;
 
   return (
-    <div className="text-foreground space-y-10">
+    <div className="space-y-8 text-foreground">
       <PageHeader
         chapter="04"
         eyebrow="Membro"
         title={m.nome}
-        lede={m.status === "ativo" ? "Membro ativo" : `Status: ${m.status}`}
+        lede={`Último contato há ${dias} dias${m.status === "ativo" ? "" : ` · status ${m.status}`}`}
         actions={
-          <div className="flex gap-2 flex-wrap justify-end">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button
               onClick={async () => {
                 try {
                   await viHoje.mutateAsync(m.id);
-                  toast.success("Presença registrada! ✓");
+                  toast.success("Presença registrada");
                 } catch (e) {
                   toast.error(e instanceof Error ? e.message : "Erro");
                 }
               }}
               disabled={viHoje.isPending}
-              className="rounded-none bg-primary text-primary-foreground hover:opacity-90 h-11 px-5 gap-2"
+              className="h-11 gap-2 rounded-none bg-primary px-5 text-primary-foreground hover:opacity-90"
             >
               {viHoje.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -176,55 +169,61 @@ export function MembroDetalhe() {
             <Button
               variant="outline"
               onClick={() => setWaOpen(true)}
-              className="rounded-none border-stone-300 h-11 gap-2"
+              className="h-11 gap-2 rounded-none border-border"
             >
-              <MessageCircle className="h-4 w-4" /> Enviar WhatsApp
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp
             </Button>
             {editor && (
               <Button
                 variant="outline"
                 onClick={() => navigate({ to: "/membros/$id/editar", params: { id } })}
-                className="rounded-none border-stone-300 h-11 gap-2"
+                className="h-11 gap-2 rounded-none border-border"
               >
-                <Pencil className="h-4 w-4" /> Editar
+                <Pencil className="h-4 w-4" />
+                Editar
               </Button>
             )}
           </div>
         }
       />
 
-      <div className="flex items-center gap-3">
-        <Badge
-          className={cn(
-            "rounded-none text-[10px] tracking-widest uppercase font-normal",
-            STATUS_STYLES[m.status] ?? STATUS_STYLES.inativo,
-          )}
-        >
-          {m.status}
-        </Badge>
-        {alerta && (
-          <span className="flex items-center gap-2 text-sm text-red-700">
-            <AlertTriangle className="h-4 w-4" />
-            Sem contato há {dias} dias
-          </span>
-        )}
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard
+          label="Status"
+          value={m.status}
+          tone={m.status === "ativo" ? "primary" : "muted"}
+        />
+        <SummaryCard
+          label="Sem contato"
+          value={`${dias} dias`}
+          tone={alerta ? "danger" : "muted"}
+          helper={alerta ? "Precisa de atenção" : "Dentro do prazo"}
+        />
+        <SummaryCard label="Ministérios" value={`${ministeriosAtivos}`} helper="Vínculos ativos" />
+        <SummaryCard label="Cargos" value={`${cargosAtivos}`} helper="Funções ativas" />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="space-y-6">
+      <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="space-y-4">
           <Card title="Contato">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="grid place-content-center h-20 w-20 rounded-full bg-primary/10 text-primary font-serif text-3xl">
+            <div className="mb-4 flex items-center gap-4">
+              <div className="grid h-16 w-16 place-content-center rounded-full bg-primary/10 text-2xl font-semibold text-primary">
                 {m.nome?.[0]?.toUpperCase() ?? "?"}
               </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{m.nome}</p>
+                <p className="truncate text-xs text-muted-foreground">{m.telefone}</p>
+              </div>
             </div>
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-3 text-sm">
               <Info label="Telefone">
                 <a
                   href={`tel:${m.telefone}`}
                   className="flex items-center gap-2 hover:text-primary"
                 >
-                  <Phone className="h-3.5 w-3.5" /> {m.telefone}
+                  <Phone className="h-3.5 w-3.5" />
+                  {m.telefone}
                 </a>
               </Info>
               {m.email && (
@@ -233,7 +232,8 @@ export function MembroDetalhe() {
                     href={`mailto:${m.email}`}
                     className="flex items-center gap-2 hover:text-primary"
                   >
-                    <Mail className="h-3.5 w-3.5" /> {m.email}
+                    <Mail className="h-3.5 w-3.5" />
+                    {m.email}
                   </a>
                 </Info>
               )}
@@ -249,18 +249,16 @@ export function MembroDetalhe() {
               )}
               {m.profissao && <Info label="Profissão">{m.profissao}</Info>}
               {(m.cidade || m.estado) && (
-                <Info label="Cidade">
-                  {[m.cidade, m.estado].filter(Boolean).join(" / ")}
-                </Info>
+                <Info label="Cidade">{[m.cidade, m.estado].filter(Boolean).join(" / ")}</Info>
               )}
             </dl>
           </Card>
 
           <Card title="Vínculo pastoral">
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-3 text-sm">
               <Info label="Último contato">
-                <span className={cn(dias > 60 && "text-red-700 font-medium")}>
-                  {formatDate(m.ultimo_contato)} — há {dias} dias
+                <span className={cn("font-medium", dias > 60 && "text-destructive")}>
+                  {formatDate(m.ultimo_contato)} · há {dias} dias
                 </span>
               </Info>
               {m.convertido_id && (
@@ -277,7 +275,7 @@ export function MembroDetalhe() {
               <Info label="Status">
                 <Badge
                   className={cn(
-                    "rounded-none text-[10px] tracking-widest uppercase font-normal",
+                    "rounded-none text-[10px] font-normal uppercase tracking-widest",
                     STATUS_STYLES[m.status] ?? STATUS_STYLES.inativo,
                   )}
                 >
@@ -287,7 +285,6 @@ export function MembroDetalhe() {
             </dl>
           </Card>
 
-          {/* Card Acesso ao Sistema */}
           {editor && (
             <Card title="Acesso ao sistema">
               {m.usuario_email ? (
@@ -295,7 +292,7 @@ export function MembroDetalhe() {
                   <div className="flex items-center gap-3">
                     <Badge
                       className={cn(
-                        "rounded-none text-[10px] tracking-widest uppercase font-normal",
+                        "rounded-none text-[10px] font-normal uppercase tracking-widest",
                         m.usuario_ativo
                           ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                           : "bg-red-50 text-red-800 border border-red-200",
@@ -303,27 +300,30 @@ export function MembroDetalhe() {
                     >
                       {m.usuario_ativo ? "Ativo" : "Inativo"}
                     </Badge>
-                    <span className="text-xs text-stone-500 truncate" title={m.usuario_email}>
+                    <span
+                      className="truncate text-xs text-muted-foreground"
+                      title={m.usuario_email}
+                    >
                       {m.usuario_email}
                     </span>
                   </div>
 
                   {m.discipulador_id && (
-                    <div className="bg-amber-500/10 border border-amber-500/20 p-3 flex gap-2 items-start text-xs text-amber-600 dark:text-amber-400 leading-normal">
-                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2 border border-amber-500/20 bg-amber-500/10 p-3 text-xs leading-normal text-amber-700 dark:text-amber-300">
+                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                       <div>
-                        Este membro também está cadastrado como discipulador.
-                        O acesso é compartilhado entre os registros.
+                        Este membro também está cadastrado como discipulador. O acesso é
+                        compartilhado entre os registros.
                       </div>
                     </div>
                   )}
 
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] tracking-widest uppercase text-stone-500">
+                    <Label className="text-[10px] uppercase tracking-widest text-stone-500">
                       Perfil de acesso
                     </Label>
                     <Select value={perfilSel} onValueChange={setPerfilSel}>
-                      <SelectTrigger className="rounded-none border-border w-full bg-card h-9">
+                      <SelectTrigger className="h-9 w-full rounded-none border-border bg-card">
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
@@ -335,14 +335,16 @@ export function MembroDetalhe() {
                     </Select>
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-border">
+                  <div className="flex gap-2 border-t border-border pt-2">
                     <Button
                       onClick={onSalvarPerfil}
                       disabled={alterarPerfil.isPending}
                       size="sm"
-                      className="rounded-none bg-primary text-primary-foreground hover:opacity-90 text-xs px-3 h-8"
+                      className="h-8 rounded-none bg-primary px-3 text-xs text-primary-foreground hover:opacity-90"
                     >
-                      {alterarPerfil.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1.5" />}
+                      {alterarPerfil.isPending && (
+                        <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                      )}
                       Salvar perfil
                     </Button>
                     <Button
@@ -350,21 +352,21 @@ export function MembroDetalhe() {
                       onClick={onRevogarAcesso}
                       disabled={revogarAcesso.isPending}
                       size="sm"
-                      className="rounded-none border-red-200 text-red-700 hover:bg-red-50 text-xs px-3 h-8"
+                      className="h-8 rounded-none border-red-200 px-3 text-xs text-red-700 hover:bg-red-50"
                     >
-                      {revogarAcesso.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1.5" />}
+                      {revogarAcesso.isPending && (
+                        <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+                      )}
                       Revogar acesso
                     </Button>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Badge className="rounded-none text-[10px] tracking-widest uppercase font-normal bg-stone-100 text-stone-500 border border-stone-200">
-                      Sem acesso
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-stone-500">
+                  <Badge className="rounded-none border border-border bg-muted text-[10px] font-normal uppercase tracking-widest text-muted-foreground">
+                    Sem acesso
+                  </Badge>
+                  <p className="text-xs text-muted-foreground">
                     Este membro não possui credenciais de acesso ao sistema.
                   </p>
                   <Button
@@ -374,7 +376,7 @@ export function MembroDetalhe() {
                       setAcessoPerfil("discipulador");
                       setAcessoOpen(true);
                     }}
-                    className="rounded-none bg-primary text-primary-foreground hover:opacity-90 text-xs px-4 h-9 w-full"
+                    className="h-9 w-full rounded-none bg-primary px-4 text-xs text-primary-foreground hover:opacity-90"
                   >
                     Criar acesso
                   </Button>
@@ -384,23 +386,38 @@ export function MembroDetalhe() {
           )}
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="space-y-4">
           <Tabs defaultValue="eclesiastico">
-            <TabsList className="rounded-none border border-border bg-card h-auto p-0">
-              <TabsTrigger value="eclesiastico" className="rounded-none">
+            <TabsList className="grid h-auto w-full grid-cols-2 gap-px rounded-none border border-border bg-border p-px md:grid-cols-4">
+              <TabsTrigger
+                value="eclesiastico"
+                className="rounded-none data-[state=active]:bg-background"
+              >
                 Eclesiástico
               </TabsTrigger>
-              <TabsTrigger value="ministerios" className="rounded-none">
+              <TabsTrigger
+                value="ministerios"
+                className="rounded-none data-[state=active]:bg-background"
+              >
                 Ministérios
               </TabsTrigger>
-              <TabsTrigger value="cargos" className="rounded-none">
+              <TabsTrigger
+                value="cargos"
+                className="rounded-none data-[state=active]:bg-background"
+              >
                 Cargos
               </TabsTrigger>
-              <TabsTrigger value="familia" className="rounded-none">
+              <TabsTrigger
+                value="familia"
+                className="rounded-none data-[state=active]:bg-background"
+              >
                 Família
               </TabsTrigger>
               {m.status === "transferido" && (
-                <TabsTrigger value="transferencia" className="rounded-none">
+                <TabsTrigger
+                  value="transferencia"
+                  className="rounded-none data-[state=active]:bg-background"
+                >
                   Transferência
                 </TabsTrigger>
               )}
@@ -408,12 +425,16 @@ export function MembroDetalhe() {
 
             <TabsContent value="eclesiastico" className="mt-4">
               <Card>
-                <dl className="space-y-2 text-sm">
+                <dl className="space-y-3 text-sm">
                   <Info label="Data de entrada">
                     {formatDate(m.data_entrada)} via {formatTipoEntrada(m.tipo_entrada)}
                   </Info>
                   <Info label="Batizado">
-                    {m.batizado ? `Sim — ${formatDate(m.data_batismo)}` : "Não"}
+                    {m.batizado
+                      ? m.data_batismo
+                        ? `Sim — ${formatDate(m.data_batismo)}`
+                        : "Sim"
+                      : "Não"}
                   </Info>
                   <Info label="Fez discipulado">{m.fez_discipulado ? "Sim" : "Não"}</Info>
                   {m.carta_entrada_origem && (
@@ -421,7 +442,7 @@ export function MembroDetalhe() {
                   )}
                   {m.observacoes && (
                     <Info label="Observações">
-                      <span className="font-serif italic">{m.observacoes}</span>
+                      <span>{m.observacoes}</span>
                     </Info>
                   )}
                 </dl>
@@ -438,13 +459,9 @@ export function MembroDetalhe() {
 
             <TabsContent value="familia" className="mt-4">
               <Card>
-                <dl className="space-y-2 text-sm">
-                  <Info label="Cônjuge">
-                    {m.nome_conjuge || m.conjuge_nome_cadastrado || "—"}
-                  </Info>
-                  <Info label="Filhos">
-                    {m.tem_filhos ? `Sim (${m.qtd_filhos})` : "Não"}
-                  </Info>
+                <dl className="space-y-3 text-sm">
+                  <Info label="Cônjuge">{m.nome_conjuge || m.conjuge_nome_cadastrado || "—"}</Info>
+                  <Info label="Filhos">{m.tem_filhos ? `Sim (${m.qtd_filhos})` : "Não"}</Info>
                 </dl>
               </Card>
             </TabsContent>
@@ -452,7 +469,7 @@ export function MembroDetalhe() {
             {m.status === "transferido" && (
               <TabsContent value="transferencia" className="mt-4">
                 <Card>
-                  <dl className="space-y-2 text-sm">
+                  <dl className="space-y-3 text-sm">
                     <Info label="Igreja de destino">{m.carta_saida_destino ?? "—"}</Info>
                     <Info label="Data de saída">{formatDate(m.data_saida)}</Info>
                     <Info label="Motivo">{m.motivo_saida ?? "—"}</Info>
@@ -464,18 +481,18 @@ export function MembroDetalhe() {
         </div>
       </div>
 
-      {/* Dialog Criar Acesso */}
       <Dialog open={acessoOpen} onOpenChange={setAcessoOpen}>
         <DialogContent className="rounded-none max-w-sm">
           <DialogHeader>
-            <DialogTitle className="font-serif text-lg">Criar Acesso ao Sistema</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Criar acesso ao sistema</DialogTitle>
           </DialogHeader>
           <form onSubmit={onCriarAcesso} className="space-y-4 pt-2">
             {m.discipulador_id && (
-              <div className="bg-amber-500/10 border border-amber-500/20 p-3 flex gap-2 items-start text-xs text-amber-600 dark:text-amber-400 leading-normal">
-                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 border border-amber-500/20 bg-amber-500/10 p-3 text-xs leading-normal text-amber-700 dark:text-amber-300">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
-                  Este membro também é discipulador. O acesso criado será compartilhado com o registro de discipulador.
+                  Este membro também é discipulador. O acesso criado será compartilhado com o
+                  registro de discipulador.
                 </div>
               </div>
             )}
@@ -487,7 +504,7 @@ export function MembroDetalhe() {
                 value={acessoEmail}
                 onChange={(e) => setAcessoEmail(e.target.value)}
                 placeholder="nome@igreja.org"
-                className="rounded-none border-stone-300 mt-1"
+                className="mt-1 rounded-none border-stone-300"
               />
             </div>
             <div>
@@ -499,13 +516,13 @@ export function MembroDetalhe() {
                 value={acessoSenha}
                 onChange={(e) => setAcessoSenha(e.target.value)}
                 placeholder="Mínimo 8 caracteres"
-                className="rounded-none border-stone-300 mt-1"
+                className="mt-1 rounded-none border-stone-300"
               />
             </div>
             <div>
               <Label className="text-xs uppercase tracking-widest text-stone-500">Perfil</Label>
               <Select value={acessoPerfil} onValueChange={setAcessoPerfil}>
-                <SelectTrigger className="rounded-none border-border mt-1 bg-card">
+                <SelectTrigger className="mt-1 rounded-none border-border bg-card">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -517,11 +534,20 @@ export function MembroDetalhe() {
               </Select>
             </div>
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setAcessoOpen(false)} className="rounded-none">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAcessoOpen(false)}
+                className="rounded-none"
+              >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={criarAcesso.isPending} className="rounded-none bg-primary text-primary-foreground hover:opacity-90">
-                {criarAcesso.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              <Button
+                type="submit"
+                disabled={criarAcesso.isPending}
+                className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
+              >
+                {criarAcesso.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Criar acesso
               </Button>
             </DialogFooter>
@@ -529,16 +555,21 @@ export function MembroDetalhe() {
         </DialogContent>
       </Dialog>
 
-      <WhatsappModal membro={m} open={waOpen} onClose={() => setWaOpen(false)} igrejaNome={igrejaNome} />
+      <WhatsappModal
+        membro={m}
+        open={waOpen}
+        onClose={() => setWaOpen(false)}
+        igrejaNome={igrejaNome}
+      />
     </div>
   );
 }
 
 function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <section className="border border-border bg-card p-6">
+    <section className="border border-border bg-card p-5">
       {title && (
-        <h3 className="text-[10px] tracking-widest uppercase text-stone-500 mb-4">
+        <h3 className="mb-4 text-[10px] uppercase tracking-widest text-muted-foreground">
           {title}
         </h3>
       )}
@@ -549,10 +580,39 @@ function Card({ title, children }: { title?: string; children: React.ReactNode }
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[130px_1fr] gap-2 items-baseline">
-      <dt className="text-[10px] tracking-widest uppercase text-stone-500">{label}</dt>
-      <dd className="text-foreground">{children}</dd>
+    <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-3 items-start">
+      <dt className="pt-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+        {label}
+      </dt>
+      <dd className="min-w-0 text-foreground">{children}</dd>
     </div>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  helper,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  helper?: string;
+  tone?: "default" | "primary" | "muted" | "danger";
+}) {
+  const toneClass =
+    tone === "primary"
+      ? "border-primary/20 bg-primary/5 text-primary"
+      : tone === "danger"
+        ? "border-red-200 bg-red-50 text-red-700"
+        : "border-border bg-card text-foreground";
+
+  return (
+    <section className={cn("border p-4", toneClass)}>
+      <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-semibold leading-none">{value}</p>
+      {helper && <p className="mt-2 text-xs text-muted-foreground">{helper}</p>}
+    </section>
   );
 }
 
@@ -564,12 +624,14 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
   const add = useAddMembroMinisterio(membro.id);
   const remove = useRemoveMembroMinisterio(membro.id);
 
-  const lista = (membro.ministerios ?? []).slice().sort((a, b) => Number(b.ativo) - Number(a.ativo));
+  const lista = (membro.ministerios ?? [])
+    .slice()
+    .sort((a, b) => Number(b.ativo) - Number(a.ativo));
 
   return (
-    <Card>
+    <Card title="Ministérios">
       {lista.length === 0 ? (
-        <p className="text-sm text-stone-500 italic">Sem vínculos ministeriais.</p>
+        <p className="text-sm italic text-muted-foreground">Sem vínculos ministeriais.</p>
       ) : (
         <ul className="space-y-2">
           {lista.map((mm) => (
@@ -577,17 +639,15 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
               key={mm.id}
               className="flex items-center justify-between gap-3 border-b border-border pb-2"
             >
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-serif">{mm.ministerio_nome}</span>
-                {mm.cargo && (
-                  <span className="text-xs text-stone-500">— {mm.cargo}</span>
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{mm.ministerio_nome}</span>
+                {mm.cargo && <span className="text-xs text-muted-foreground">— {mm.cargo}</span>}
                 <Badge
                   className={cn(
-                    "rounded-none text-[10px] tracking-widest uppercase font-normal",
+                    "rounded-none text-[10px] font-normal uppercase tracking-widest",
                     mm.ativo
-                      ? "bg-amber-50 text-amber-800 border border-amber-200"
-                      : "bg-stone-100 text-stone-500 border border-stone-200",
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      : "bg-muted text-muted-foreground border border-border",
                   )}
                 >
                   {mm.ativo ? "ativo" : "inativo"}
@@ -619,24 +679,23 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
         <Button
           variant="outline"
           onClick={() => setOpen(true)}
-          className="rounded-none border-stone-300 mt-4 gap-2"
+          className="mt-4 gap-2 rounded-none border-stone-300"
         >
-          <Plus className="h-4 w-4" /> Adicionar a ministério
+          <Plus className="h-4 w-4" />
+          Adicionar a ministério
         </Button>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-none">
           <DialogHeader>
             <DialogTitle>Adicionar a ministério</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-xs uppercase tracking-widest text-stone-500">
-                Ministério
-              </Label>
+              <Label className="text-xs uppercase tracking-widest text-stone-500">Ministério</Label>
               <Select value={selId} onValueChange={setSelId}>
-                <SelectTrigger className="rounded-none border-stone-300 mt-1">
+                <SelectTrigger className="mt-1 rounded-none border-stone-300">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -657,16 +716,12 @@ function MinisteriosTab({ membro, editor }: { membro: Membro; editor: boolean })
               <Input
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
-                className="rounded-none border-stone-300 mt-1"
+                className="mt-1 rounded-none border-stone-300"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              className="rounded-none"
-            >
+            <Button variant="outline" onClick={() => setOpen(false)} className="rounded-none">
               Cancelar
             </Button>
             <Button
@@ -704,9 +759,9 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
   const enc = useEncerrarCargo(membro.id);
 
   return (
-    <Card>
+    <Card title="Cargos">
       {(membro.cargos ?? []).length === 0 ? (
-        <p className="text-sm text-stone-500 italic">Sem cargos registrados.</p>
+        <p className="text-sm italic text-muted-foreground">Sem cargos registrados.</p>
       ) : (
         <ul className="space-y-2">
           {(membro.cargos ?? []).map((c) => (
@@ -714,19 +769,19 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
               key={c.id}
               className="flex items-center justify-between gap-3 border-b border-border pb-2"
             >
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-serif">{c.cargo}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{c.cargo}</span>
                 {c.data_posse && (
-                  <span className="text-xs text-stone-500">
+                  <span className="text-xs text-muted-foreground">
                     desde {formatDate(c.data_posse)}
                   </span>
                 )}
                 <Badge
                   className={cn(
-                    "rounded-none text-[10px] tracking-widest uppercase font-normal",
+                    "rounded-none text-[10px] font-normal uppercase tracking-widest",
                     c.ativo
-                      ? "bg-amber-50 text-amber-800 border border-amber-200"
-                      : "bg-stone-100 text-stone-500 border border-stone-200",
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      : "bg-muted text-muted-foreground border border-border",
                   )}
                 >
                   {c.ativo ? "ativo" : "encerrado"}
@@ -761,27 +816,26 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
         <Button
           variant="outline"
           onClick={() => setOpen(true)}
-          className="rounded-none border-stone-300 mt-4 gap-2"
+          className="mt-4 gap-2 rounded-none border-stone-300"
         >
-          <Plus className="h-4 w-4" /> Adicionar cargo
+          <Plus className="h-4 w-4" />
+          Adicionar cargo
         </Button>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-none">
           <DialogHeader>
             <DialogTitle>Adicionar cargo</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-xs uppercase tracking-widest text-stone-500">
-                Cargo
-              </Label>
+              <Label className="text-xs uppercase tracking-widest text-stone-500">Cargo</Label>
               <Input
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
                 placeholder="Ex.: Diácono, Presbítero, Pastor"
-                className="rounded-none border-stone-300 mt-1"
+                className="mt-1 rounded-none border-stone-300"
               />
             </div>
             <div>
@@ -792,16 +846,12 @@ function CargosTab({ membro, editor }: { membro: Membro; editor: boolean }) {
                 type="date"
                 value={dataPosse}
                 onChange={(e) => setDataPosse(e.target.value)}
-                className="rounded-none border-stone-300 mt-1"
+                className="mt-1 rounded-none border-stone-300"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              className="rounded-none"
-            >
+            <Button variant="outline" onClick={() => setOpen(false)} className="rounded-none">
               Cancelar
             </Button>
             <Button
@@ -852,7 +902,7 @@ function WhatsappModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
+      <DialogContent className="rounded-none">
         <DialogHeader>
           <DialogTitle>Enviar follow-up pastoral</DialogTitle>
         </DialogHeader>
@@ -866,10 +916,10 @@ function WhatsappModal({
           <p>
             <span className="text-stone-500">Último contato:</span> há {dias} dias
           </p>
-          <p className="text-[10px] tracking-widest uppercase text-stone-500 pt-2">
+          <p className="pt-2 text-[10px] uppercase tracking-widest text-stone-500">
             {inativo ? "Mensagem de saudade" : "Mensagem de contato"}
           </p>
-          <blockquote className="border-l-2 border-primary pl-4 py-2 bg-muted font-serif italic text-foreground whitespace-pre-line">
+          <blockquote className="border-l-2 border-primary bg-muted px-4 py-2 font-serif italic whitespace-pre-line text-foreground">
             {template}
           </blockquote>
           <p className="text-xs text-stone-500">

@@ -10,7 +10,7 @@ router.use(autenticar);
 router.use(identificarTenant);
 
 // 8.1 GET /api/ministerios
-router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   try {
     const resultado = await db.query(
       `SELECT
@@ -38,7 +38,7 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
 });
 
 // 8.2 GET /api/ministerios/:id
-router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/:id', checkPerfil(['admin', 'lider', 'pastor']), async (req, res) => {
   const { id } = req.params;
   try {
     const [minRes, membrosRes] = await Promise.all([

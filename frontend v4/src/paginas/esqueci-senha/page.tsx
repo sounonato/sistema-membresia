@@ -41,12 +41,10 @@ export function EsqueciSenhaPage() {
             <div className="text-4xl mb-2">📬</div>
             <h1 className="font-serif text-2xl text-stone-900">Verifique seu e-mail</h1>
             <p className="text-sm text-stone-600">
-              Se o e-mail <strong>{email}</strong> estiver cadastrado, você receberá
-              as instruções para redefinir sua senha em alguns minutos.
+              Se o e-mail <strong>{email}</strong> estiver cadastrado, você receberá as instruções
+              para redefinir sua senha em alguns minutos.
             </p>
-            <p className="text-xs text-stone-400 mt-4">
-              Não recebeu? Verifique a pasta de spam.
-            </p>
+            <p className="text-xs text-stone-400 mt-4">Não recebeu? Verifique a pasta de spam.</p>
           </div>
         ) : (
           <>
@@ -54,12 +52,9 @@ export function EsqueciSenhaPage() {
               <p className="text-[10px] tracking-[0.3em] uppercase text-amber-700 mb-3">
                 Recuperação de acesso
               </p>
-              <h1 className="font-serif text-3xl text-stone-900 mb-2">
-                Esqueceu a senha?
-              </h1>
+              <h1 className="font-serif text-3xl text-stone-900 mb-2">Esqueceu a senha?</h1>
               <p className="text-sm text-stone-600">
-                Informe o e-mail da sua conta e enviaremos um código para
-                redefinir a senha.
+                Informe o e-mail da sua conta e enviaremos um código para redefinir a senha.
               </p>
             </div>
 
@@ -91,11 +86,7 @@ export function EsqueciSenhaPage() {
                 disabled={enviando}
                 className="w-full h-12 bg-amber-700 hover:bg-amber-800 text-white rounded-md"
               >
-                {enviando ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Enviar instruções"
-                )}
+                {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar instruções"}
               </Button>
             </form>
           </>

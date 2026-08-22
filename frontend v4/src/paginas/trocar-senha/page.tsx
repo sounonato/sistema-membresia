@@ -46,9 +46,7 @@ export function TrocarSenhaPage() {
           <p className="text-[10px] tracking-[0.3em] uppercase text-amber-700 mb-3">
             Primeiro acesso
           </p>
-          <h1 className="font-serif text-3xl text-stone-900 mb-2">
-            Crie sua senha
-          </h1>
+          <h1 className="font-serif text-3xl text-stone-900 mb-2">Crie sua senha</h1>
           <p className="text-sm text-stone-600">
             {usuario?.nome ? `Olá, ${usuario.nome.split(" ")[0]}. ` : ""}
             Por segurança, defina uma senha pessoal antes de continuar.
@@ -73,9 +71,7 @@ export function TrocarSenhaPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-widest text-stone-500">
-              Nova senha
-            </Label>
+            <Label className="text-xs uppercase tracking-widest text-stone-500">Nova senha</Label>
             <Input
               type="password"
               value={senhaNova}
@@ -109,11 +105,7 @@ export function TrocarSenhaPage() {
             disabled={enviando}
             className="w-full h-12 bg-amber-700 hover:bg-amber-800 text-white rounded-md"
           >
-            {enviando ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Salvar e entrar"
-            )}
+            {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar e entrar"}
           </Button>
         </form>
       </div>

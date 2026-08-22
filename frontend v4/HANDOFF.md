@@ -54,32 +54,35 @@ src/
 ## 3. Rotas
 
 ### Públicas
-| URL                    | Arquivo                    | Descrição |
-|------------------------|----------------------------|-----------|
-| `/`                    | `routes/index.tsx`         | Landing editorial global |
-| `/login`               | `routes/login.tsx`         | Login (email + senha + slug manual) |
-| `/$slug`               | `routes/$slug.index.tsx`   | Landing da igreja (branding dinâmico) |
-| `/$slug/login`         | `routes/$slug.login.tsx`   | Login com slug preenchido pela URL |
-| `/cadastro/$slug`      | `routes/cadastro.$slug.tsx`| Cadastro público via QR (multi-etapa) |
+
+| URL               | Arquivo                     | Descrição                             |
+| ----------------- | --------------------------- | ------------------------------------- |
+| `/`               | `routes/index.tsx`          | Landing editorial global              |
+| `/login`          | `routes/login.tsx`          | Login (email + senha + slug manual)   |
+| `/$slug`          | `routes/$slug.index.tsx`    | Landing da igreja (branding dinâmico) |
+| `/$slug/login`    | `routes/$slug.login.tsx`    | Login com slug preenchido pela URL    |
+| `/cadastro/$slug` | `routes/cadastro.$slug.tsx` | Cadastro público via QR (multi-etapa) |
 
 `routes/$slug.tsx` é o **layout pai** que busca `getIgrejaPublica(slug)` e aplica a cor primária no CSS var `--primary`.
 
 ### Autenticadas (`routes/_auth.tsx` — guard global)
-| URL                              | Perfis permitidos             |
-|----------------------------------|-------------------------------|
-| `/dashboard`                     | todos exceto superadmin       |
-| `/convertidos`                   | admin, lider, pastor, discipulador |
-| `/convertidos/novo`              | admin, lider                  |
-| `/convertidos/$id`               | admin, lider, pastor, discipulador |
-| `/convertidos/$id/editar`        | admin, lider                  |
-| `/convertidos/$id/jornada`       | admin, lider, pastor, discipulador |
-| `/discipulado`, `/discipulado/$id` | admin, lider, pastor, discipulador |
-| `/discipuladores`, `/modulos`    | admin, lider                  |
-| `/usuarios`                      | admin, lider                  |
-| `/manual`, `/relatorios`, `/qr-cadastro` | autenticado           |
-| `/igrejas`                       | **superadmin apenas**         |
+
+| URL                                      | Perfis permitidos                  |
+| ---------------------------------------- | ---------------------------------- |
+| `/dashboard`                             | todos exceto superadmin            |
+| `/convertidos`                           | admin, lider, pastor, discipulador |
+| `/convertidos/novo`                      | admin, lider                       |
+| `/convertidos/$id`                       | admin, lider, pastor, discipulador |
+| `/convertidos/$id/editar`                | admin, lider                       |
+| `/convertidos/$id/jornada`               | admin, lider, pastor, discipulador |
+| `/discipulado`, `/discipulado/$id`       | admin, lider, pastor, discipulador |
+| `/discipuladores`, `/modulos`            | admin, lider                       |
+| `/usuarios`                              | admin, lider                       |
+| `/manual`, `/relatorios`, `/qr-cadastro` | autenticado                        |
+| `/igrejas`                               | **superadmin apenas**              |
 
 Guard em `_auth.tsx`:
+
 - Sem token → redireciona `/login`.
 - Superadmin → só pode acessar `/igrejas`.
 - Não-superadmin → não pode acessar `/igrejas`.
@@ -113,6 +116,7 @@ Guard em `_auth.tsx`:
 **Base URL:** `http://localhost:3031/api` (constante no topo de `api.ts` — trocar para produção).
 
 ### Auth
+
 - `POST /auth/login` — body `{ email, senha, slug }` → `{ token, usuario }`
 - `GET  /auth/me` → `Usuario`
 - `GET  /auth/usuarios` → `Usuario[]`
@@ -120,6 +124,7 @@ Guard em `_auth.tsx`:
 - `PATCH /auth/usuarios/:id/toggle` — ativa/desativa
 
 ### Igrejas (superadmin)
+
 - `GET  /igrejas` → `Igreja[]`
 - `POST /igrejas` — cria igreja
 - `PUT  /igrejas/:id`
@@ -130,10 +135,12 @@ Guard em `_auth.tsx`:
 Campos do tipo `Igreja`: `id, nome, slug, ativa?, plano?, cor_primaria?, logo_url?, descricao?, cidade?, estado?`
 
 ### Convertidos
+
 - `GET  /convertidos` · `GET /convertidos/:id`
 - `POST /convertidos` · `PUT /convertidos/:id` · `DELETE /convertidos/:id`
 
 ### Discipulado
+
 - `GET  /discipulado/grupos` · `GET /discipulado/grupos/:id`
 - `POST /discipulado/grupos` · `PUT /discipulado/grupos/:id`
 - `POST /discipulado/grupos/:id/membros` — body `{ convertido_id }`
@@ -142,24 +149,33 @@ Campos do tipo `Igreja`: `id, nome, slug, ativa?, plano?, cor_primaria?, logo_ur
 - `POST /discipulado/grupos/:id/progresso` — registrar aula concluída
 
 ### Discipuladores / Módulos
+
 CRUD padrão em `/discipuladores` e `/modulos`.
 
 ### Dashboard
+
 - `GET /dashboard/stats` → estatísticas para os cards e gráficos Recharts (ver `paginas/dashboard/page.tsx` para o shape esperado).
 
 ### Manual (IA)
+
 - `POST /manual/chat` — body `{ pergunta, historico: [{role, content}] }` → `{ resposta }`
 
 ### Públicos (sem token) — usados pelo QR/landing
+
 - `GET  /publico/igrejas/:slug` → dados públicos da igreja (nome, cor, logo, descrição…)
 - `GET  /publico/igrejas/:slug/grupos` → grupos disponíveis para o form
 - `POST /publico/igrejas/:slug/cadastro` → cria convertido a partir do QR
 
 Payload do cadastro público (multi-etapa):
+
 ```json
 {
-  "nome": "", "telefone": "", "email": "", "data_nascimento": "",
-  "endereco": "", "grupo_id": "opcional",
+  "nome": "",
+  "telefone": "",
+  "email": "",
+  "data_nascimento": "",
+  "endereco": "",
+  "grupo_id": "opcional",
   "questionario": {
     "tomou_decisao": true,
     "ja_batizado": false,
@@ -170,9 +186,11 @@ Payload do cadastro público (multi-etapa):
 ```
 
 ### Formato de erro esperado
+
 ```json
 { "error": "mensagem legível" }
 ```
+
 `api.ts` faz `throw new Error(err.error)` — toasts consomem essa mensagem.
 
 ---

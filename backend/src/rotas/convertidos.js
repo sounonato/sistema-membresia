@@ -124,7 +124,7 @@ router.post('/', checkPerfil(['admin', 'lider']), async (req, res) => {
   const {
     nome, telefone, email, data_conversao, data_nascimento,
     endereco, bairro, cidade, estado_civil, genero,
-    tem_filhos, qtd_filhos, profissao, como_conheceu,
+    tem_filhos, qtd_filhos, profissao, como_conheceu, culto_conversao,
     batizado, quer_batismo, ja_frequentava_igreja, igreja_anterior,
     ja_fez_discipulado, observacoes, status
   } = req.body;
@@ -168,11 +168,11 @@ router.post('/', checkPerfil(['admin', 'lider']), async (req, res) => {
       INSERT INTO novos_convertidos (
         igreja_id, nome, telefone, email, data_conversao, data_nascimento,
         endereco, bairro, cidade, estado_civil, genero,
-        tem_filhos, qtd_filhos, profissao, como_conheceu,
+        tem_filhos, qtd_filhos, profissao, como_conheceu, culto_conversao,
         batizado, quer_batismo, ja_frequentava_igreja, igreja_anterior,
         ja_fez_discipulado, observacoes, status
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23
       ) RETURNING *
     `;
 
@@ -180,6 +180,7 @@ router.post('/', checkPerfil(['admin', 'lider']), async (req, res) => {
       novoConvertidoIgrejaId, nome, telefone, email || null, data_conversao, data_nascimento || null,
       endereco || null, bairro || null, cidade || null, estado_civil || null, genero || null,
       tem_filhos === undefined ? false : tem_filhos, qtd_filhos || 0, profissao || null, como_conheceu || null,
+      culto_conversao || null,
       batizado === undefined ? false : batizado, quer_batismo === undefined ? false : quer_batismo,
       ja_frequentava_igreja === undefined ? false : ja_frequentava_igreja, igreja_anterior || null,
       ja_fez_discipulado === undefined ? false : ja_fez_discipulado, observacoes || null, status || 'ativo'
@@ -199,7 +200,7 @@ router.put('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   const {
     nome, telefone, email, data_conversao, data_nascimento,
     endereco, bairro, cidade, estado_civil, genero,
-    tem_filhos, qtd_filhos, profissao, como_conheceu,
+    tem_filhos, qtd_filhos, profissao, como_conheceu, culto_conversao,
     batizado, quer_batismo, ja_frequentava_igreja, igreja_anterior,
     ja_fez_discipulado, observacoes, status
   } = req.body;
@@ -214,14 +215,15 @@ router.put('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
         nome = $1, telefone = $2, email = $3, data_conversao = $4, data_nascimento = $5,
         endereco = $6, bairro = $7, cidade = $8, estado_civil = $9, genero = $10,
         tem_filhos = $11, qtd_filhos = $12, profissao = $13, como_conheceu = $14,
-        batizado = $15, quer_batismo = $16, ja_frequentava_igreja = $17, igreja_anterior = $18,
-        ja_fez_discipulado = $19, observacoes = $20, status = $21
-      WHERE id = $22
+        culto_conversao = $15, batizado = $16, quer_batismo = $17, ja_frequentava_igreja = $18,
+        igreja_anterior = $19, ja_fez_discipulado = $20, observacoes = $21, status = $22
+      WHERE id = $23
     `;
     const valores = [
       nome, telefone, email || null, data_conversao, data_nascimento || null,
       endereco || null, bairro || null, cidade || null, estado_civil || null, genero || null,
       tem_filhos === undefined ? false : tem_filhos, qtd_filhos || 0, profissao || null, como_conheceu || null,
+      culto_conversao || null,
       batizado === undefined ? false : batizado, quer_batismo === undefined ? false : quer_batismo,
       ja_frequentava_igreja === undefined ? false : ja_frequentava_igreja, igreja_anterior || null,
       ja_fez_discipulado === undefined ? false : ja_fez_discipulado, observacoes || null, status || 'ativo',
@@ -229,7 +231,7 @@ router.put('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
     ];
 
     if (req.igrejaId) {
-      queryText += ' AND igreja_id = $23';
+      queryText += ' AND igreja_id = $24';
       valores.push(req.igrejaId);
     }
 
@@ -248,10 +250,7 @@ router.put('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
 });
 
 // PATCH /api/convertidos/:id/transferir - Transferir convertido para outra igreja (Apenas superadmin)
-router.patch('/:id/transferir', checkPerfil([]), async (req, res) => {
-  if (req.usuarioPerfil !== 'superadmin') {
-    return res.status(403).json({ error: 'Apenas superadmin pode transferir convertidos entre igrejas' });
-  }
+router.patch('/:id/transferir', checkPerfil(['superadmin']), async (req, res) => {
   const { id } = req.params;
   const { igreja_id } = req.body;
   if (!igreja_id) return res.status(400).json({ error: 'igreja_id é obrigatório' });

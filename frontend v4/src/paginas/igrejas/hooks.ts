@@ -14,8 +14,7 @@ export function useCreateIgreja() {
 export function useUpdateIgreja() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Igreja> }) =>
-      api.updateIgreja(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Igreja> }) => api.updateIgreja(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["igrejas"] }),
   });
 }
@@ -35,8 +34,13 @@ export function useDeleteIgreja() {
 }
 export function useCreateAdminIgreja() {
   return useMutation({
-    mutationFn: ({ igrejaId, data }: { igrejaId: string; data: { nome: string; email: string; senha: string } }) =>
-      api.createAdminIgreja(igrejaId, data),
+    mutationFn: ({
+      igrejaId,
+      data,
+    }: {
+      igrejaId: string;
+      data: { nome: string; email: string; senha: string };
+    }) => api.createAdminIgreja(igrejaId, data),
   });
 }
 

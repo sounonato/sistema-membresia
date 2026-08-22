@@ -32,14 +32,21 @@ async function executarFollowupAutomatico() {
     return { enviados: 0, erros: 0, pulado: true };
   }
 
-  const mensagemInativo = (nome) =>
-    `Olá, ${nome}! 😊\n\nA gente sente sua falta por aqui! 💛\n\nComo você está? Estamos com saudade e pensando em você.\n\nQue Deus te abençoe! 🙏\n— Igreja do Nazareno`;
+  const lock = await db.query("SELECT pg_try_advisory_lock(hashtext('sistema-membresia:followup')) AS adquirido");
+  if (!lock.rows[0]?.adquirido) {
+    console.log('[followup] Outra instância já está executando. Pulando.');
+    return { enviados: 0, erros: 0, pulado: true };
+  }
+
+  const mensagemInativo = (nome, igrejaNome) =>
+    `Olá, ${nome}! 😊\n\nA gente sente sua falta por aqui! 💛\n\nComo você está? Estamos com saudade e pensando em você.\n\nQue Deus te abençoe! 🙏\n— ${igrejaNome}`;
 
   try {
     // Busca membros sem contato há mais de 90 dias que ainda não receberam follow-up neste período
     const resultado = await db.query(`
-      SELECT m.id, m.nome, m.telefone
+      SELECT m.id, m.nome, m.telefone, i.nome AS igreja_nome
       FROM membros m
+      JOIN igrejas i ON i.id = m.igreja_id AND i.ativa = true
       WHERE m.status = 'ativo'
         AND m.ultimo_contato < CURRENT_DATE - INTERVAL '90 days'
         AND NOT EXISTS (
@@ -55,7 +62,7 @@ async function executarFollowupAutomatico() {
     let erros = 0;
 
     for (const membro of resultado.rows) {
-      const mensagem = mensagemInativo(membro.nome);
+      const mensagem = mensagemInativo(membro.nome, membro.igreja_nome);
       const numero = formatarNumeroWhatsapp(membro.telefone);
 
       try {
@@ -77,7 +84,7 @@ async function executarFollowupAutomatico() {
         );
 
         enviados++;
-        console.log(`[followup] ✓ Mensagem enviada para ${membro.nome}`);
+        console.log('[followup] Mensagem enviada com sucesso.');
 
         // Pausa de 1 segundo entre mensagens para não sobrecarregar a API
         await new Promise((r) => setTimeout(r, 1000));
@@ -88,15 +95,17 @@ async function executarFollowupAutomatico() {
           [membro.id, errEnvio.message]
         );
         erros++;
-        console.error(`[followup] ✗ Falha para ${membro.nome}:`, errEnvio.message);
+        console.error('[followup] Falha no envio:', errEnvio.message);
       }
     }
 
     console.log(`[followup] Concluído: ${enviados} enviados, ${erros} erros`);
+    await db.query("SELECT pg_advisory_unlock(hashtext('sistema-membresia:followup'))");
     return { enviados, erros };
 
   } catch (err) {
     console.error('[followup] Erro geral na execução:', err);
+    await db.query("SELECT pg_advisory_unlock(hashtext('sistema-membresia:followup'))").catch(() => {});
     return { enviados: 0, erros: 1, erro: err.message };
   }
 }

@@ -61,7 +61,9 @@ function SlugLogin() {
                 <Church className="h-8 w-8" />
               </div>
             )}
-            <p className="text-xs text-muted-foreground tracking-widest uppercase">Powered by Ovile</p>
+            <p className="text-xs text-muted-foreground tracking-widest uppercase">
+              Powered by Ovile
+            </p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">

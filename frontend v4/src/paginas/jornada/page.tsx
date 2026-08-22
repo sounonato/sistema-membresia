@@ -1,7 +1,7 @@
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useConvertido } from "../convertidos/hooks";
+import { useConvertido, type Convertido } from "../convertidos/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -40,8 +40,9 @@ export function JornadaPage() {
   }
 
   const modulosLista: { id: string; nome: string }[] = Array.isArray(modulos) ? modulos : [];
-  const concluidos: string[] = Array.isArray((c as any).modulos_concluidos)
-    ? (c as any).modulos_concluidos
+  const convertida = c as Convertido;
+  const concluidos: string[] = Array.isArray(convertida.modulos_concluidos)
+    ? convertida.modulos_concluidos
     : [];
 
   const etapas: Etapa[] = [
@@ -49,7 +50,7 @@ export function JornadaPage() {
       id: "cadastro",
       titulo: "Cadastro",
       descricao: "Acolhimento e registro inicial",
-      data: (c as any).created_at ?? (c as any).data_cadastro,
+      data: convertida.created_at ?? convertida.data_cadastro,
       status: "concluido",
       manualSecaoId: "passo-decisao",
     },
@@ -69,16 +70,14 @@ export function JornadaPage() {
         : c.quer_batizar
           ? "Aguardando preparação para batismo"
           : "A conversar sobre o batismo",
-      data: (c as any).data_batismo,
+      data: convertida.data_batismo,
       status: c.batizado ? "concluido" : c.quer_batizar ? "ativo" : "pendente",
       manualSecaoId: "passo-batismo",
     },
     ...modulosLista.map<Etapa>((m, i) => {
       const done = concluidos.includes(m.id);
       const prevDone =
-        i === 0
-          ? !!c.batizado || !!c.fez_discipulado
-          : concluidos.includes(modulosLista[i - 1].id);
+        i === 0 ? !!c.batizado || !!c.fez_discipulado : concluidos.includes(modulosLista[i - 1].id);
       return {
         id: `mod-${m.id}`,
         titulo: `Módulo: ${m.nome}`,
@@ -92,21 +91,25 @@ export function JornadaPage() {
       titulo: "Líder em formação",
       descricao: "Multiplicação: novos discípulos sob sua liderança",
       status:
-        modulosLista.length > 0 && concluidos.length === modulosLista.length
-          ? "ativo"
-          : "pendente",
+        modulosLista.length > 0 && concluidos.length === modulosLista.length ? "ativo" : "pendente",
       manualSecaoId: "passo-lideranca",
     },
   ];
 
   const totalConcluido = etapas.filter((e) => e.status === "concluido").length;
   const progresso = Math.round((totalConcluido / etapas.length) * 100);
-  const proxima = etapas.find((e) => e.status === "ativo") ?? etapas.find((e) => e.status === "pendente");
+  const proxima =
+    etapas.find((e) => e.status === "ativo") ?? etapas.find((e) => e.status === "pendente");
 
   return (
     <div>
       <div className="mb-6">
-        <Button asChild variant="ghost" size="sm" className="-ml-2 text-stone-500 hover:text-stone-900">
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="-ml-2 text-stone-500 hover:text-stone-900"
+        >
           <Link to="/convertidos/$id" params={{ id }}>
             <ArrowLeft className="h-4 w-4" /> voltar ao dossiê
           </Link>
@@ -139,7 +142,10 @@ export function JornadaPage() {
         </div>
         <div className="text-right">
           <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500">Progresso</p>
-          <p className="font-serif text-6xl tabular-nums text-primary leading-none mt-2">{progresso}<span className="text-2xl text-stone-400 align-top">%</span></p>
+          <p className="font-serif text-6xl tabular-nums text-primary leading-none mt-2">
+            {progresso}
+            <span className="text-2xl text-stone-400 align-top">%</span>
+          </p>
           <div className="mt-3 h-[3px] w-40 bg-stone-200 overflow-hidden ml-auto">
             <div className="h-full bg-primary transition-all" style={{ width: `${progresso}%` }} />
           </div>
@@ -148,34 +154,47 @@ export function JornadaPage() {
 
       <ol className="relative">
         {etapas.map((e, i) => (
-          <li key={e.id} className="grid grid-cols-[80px_1fr] gap-6 py-6 border-t border-stone-200 first:border-t-0">
+          <li
+            key={e.id}
+            className="grid grid-cols-[80px_1fr] gap-6 py-6 border-t border-stone-200 first:border-t-0"
+          >
             <div className="text-right">
               <p className="font-serif text-3xl italic text-stone-300 tabular-nums leading-none">
                 {String(i + 1).padStart(2, "0")}
               </p>
-              <p className={cn(
-                "mt-2 text-[10px] uppercase tracking-widest",
-                e.status === "concluido" && "text-emerald-700",
-                e.status === "ativo" && "text-primary",
-                e.status === "pendente" && "text-stone-400",
-              )}>
-                {e.status === "concluido" ? "cumprido" : e.status === "ativo" ? "em curso" : "a caminho"}
+              <p
+                className={cn(
+                  "mt-2 text-[10px] uppercase tracking-widest",
+                  e.status === "concluido" && "text-emerald-700",
+                  e.status === "ativo" && "text-primary",
+                  e.status === "pendente" && "text-stone-400",
+                )}
+              >
+                {e.status === "concluido"
+                  ? "cumprido"
+                  : e.status === "ativo"
+                    ? "em curso"
+                    : "a caminho"}
               </p>
             </div>
             <div className="border-l border-stone-300 pl-6 relative">
-              <span className={cn(
-                "absolute -left-[5px] top-2 h-[9px] w-[9px] rounded-full ring-2 ring-white",
-                e.status === "concluido" && "bg-primary",
-                e.status === "ativo" && "bg-stone-900",
-                e.status === "pendente" && "bg-stone-300",
-              )} />
+              <span
+                className={cn(
+                  "absolute -left-[5px] top-2 h-[9px] w-[9px] rounded-full ring-2 ring-white",
+                  e.status === "concluido" && "bg-primary",
+                  e.status === "ativo" && "bg-stone-900",
+                  e.status === "pendente" && "bg-stone-300",
+                )}
+              />
               <h3 className="font-serif text-2xl text-stone-900 leading-tight">{e.titulo}</h3>
-              <p className="mt-1 font-[Instrument_Serif,serif] italic text-stone-600">{e.descricao}</p>
+              <p className="mt-1 font-[Instrument_Serif,serif] italic text-stone-600">
+                {e.descricao}
+              </p>
               <div className="mt-3 flex items-center gap-4 text-xs">
                 {fmt(e.data) && <span className="text-stone-500">{fmt(e.data)}</span>}
                 {e.manualSecaoId && (
                   <Button asChild variant="link" size="sm" className="h-auto p-0 text-primary">
-                    <Link to="/manual" search={{ secao: e.manualSecaoId } as any}>
+                    <Link to="/manual" search={{ secao: e.manualSecaoId }}>
                       <BookOpen className="h-3 w-3" /> consultar manual
                     </Link>
                   </Button>

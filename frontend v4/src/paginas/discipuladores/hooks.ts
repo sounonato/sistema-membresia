@@ -14,7 +14,10 @@ export type Discipulador = {
 };
 
 export function useDiscipuladores() {
-  return useQuery<Discipulador[]>({ queryKey: ["discipuladores"], queryFn: () => api.getDiscipuladores() });
+  return useQuery<Discipulador[]>({
+    queryKey: ["discipuladores"],
+    queryFn: () => api.getDiscipuladores(),
+  });
 }
 
 export function useCreateDiscipulador() {

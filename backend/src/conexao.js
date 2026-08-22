@@ -4,7 +4,9 @@ require('dotenv').config();
 const isLocal = process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isLocal ? false : { rejectUnauthorized: false },
+  ssl: isLocal ? false : {
+    rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false',
+  },
 });
 
 module.exports = {

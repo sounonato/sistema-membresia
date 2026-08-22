@@ -7,18 +7,21 @@ Você selecionou 9 frentes grandes. Para não entregar tudo pela metade, proponh
 ## Fase 1 — Jornada + Manual + Relatórios (entrego agora)
 
 **1. Jornada do Convertido (Timeline)**
+
 - Nova página `/convertidos/:id/jornada` com linha do tempo vertical: Cadastro → Decisão → Batismo → Módulos do discipulado (1 etapa por módulo concluído) → Líder em formação.
 - Cada etapa mostra data, responsável e status (concluído / em andamento / pendente).
 - Barra de progresso e "próximo passo sugerido" no topo.
 - Badge de gamificação por etapa concluída.
 
 **2. Manual integrado à Jornada e ao Discipulado**
+
 - Página `/manual` deixa de ser só chat: ganha aba **"Conteúdo"** com o manual completo navegável (sumário lateral + leitor).
 - O manual será carregado de `manual.json` (estrutura: módulos → capítulos → seções com markdown). Você me envia o PDF/DOCX e eu transcrevo e estruturo.
 - Dentro de cada etapa da Jornada e de cada módulo do discipulado, aparece botão **"Abrir no manual"** que leva direto à seção correspondente.
 - Chat IA continua, mas agora ele **cita trechos do manual** (busca por palavras-chave nas seções carregadas) — RAG simples client-side, sem custo extra de API.
 
 **3. Relatórios e exportação (PDF/Excel)**
+
 - Nova página `/relatorios` (admin/líder/pastor):
   - Convertidos por período / status / grupo
   - Frequência e progresso por módulo

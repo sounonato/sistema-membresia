@@ -72,9 +72,7 @@ export function ResetarSenhaPage() {
           <p className="text-[10px] tracking-[0.3em] uppercase text-amber-700 mb-3">
             Redefinição de senha
           </p>
-          <h1 className="font-serif text-3xl text-stone-900 mb-2">
-            Nova senha
-          </h1>
+          <h1 className="font-serif text-3xl text-stone-900 mb-2">Nova senha</h1>
           <p className="text-sm text-stone-600">
             Escolha uma senha segura com pelo menos 8 caracteres.
           </p>
@@ -85,9 +83,7 @@ export function ResetarSenhaPage() {
           className="bg-white border border-stone-200 rounded-md p-8 space-y-5"
         >
           <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-widest text-stone-500">
-              Nova senha
-            </Label>
+            <Label className="text-xs uppercase tracking-widest text-stone-500">Nova senha</Label>
             <Input
               type="password"
               value={senhaNova}
@@ -121,11 +117,7 @@ export function ResetarSenhaPage() {
             disabled={enviando}
             className="w-full h-12 bg-amber-700 hover:bg-amber-800 text-white rounded-md"
           >
-            {enviando ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Salvar nova senha"
-            )}
+            {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar nova senha"}
           </Button>
         </form>
       </div>

@@ -44,9 +44,7 @@ function SlugLanding() {
           </div>
 
           {igreja.descricao && (
-            <p className="text-base text-muted-foreground leading-relaxed">
-              {igreja.descricao}
-            </p>
+            <p className="text-base text-muted-foreground leading-relaxed">{igreja.descricao}</p>
           )}
 
           <div className="pt-4">
@@ -58,9 +56,7 @@ function SlugLanding() {
           </div>
         </div>
       </main>
-      <footer className="py-6 text-center text-xs text-muted-foreground">
-        Powered by Ovile
-      </footer>
+      <footer className="py-6 text-center text-xs text-muted-foreground">Powered by Ovile</footer>
     </div>
   );
 }

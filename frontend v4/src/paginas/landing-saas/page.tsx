@@ -12,9 +12,15 @@ export function LandingSaasPage() {
             Ovile<span className="text-amber-700">.</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-stone-600">
-            <a href="#recursos" className="hover:text-stone-900 transition">Recursos</a>
-            <a href="#como-funciona" className="hover:text-stone-900 transition">Como funciona</a>
-            <a href="#planos" className="hover:text-stone-900 transition">Planos</a>
+            <a href="#recursos" className="hover:text-stone-900 transition">
+              Recursos
+            </a>
+            <a href="#como-funciona" className="hover:text-stone-900 transition">
+              Como funciona
+            </a>
+            <a href="#planos" className="hover:text-stone-900 transition">
+              Planos
+            </a>
           </nav>
           <div className="flex items-center gap-2">
             <Link to="/login">
@@ -45,9 +51,8 @@ export function LandingSaasPage() {
               <span className="italic text-amber-800">não das planilhas.</span>
             </h1>
             <p className="mt-8 text-lg text-stone-600 max-w-xl leading-relaxed">
-              Sistema completo de membros, discipulado e ministérios para sua
-              igreja. Simples, pastoral e sob medida para a realidade das
-              igrejas evangélicas.
+              Sistema completo de membros, discipulado e ministérios para sua igreja. Simples,
+              pastoral e sob medida para a realidade das igrejas evangélicas.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3">
               <Link to="/cadastro">
@@ -76,9 +81,7 @@ export function LandingSaasPage() {
       <section id="recursos" className="border-b border-stone-200 bg-stone-50">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="mb-16 max-w-2xl">
-            <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">
-              01 — Recursos
-            </p>
+            <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">01 — Recursos</p>
             <h2 className="font-serif text-4xl md:text-5xl leading-tight tracking-tight">
               O que o sistema oferece
             </h2>
@@ -104,10 +107,7 @@ export function LandingSaasPage() {
                   "Organize os times de servos: cargos, membros ativos, encerramentos e histórico ministerial da igreja.",
               },
             ].map(({ icon: Icon, titulo, texto }) => (
-              <div
-                key={titulo}
-                className="bg-white border border-stone-200 p-8 rounded-md"
-              >
+              <div key={titulo} className="bg-white border border-stone-200 p-8 rounded-md">
                 <div className="h-12 w-12 rounded-md bg-amber-50 border border-amber-100 grid place-content-center text-amber-700 mb-6">
                   <Icon className="h-5 w-5" />
                 </div>
@@ -153,9 +153,7 @@ export function LandingSaasPage() {
       <section id="planos" className="border-b border-stone-200 bg-stone-50">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="mb-16 max-w-2xl">
-            <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">
-              03 — Planos
-            </p>
+            <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">03 — Planos</p>
             <h2 className="font-serif text-4xl md:text-5xl leading-tight tracking-tight">
               Comece grátis. Cresça no seu tempo.
             </h2>
@@ -202,9 +200,15 @@ export function LandingSaasPage() {
             </p>
           </div>
           <div className="flex gap-6 text-xs uppercase tracking-widest">
-            <a href="#recursos" className="hover:text-stone-900">Recursos</a>
-            <a href="#planos" className="hover:text-stone-900">Planos</a>
-            <Link to="/cadastro" className="hover:text-stone-900">Cadastro</Link>
+            <a href="#recursos" className="hover:text-stone-900">
+              Recursos
+            </a>
+            <a href="#planos" className="hover:text-stone-900">
+              Planos
+            </a>
+            <Link to="/cadastro" className="hover:text-stone-900">
+              Cadastro
+            </Link>
           </div>
         </div>
       </footer>

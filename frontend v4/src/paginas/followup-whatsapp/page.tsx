@@ -19,15 +19,11 @@ export function FollowupWhatsappPage() {
   const isAdmin = usuario?.perfil === "admin";
   const { data: urgentes, isLoading: l1 } = useMembrosSemContato(90);
   const { data: atencao, isLoading: l2 } = useMembrosSemContato(60);
-  const somenteAtencao = (atencao ?? []).filter(
-    (m) => (m.dias_sem_contato ?? 0) <= 90,
-  );
+  const somenteAtencao = (atencao ?? []).filter((m) => (m.dias_sem_contato ?? 0) <= 90);
   const urg = urgentes ?? [];
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [progress, setProgress] = useState<{ atual: number; total: number } | null>(
-    null,
-  );
+  const [progress, setProgress] = useState<{ atual: number; total: number } | null>(null);
 
   async function dispararTodos() {
     setConfirmOpen(false);
@@ -58,16 +54,8 @@ export function FollowupWhatsappPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Kpi
-          n={urg.length}
-          label="mais de 90 dias"
-          tone="red"
-        />
-        <Kpi
-          n={somenteAtencao.length}
-          label="entre 60 e 90 dias"
-          tone="amber"
-        />
+        <Kpi n={urg.length} label="mais de 90 dias" tone="red" />
+        <Kpi n={somenteAtencao.length} label="entre 60 e 90 dias" tone="amber" />
       </div>
 
       {isAdmin && urg.length > 0 && (
@@ -111,8 +99,8 @@ export function FollowupWhatsappPage() {
             <DialogTitle>Confirmar disparo em massa</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-foreground">
-            Você está prestes a enviar WhatsApp para {urg.length} membros sem
-            contato há mais de 90 dias. Confirmar?
+            Você está prestes a enviar WhatsApp para {urg.length} membros sem contato há mais de 90
+            dias. Confirmar?
           </p>
           <DialogFooter>
             <Button
@@ -135,15 +123,7 @@ export function FollowupWhatsappPage() {
   );
 }
 
-function Kpi({
-  n,
-  label,
-  tone,
-}: {
-  n: number;
-  label: string;
-  tone: "red" | "amber";
-}) {
+function Kpi({ n, label, tone }: { n: number; label: string; tone: "red" | "amber" }) {
   const styles =
     tone === "red"
       ? "border-red-300 bg-red-50 text-red-800"

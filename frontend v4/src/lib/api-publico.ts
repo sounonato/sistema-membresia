@@ -1,4 +1,8 @@
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3031/api";
+const configuredBaseUrl = import.meta.env.VITE_API_URL as string | undefined;
+if (import.meta.env.PROD && !configuredBaseUrl) {
+  throw new Error("VITE_API_URL precisa estar configurada no build de produção");
+}
+const BASE_URL = configuredBaseUrl ?? "http://localhost:3031/api";
 
 export interface SolicitacaoIgrejaPayload {
   nome: string;

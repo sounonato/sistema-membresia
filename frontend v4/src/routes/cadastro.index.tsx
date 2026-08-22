@@ -7,8 +7,7 @@ export const Route = createFileRoute("/cadastro/")({
       { title: "Cadastrar minha igreja — Ovile" },
       {
         name: "description",
-        content:
-          "Cadastre sua igreja na plataforma Ovile. Análise em até 48 horas.",
+        content: "Cadastre sua igreja na plataforma Ovile. Análise em até 48 horas.",
       },
     ],
   }),

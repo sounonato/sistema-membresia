@@ -3,8 +3,26 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Upload, CheckCircle2, AlertTriangle, XCircle, FileSpreadsheet, FileUp, Info, HelpCircle, ArrowRight } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Loader2,
+  Upload,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  FileSpreadsheet,
+  FileUp,
+  Info,
+  HelpCircle,
+  ArrowRight,
+} from "lucide-react";
 import { useImportarMembros } from "./hooks";
 
 type ImportResult = {
@@ -19,7 +37,7 @@ export function MigracaoPage() {
   const [dragActive, setDragActive] = useState(false);
   const [resultado, setResultado] = useState<ImportResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const mutation = useImportarMembros();
 
   const handleDrag = (e: React.DragEvent) => {
@@ -63,7 +81,7 @@ export function MigracaoPage() {
 
   const handleImport = async () => {
     if (!file) return;
-    
+
     const formData = new FormData();
     formData.append("arquivo", file);
     formData.append("sistema", sistema);
@@ -96,10 +114,12 @@ export function MigracaoPage() {
           {/* Passo 1 — Sistema de Origem */}
           <div className="md:col-span-3 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">1</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">
+                1
+              </span>
               Selecione o sistema de origem
             </h2>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {/* Card InChurch */}
               <button
@@ -112,8 +132,12 @@ export function MigracaoPage() {
               >
                 <div className="flex items-center justify-between w-full mb-3">
                   <span className="font-serif text-lg font-medium text-foreground">InChurch</span>
-                  <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sistema === "inchurch" ? "bg-primary" : "border border-border"}`}>
-                    {sistema === "inchurch" && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  <span
+                    className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sistema === "inchurch" ? "bg-primary" : "border border-border"}`}
+                  >
+                    {sistema === "inchurch" && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    )}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -124,7 +148,9 @@ export function MigracaoPage() {
               {/* Card Brevemente */}
               <div className="flex flex-col p-5 border border-dashed border-border bg-muted/50 opacity-60 cursor-not-allowed">
                 <div className="flex items-center justify-between w-full mb-3">
-                  <span className="font-serif text-lg font-medium text-muted-foreground">Outros sistemas</span>
+                  <span className="font-serif text-lg font-medium text-muted-foreground">
+                    Outros sistemas
+                  </span>
                   <HelpCircle className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -137,10 +163,12 @@ export function MigracaoPage() {
           {/* Passo 2 — Instruções de Exportação */}
           <div className="md:col-span-1 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">2</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">
+                2
+              </span>
               Instruções de exportação
             </h2>
-            
+
             <Card className="border-border bg-card">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-start gap-2.5">
@@ -153,15 +181,21 @@ export function MigracaoPage() {
                 <div className="space-y-3">
                   <div className="border-l-2 border-primary/20 pl-3">
                     <p className="text-xs font-medium text-foreground">Passo 2.1</p>
-                    <p className="text-xs text-muted-foreground">Acesse o painel do InChurch com credenciais de administrador.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Acesse o painel do InChurch com credenciais de administrador.
+                    </p>
                   </div>
                   <div className="border-l-2 border-primary/20 pl-3">
                     <p className="text-xs font-medium text-foreground">Passo 2.2</p>
-                    <p className="text-xs text-muted-foreground">Navegue no menu lateral em <strong>Membros → Exportar</strong>.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Navegue no menu lateral em <strong>Membros → Exportar</strong>.
+                    </p>
                   </div>
                   <div className="border-l-2 border-primary/20 pl-3">
                     <p className="text-xs font-medium text-foreground">Passo 2.3</p>
-                    <p className="text-xs text-muted-foreground">Escolha a opção de exportação em formato <strong>Excel (.xlsx)</strong>.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Escolha a opção de exportação em formato <strong>Excel (.xlsx)</strong>.
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -171,7 +205,9 @@ export function MigracaoPage() {
           {/* Passo 3 — Envio e Upload */}
           <div className="md:col-span-2 space-y-3">
             <h2 className="font-serif text-xl text-foreground flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">3</span>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-sans">
+                3
+              </span>
               Envie o arquivo exportado
             </h2>
 
@@ -183,7 +219,7 @@ export function MigracaoPage() {
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
               />
-              
+
               <div
                 onDragEnter={handleDrag}
                 onDragOver={handleDrag}
@@ -194,8 +230,8 @@ export function MigracaoPage() {
                   dragActive
                     ? "border-primary bg-amber-50/10"
                     : file
-                    ? "border-stone-400 bg-muted/30"
-                    : "border-border hover:border-primary/50 hover:bg-muted/20"
+                      ? "border-stone-400 bg-muted/30"
+                      : "border-border hover:border-primary/50 hover:bg-muted/20"
                 }`}
               >
                 {file ? (
@@ -205,7 +241,9 @@ export function MigracaoPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{file.name}</p>
-                      <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(file.size / 1024).toFixed(1)} KB
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -261,7 +299,7 @@ export function MigracaoPage() {
         /* Tela de Resultados da Importação */
         <div className="space-y-6">
           <h2 className="font-serif text-2xl text-foreground">Resultado da Importação</h2>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Sucesso */}
             <div className="flex items-center gap-4 p-5 border border-border bg-card">
@@ -291,7 +329,9 @@ export function MigracaoPage() {
 
             {/* Erros */}
             <div className="flex items-center gap-4 p-5 border border-border bg-card">
-              <div className={`p-3 rounded-full ${resultado.erros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+              <div
+                className={`p-3 rounded-full ${resultado.erros.length > 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}
+              >
                 <XCircle className="h-6 w-6" />
               </div>
               <div>
@@ -306,16 +346,24 @@ export function MigracaoPage() {
           {resultado.erros.length > 0 && (
             <div className="border border-border bg-card">
               <div className="px-5 py-4 border-b border-border">
-                <h3 className="font-serif text-lg text-foreground">Log detalhado de inconsistências</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">As linhas abaixo continham inconsistências e foram puladas.</p>
+                <h3 className="font-serif text-lg text-foreground">
+                  Log detalhado de inconsistências
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  As linhas abaixo continham inconsistências e foram puladas.
+                </p>
               </div>
-              
+
               <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-border">
-                      <TableHead className="w-20 text-[10px] uppercase tracking-widest text-muted-foreground">Linha</TableHead>
-                      <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Inconsistência</TableHead>
+                      <TableHead className="w-20 text-[10px] uppercase tracking-widest text-muted-foreground">
+                        Linha
+                      </TableHead>
+                      <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                        Inconsistência
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -324,9 +372,7 @@ export function MigracaoPage() {
                         <TableCell className="font-serif italic text-muted-foreground tabular-nums">
                           {String(err.linha).padStart(2, "0")}
                         </TableCell>
-                        <TableCell className="text-xs text-red-600 font-mono">
-                          {err.erro}
-                        </TableCell>
+                        <TableCell className="text-xs text-red-600 font-mono">{err.erro}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -336,15 +382,11 @@ export function MigracaoPage() {
           )}
 
           <div className="flex gap-3 justify-end">
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="rounded-none border-border"
-            >
+            <Button variant="outline" onClick={handleReset} className="rounded-none border-border">
               Nova Importação
             </Button>
             <Button
-              onClick={() => window.location.href = "/membros"}
+              onClick={() => (window.location.href = "/membros")}
               className="rounded-none bg-primary text-primary-foreground hover:opacity-90"
             >
               Ver Membros

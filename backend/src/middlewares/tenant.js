@@ -16,8 +16,12 @@ async function identificarTenant(req, res, next) {
             req.igrejaId = resultado.rows[0].id;
             req.igrejaNome = resultado.rows[0].nome;
           }
+          if (resultado.rows.length === 0 || !resultado.rows[0].ativa) {
+            return res.status(404).json({ error: 'Igreja do tenant não encontrada ou inativa' });
+          }
         } catch (err) {
           console.error('Erro ao buscar igreja para superadmin:', err);
+          return res.status(500).json({ error: 'Erro interno ao identificar tenant' });
         }
       } else {
         req.igrejaId = null;

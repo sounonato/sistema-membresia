@@ -159,17 +159,9 @@ export function MinisteriosPage() {
         </div>
       )}
 
-      <MinisterioFormModal
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        editing={editing}
-      />
+      <MinisterioFormModal open={formOpen} onClose={() => setFormOpen(false)} editing={editing} />
       {detalheId && (
-        <MinisterioDetalheModal
-          id={detalheId}
-          onClose={() => setDetalheId(null)}
-          editor={editor}
-        />
+        <MinisterioDetalheModal id={detalheId} onClose={() => setDetalheId(null)} editor={editor} />
       )}
     </div>
   );
@@ -304,22 +296,17 @@ function MinisterioDetalheModal({
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">
-            {data?.nome ?? "Carregando..."}
-          </DialogTitle>
+          <DialogTitle className="font-serif text-2xl">{data?.nome ?? "Carregando..."}</DialogTitle>
         </DialogHeader>
         {isLoading || !data ? (
           <Loader2 className="h-6 w-6 animate-spin mx-auto my-8 text-muted-foreground" />
         ) : (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              <span className="text-muted-foreground">Líder:</span>{" "}
-              {data.lider_nome ?? "—"}
+              <span className="text-muted-foreground">Líder:</span> {data.lider_nome ?? "—"}
             </p>
             {data.descricao && (
-              <p className="text-sm font-serif italic text-foreground">
-                {data.descricao}
-              </p>
+              <p className="text-sm font-serif italic text-foreground">{data.descricao}</p>
             )}
             <div>
               <h4 className="text-[10px] tracking-widest uppercase text-muted-foreground mb-2">

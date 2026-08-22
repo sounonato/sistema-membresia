@@ -9,72 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TrocarSenhaRouteImport } from './routes/trocar-senha'
-import { Route as TermosRouteImport } from './routes/termos'
-import { Route as ResetarSenhaRouteImport } from './routes/resetar-senha'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
-import { Route as AuthRouteImport } from './routes/_auth'
-import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CadastroIndexRouteImport } from './routes/cadastro.index'
+import { Route as SlugRouteImport } from './routes/$slug'
+import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetarSenhaRouteImport } from './routes/resetar-senha'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as TrocarSenhaRouteImport } from './routes/trocar-senha'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
-import { Route as SuperadminLoginRouteImport } from './routes/superadmin.login'
-import { Route as CadastroSucessoRouteImport } from './routes/cadastro.sucesso'
-import { Route as CadastroSlugRouteImport } from './routes/cadastro.$slug'
-import { Route as CadastroMembroSlugRouteImport } from './routes/cadastro-membro.$slug'
-import { Route as AuthUsuariosRouteImport } from './routes/_auth.usuarios'
-import { Route as AuthRelatoriosRouteImport } from './routes/_auth.relatorios'
-import { Route as AuthQrCadastroRouteImport } from './routes/_auth.qr-cadastro'
-import { Route as AuthModulosRouteImport } from './routes/_auth.modulos'
-import { Route as AuthMinisteriosRouteImport } from './routes/_auth.ministerios'
-import { Route as AuthMigracaoRouteImport } from './routes/_auth.migracao'
-import { Route as AuthMembrosMetricasRouteImport } from './routes/_auth.membros-metricas'
-import { Route as AuthManualRouteImport } from './routes/_auth.manual'
-import { Route as AuthIgrejasRouteImport } from './routes/_auth.igrejas'
-import { Route as AuthFollowupWhatsappRouteImport } from './routes/_auth.followup-whatsapp'
-import { Route as AuthDiscipuladoresRouteImport } from './routes/_auth.discipuladores'
-import { Route as AuthDashboardRouteImport } from './routes/_auth.dashboard'
 import { Route as SlugLoginRouteImport } from './routes/$slug.login'
-import { Route as AuthMembrosIndexRouteImport } from './routes/_auth.membros.index'
-import { Route as AuthDiscipuladoIndexRouteImport } from './routes/_auth.discipulado.index'
+import { Route as AuthDashboardRouteImport } from './routes/_auth.dashboard'
+import { Route as AuthDiscipuladoresRouteImport } from './routes/_auth.discipuladores'
+import { Route as AuthFollowupWhatsappRouteImport } from './routes/_auth.followup-whatsapp'
+import { Route as AuthIgrejasRouteImport } from './routes/_auth.igrejas'
+import { Route as AuthManualRouteImport } from './routes/_auth.manual'
+import { Route as AuthMembrosMetricasRouteImport } from './routes/_auth.membros-metricas'
+import { Route as AuthMigracaoRouteImport } from './routes/_auth.migracao'
+import { Route as AuthMinisteriosRouteImport } from './routes/_auth.ministerios'
+import { Route as AuthModulosRouteImport } from './routes/_auth.modulos'
+import { Route as AuthQrCadastroRouteImport } from './routes/_auth.qr-cadastro'
+import { Route as AuthRelatoriosRouteImport } from './routes/_auth.relatorios'
+import { Route as AuthUsuariosRouteImport } from './routes/_auth.usuarios'
+import { Route as CadastroMembroSlugRouteImport } from './routes/cadastro-membro.$slug'
+import { Route as CadastroIndexRouteImport } from './routes/cadastro.index'
+import { Route as CadastroSlugRouteImport } from './routes/cadastro.$slug'
+import { Route as CadastroSucessoRouteImport } from './routes/cadastro.sucesso'
+import { Route as SuperadminLoginRouteImport } from './routes/superadmin.login'
 import { Route as AuthConvertidosIndexRouteImport } from './routes/_auth.convertidos.index'
-import { Route as AuthMembrosNovoRouteImport } from './routes/_auth.membros.novo'
-import { Route as AuthDiscipuladoIdRouteImport } from './routes/_auth.discipulado.$id'
 import { Route as AuthConvertidosNovoRouteImport } from './routes/_auth.convertidos.novo'
-import { Route as AuthMembrosIdIndexRouteImport } from './routes/_auth.membros.$id.index'
+import { Route as AuthDiscipuladoIndexRouteImport } from './routes/_auth.discipulado.index'
+import { Route as AuthDiscipuladoIdRouteImport } from './routes/_auth.discipulado.$id'
+import { Route as AuthMembrosIndexRouteImport } from './routes/_auth.membros.index'
+import { Route as AuthMembrosNovoRouteImport } from './routes/_auth.membros.novo'
 import { Route as AuthConvertidosIdIndexRouteImport } from './routes/_auth.convertidos.$id.index'
-import { Route as AuthMembrosIdEditarRouteImport } from './routes/_auth.membros.$id.editar'
-import { Route as AuthConvertidosIdJornadaRouteImport } from './routes/_auth.convertidos.$id.jornada'
 import { Route as AuthConvertidosIdEditarRouteImport } from './routes/_auth.convertidos.$id.editar'
+import { Route as AuthConvertidosIdJornadaRouteImport } from './routes/_auth.convertidos.$id.jornada'
+import { Route as AuthMembrosIdIndexRouteImport } from './routes/_auth.membros.$id.index'
+import { Route as AuthMembrosIdEditarRouteImport } from './routes/_auth.membros.$id.editar'
 
-const TrocarSenhaRoute = TrocarSenhaRouteImport.update({
-  id: '/trocar-senha',
-  path: '/trocar-senha',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TermosRoute = TermosRouteImport.update({
-  id: '/termos',
-  path: '/termos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetarSenhaRoute = ResetarSenhaRouteImport.update({
-  id: '/resetar-senha',
-  path: '/resetar-senha',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
-  id: '/esqueci-senha',
-  path: '/esqueci-senha',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/_auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlugRoute = SlugRouteImport.update({
@@ -82,14 +58,33 @@ const SlugRoute = SlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CadastroIndexRoute = CadastroIndexRouteImport.update({
-  id: '/cadastro/',
-  path: '/cadastro/',
+const EsqueciSenhaRoute = EsqueciSenhaRouteImport.update({
+  id: '/esqueci-senha',
+  path: '/esqueci-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetarSenhaRoute = ResetarSenhaRouteImport.update({
+  id: '/resetar-senha',
+  path: '/resetar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrocarSenhaRoute = TrocarSenhaRouteImport.update({
+  id: '/trocar-senha',
+  path: '/trocar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlugIndexRoute = SlugIndexRouteImport.update({
@@ -97,74 +92,14 @@ const SlugIndexRoute = SlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SlugRoute,
 } as any)
-const SuperadminLoginRoute = SuperadminLoginRouteImport.update({
-  id: '/superadmin/login',
-  path: '/superadmin/login',
-  getParentRoute: () => rootRouteImport,
+const SlugLoginRoute = SlugLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => SlugRoute,
 } as any)
-const CadastroSucessoRoute = CadastroSucessoRouteImport.update({
-  id: '/cadastro/sucesso',
-  path: '/cadastro/sucesso',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CadastroSlugRoute = CadastroSlugRouteImport.update({
-  id: '/cadastro/$slug',
-  path: '/cadastro/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CadastroMembroSlugRoute = CadastroMembroSlugRouteImport.update({
-  id: '/cadastro-membro/$slug',
-  path: '/cadastro-membro/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthUsuariosRoute = AuthUsuariosRouteImport.update({
-  id: '/usuarios',
-  path: '/usuarios',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthRelatoriosRoute = AuthRelatoriosRouteImport.update({
-  id: '/relatorios',
-  path: '/relatorios',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthQrCadastroRoute = AuthQrCadastroRouteImport.update({
-  id: '/qr-cadastro',
-  path: '/qr-cadastro',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthModulosRoute = AuthModulosRouteImport.update({
-  id: '/modulos',
-  path: '/modulos',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthMinisteriosRoute = AuthMinisteriosRouteImport.update({
-  id: '/ministerios',
-  path: '/ministerios',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthMigracaoRoute = AuthMigracaoRouteImport.update({
-  id: '/migracao',
-  path: '/migracao',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthMembrosMetricasRoute = AuthMembrosMetricasRouteImport.update({
-  id: '/membros-metricas',
-  path: '/membros-metricas',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthManualRoute = AuthManualRouteImport.update({
-  id: '/manual',
-  path: '/manual',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthIgrejasRoute = AuthIgrejasRouteImport.update({
-  id: '/igrejas',
-  path: '/igrejas',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthFollowupWhatsappRoute = AuthFollowupWhatsappRouteImport.update({
-  id: '/followup-whatsapp',
-  path: '/followup-whatsapp',
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthDiscipuladoresRoute = AuthDiscipuladoresRouteImport.update({
@@ -172,39 +107,84 @@ const AuthDiscipuladoresRoute = AuthDiscipuladoresRouteImport.update({
   path: '/discipuladores',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthDashboardRoute = AuthDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthFollowupWhatsappRoute = AuthFollowupWhatsappRouteImport.update({
+  id: '/followup-whatsapp',
+  path: '/followup-whatsapp',
   getParentRoute: () => AuthRoute,
 } as any)
-const SlugLoginRoute = SlugLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => SlugRoute,
-} as any)
-const AuthMembrosIndexRoute = AuthMembrosIndexRouteImport.update({
-  id: '/membros/',
-  path: '/membros/',
+const AuthIgrejasRoute = AuthIgrejasRouteImport.update({
+  id: '/igrejas',
+  path: '/igrejas',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthDiscipuladoIndexRoute = AuthDiscipuladoIndexRouteImport.update({
-  id: '/discipulado/',
-  path: '/discipulado/',
+const AuthManualRoute = AuthManualRouteImport.update({
+  id: '/manual',
+  path: '/manual',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthMembrosMetricasRoute = AuthMembrosMetricasRouteImport.update({
+  id: '/membros-metricas',
+  path: '/membros-metricas',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthMigracaoRoute = AuthMigracaoRouteImport.update({
+  id: '/migracao',
+  path: '/migracao',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthMinisteriosRoute = AuthMinisteriosRouteImport.update({
+  id: '/ministerios',
+  path: '/ministerios',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthModulosRoute = AuthModulosRouteImport.update({
+  id: '/modulos',
+  path: '/modulos',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthQrCadastroRoute = AuthQrCadastroRouteImport.update({
+  id: '/qr-cadastro',
+  path: '/qr-cadastro',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthRelatoriosRoute = AuthRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthUsuariosRoute = AuthUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AuthRoute,
+} as any)
+const CadastroMembroSlugRoute = CadastroMembroSlugRouteImport.update({
+  id: '/cadastro-membro/$slug',
+  path: '/cadastro-membro/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroIndexRoute = CadastroIndexRouteImport.update({
+  id: '/cadastro/',
+  path: '/cadastro/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroSlugRoute = CadastroSlugRouteImport.update({
+  id: '/cadastro/$slug',
+  path: '/cadastro/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroSucessoRoute = CadastroSucessoRouteImport.update({
+  id: '/cadastro/sucesso',
+  path: '/cadastro/sucesso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperadminLoginRoute = SuperadminLoginRouteImport.update({
+  id: '/superadmin/login',
+  path: '/superadmin/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthConvertidosIndexRoute = AuthConvertidosIndexRouteImport.update({
   id: '/convertidos/',
   path: '/convertidos/',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthMembrosNovoRoute = AuthMembrosNovoRouteImport.update({
-  id: '/membros/novo',
-  path: '/membros/novo',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthDiscipuladoIdRoute = AuthDiscipuladoIdRouteImport.update({
-  id: '/discipulado/$id',
-  path: '/discipulado/$id',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthConvertidosNovoRoute = AuthConvertidosNovoRouteImport.update({
@@ -212,9 +192,24 @@ const AuthConvertidosNovoRoute = AuthConvertidosNovoRouteImport.update({
   path: '/convertidos/novo',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthMembrosIdIndexRoute = AuthMembrosIdIndexRouteImport.update({
-  id: '/membros/$id/',
-  path: '/membros/$id/',
+const AuthDiscipuladoIndexRoute = AuthDiscipuladoIndexRouteImport.update({
+  id: '/discipulado/',
+  path: '/discipulado/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthDiscipuladoIdRoute = AuthDiscipuladoIdRouteImport.update({
+  id: '/discipulado/$id',
+  path: '/discipulado/$id',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthMembrosIndexRoute = AuthMembrosIndexRouteImport.update({
+  id: '/membros/',
+  path: '/membros/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthMembrosNovoRoute = AuthMembrosNovoRouteImport.update({
+  id: '/membros/novo',
+  path: '/membros/novo',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthConvertidosIdIndexRoute = AuthConvertidosIdIndexRouteImport.update({
@@ -222,9 +217,9 @@ const AuthConvertidosIdIndexRoute = AuthConvertidosIdIndexRouteImport.update({
   path: '/convertidos/$id/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthMembrosIdEditarRoute = AuthMembrosIdEditarRouteImport.update({
-  id: '/membros/$id/editar',
-  path: '/membros/$id/editar',
+const AuthConvertidosIdEditarRoute = AuthConvertidosIdEditarRouteImport.update({
+  id: '/convertidos/$id/editar',
+  path: '/convertidos/$id/editar',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthConvertidosIdJornadaRoute =
@@ -233,9 +228,14 @@ const AuthConvertidosIdJornadaRoute =
     path: '/convertidos/$id/jornada',
     getParentRoute: () => AuthRoute,
   } as any)
-const AuthConvertidosIdEditarRoute = AuthConvertidosIdEditarRouteImport.update({
-  id: '/convertidos/$id/editar',
-  path: '/convertidos/$id/editar',
+const AuthMembrosIdIndexRoute = AuthMembrosIdIndexRouteImport.update({
+  id: '/membros/$id/',
+  path: '/membros/$id/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthMembrosIdEditarRoute = AuthMembrosIdEditarRouteImport.update({
+  id: '/membros/$id/editar',
+  path: '/membros/$id/editar',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -495,46 +495,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/trocar-senha': {
-      id: '/trocar-senha'
-      path: '/trocar-senha'
-      fullPath: '/trocar-senha'
-      preLoaderRoute: typeof TrocarSenhaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/termos': {
-      id: '/termos'
-      path: '/termos'
-      fullPath: '/termos'
-      preLoaderRoute: typeof TermosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resetar-senha': {
-      id: '/resetar-senha'
-      path: '/resetar-senha'
-      fullPath: '/resetar-senha'
-      preLoaderRoute: typeof ResetarSenhaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/esqueci-senha': {
-      id: '/esqueci-senha'
-      path: '/esqueci-senha'
-      fullPath: '/esqueci-senha'
-      preLoaderRoute: typeof EsqueciSenhaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth': {
-      id: '/_auth'
-      path: ''
+    '/': {
+      id: '/'
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$slug': {
@@ -544,18 +509,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
+    '/_auth': {
+      id: '/_auth'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cadastro/': {
-      id: '/cadastro/'
-      path: '/cadastro'
-      fullPath: '/cadastro/'
-      preLoaderRoute: typeof CadastroIndexRouteImport
+    '/esqueci-senha': {
+      id: '/esqueci-senha'
+      path: '/esqueci-senha'
+      fullPath: '/esqueci-senha'
+      preLoaderRoute: typeof EsqueciSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resetar-senha': {
+      id: '/resetar-senha'
+      path: '/resetar-senha'
+      fullPath: '/resetar-senha'
+      preLoaderRoute: typeof ResetarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trocar-senha': {
+      id: '/trocar-senha'
+      path: '/trocar-senha'
+      fullPath: '/trocar-senha'
+      preLoaderRoute: typeof TrocarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$slug/': {
@@ -565,102 +558,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugIndexRouteImport
       parentRoute: typeof SlugRoute
     }
-    '/superadmin/login': {
-      id: '/superadmin/login'
-      path: '/superadmin/login'
-      fullPath: '/superadmin/login'
-      preLoaderRoute: typeof SuperadminLoginRouteImport
-      parentRoute: typeof rootRouteImport
+    '/$slug/login': {
+      id: '/$slug/login'
+      path: '/login'
+      fullPath: '/$slug/login'
+      preLoaderRoute: typeof SlugLoginRouteImport
+      parentRoute: typeof SlugRoute
     }
-    '/cadastro/sucesso': {
-      id: '/cadastro/sucesso'
-      path: '/cadastro/sucesso'
-      fullPath: '/cadastro/sucesso'
-      preLoaderRoute: typeof CadastroSucessoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cadastro/$slug': {
-      id: '/cadastro/$slug'
-      path: '/cadastro/$slug'
-      fullPath: '/cadastro/$slug'
-      preLoaderRoute: typeof CadastroSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cadastro-membro/$slug': {
-      id: '/cadastro-membro/$slug'
-      path: '/cadastro-membro/$slug'
-      fullPath: '/cadastro-membro/$slug'
-      preLoaderRoute: typeof CadastroMembroSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth/usuarios': {
-      id: '/_auth/usuarios'
-      path: '/usuarios'
-      fullPath: '/usuarios'
-      preLoaderRoute: typeof AuthUsuariosRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/relatorios': {
-      id: '/_auth/relatorios'
-      path: '/relatorios'
-      fullPath: '/relatorios'
-      preLoaderRoute: typeof AuthRelatoriosRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/qr-cadastro': {
-      id: '/_auth/qr-cadastro'
-      path: '/qr-cadastro'
-      fullPath: '/qr-cadastro'
-      preLoaderRoute: typeof AuthQrCadastroRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/modulos': {
-      id: '/_auth/modulos'
-      path: '/modulos'
-      fullPath: '/modulos'
-      preLoaderRoute: typeof AuthModulosRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/ministerios': {
-      id: '/_auth/ministerios'
-      path: '/ministerios'
-      fullPath: '/ministerios'
-      preLoaderRoute: typeof AuthMinisteriosRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/migracao': {
-      id: '/_auth/migracao'
-      path: '/migracao'
-      fullPath: '/migracao'
-      preLoaderRoute: typeof AuthMigracaoRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/membros-metricas': {
-      id: '/_auth/membros-metricas'
-      path: '/membros-metricas'
-      fullPath: '/membros-metricas'
-      preLoaderRoute: typeof AuthMembrosMetricasRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/manual': {
-      id: '/_auth/manual'
-      path: '/manual'
-      fullPath: '/manual'
-      preLoaderRoute: typeof AuthManualRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/igrejas': {
-      id: '/_auth/igrejas'
-      path: '/igrejas'
-      fullPath: '/igrejas'
-      preLoaderRoute: typeof AuthIgrejasRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/followup-whatsapp': {
-      id: '/_auth/followup-whatsapp'
-      path: '/followup-whatsapp'
-      fullPath: '/followup-whatsapp'
-      preLoaderRoute: typeof AuthFollowupWhatsappRouteImport
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/discipuladores': {
@@ -670,53 +579,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDiscipuladoresRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/dashboard': {
-      id: '/_auth/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthDashboardRouteImport
+    '/_auth/followup-whatsapp': {
+      id: '/_auth/followup-whatsapp'
+      path: '/followup-whatsapp'
+      fullPath: '/followup-whatsapp'
+      preLoaderRoute: typeof AuthFollowupWhatsappRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/$slug/login': {
-      id: '/$slug/login'
-      path: '/login'
-      fullPath: '/$slug/login'
-      preLoaderRoute: typeof SlugLoginRouteImport
-      parentRoute: typeof SlugRoute
-    }
-    '/_auth/membros/': {
-      id: '/_auth/membros/'
-      path: '/membros'
-      fullPath: '/membros/'
-      preLoaderRoute: typeof AuthMembrosIndexRouteImport
+    '/_auth/igrejas': {
+      id: '/_auth/igrejas'
+      path: '/igrejas'
+      fullPath: '/igrejas'
+      preLoaderRoute: typeof AuthIgrejasRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/discipulado/': {
-      id: '/_auth/discipulado/'
-      path: '/discipulado'
-      fullPath: '/discipulado/'
-      preLoaderRoute: typeof AuthDiscipuladoIndexRouteImport
+    '/_auth/manual': {
+      id: '/_auth/manual'
+      path: '/manual'
+      fullPath: '/manual'
+      preLoaderRoute: typeof AuthManualRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_auth/membros-metricas': {
+      id: '/_auth/membros-metricas'
+      path: '/membros-metricas'
+      fullPath: '/membros-metricas'
+      preLoaderRoute: typeof AuthMembrosMetricasRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/migracao': {
+      id: '/_auth/migracao'
+      path: '/migracao'
+      fullPath: '/migracao'
+      preLoaderRoute: typeof AuthMigracaoRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/ministerios': {
+      id: '/_auth/ministerios'
+      path: '/ministerios'
+      fullPath: '/ministerios'
+      preLoaderRoute: typeof AuthMinisteriosRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/modulos': {
+      id: '/_auth/modulos'
+      path: '/modulos'
+      fullPath: '/modulos'
+      preLoaderRoute: typeof AuthModulosRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/qr-cadastro': {
+      id: '/_auth/qr-cadastro'
+      path: '/qr-cadastro'
+      fullPath: '/qr-cadastro'
+      preLoaderRoute: typeof AuthQrCadastroRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/relatorios': {
+      id: '/_auth/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof AuthRelatoriosRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/usuarios': {
+      id: '/_auth/usuarios'
+      path: '/usuarios'
+      fullPath: '/usuarios'
+      preLoaderRoute: typeof AuthUsuariosRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/cadastro-membro/$slug': {
+      id: '/cadastro-membro/$slug'
+      path: '/cadastro-membro/$slug'
+      fullPath: '/cadastro-membro/$slug'
+      preLoaderRoute: typeof CadastroMembroSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro/': {
+      id: '/cadastro/'
+      path: '/cadastro'
+      fullPath: '/cadastro/'
+      preLoaderRoute: typeof CadastroIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro/$slug': {
+      id: '/cadastro/$slug'
+      path: '/cadastro/$slug'
+      fullPath: '/cadastro/$slug'
+      preLoaderRoute: typeof CadastroSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro/sucesso': {
+      id: '/cadastro/sucesso'
+      path: '/cadastro/sucesso'
+      fullPath: '/cadastro/sucesso'
+      preLoaderRoute: typeof CadastroSucessoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin/login': {
+      id: '/superadmin/login'
+      path: '/superadmin/login'
+      fullPath: '/superadmin/login'
+      preLoaderRoute: typeof SuperadminLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/convertidos/': {
       id: '/_auth/convertidos/'
       path: '/convertidos'
       fullPath: '/convertidos/'
       preLoaderRoute: typeof AuthConvertidosIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/membros/novo': {
-      id: '/_auth/membros/novo'
-      path: '/membros/novo'
-      fullPath: '/membros/novo'
-      preLoaderRoute: typeof AuthMembrosNovoRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/discipulado/$id': {
-      id: '/_auth/discipulado/$id'
-      path: '/discipulado/$id'
-      fullPath: '/discipulado/$id'
-      preLoaderRoute: typeof AuthDiscipuladoIdRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/convertidos/novo': {
@@ -726,11 +698,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthConvertidosNovoRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/membros/$id/': {
-      id: '/_auth/membros/$id/'
-      path: '/membros/$id'
-      fullPath: '/membros/$id/'
-      preLoaderRoute: typeof AuthMembrosIdIndexRouteImport
+    '/_auth/discipulado/': {
+      id: '/_auth/discipulado/'
+      path: '/discipulado'
+      fullPath: '/discipulado/'
+      preLoaderRoute: typeof AuthDiscipuladoIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/discipulado/$id': {
+      id: '/_auth/discipulado/$id'
+      path: '/discipulado/$id'
+      fullPath: '/discipulado/$id'
+      preLoaderRoute: typeof AuthDiscipuladoIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/membros/': {
+      id: '/_auth/membros/'
+      path: '/membros'
+      fullPath: '/membros/'
+      preLoaderRoute: typeof AuthMembrosIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/membros/novo': {
+      id: '/_auth/membros/novo'
+      path: '/membros/novo'
+      fullPath: '/membros/novo'
+      preLoaderRoute: typeof AuthMembrosNovoRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/convertidos/$id/': {
@@ -740,11 +733,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthConvertidosIdIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/membros/$id/editar': {
-      id: '/_auth/membros/$id/editar'
-      path: '/membros/$id/editar'
-      fullPath: '/membros/$id/editar'
-      preLoaderRoute: typeof AuthMembrosIdEditarRouteImport
+    '/_auth/convertidos/$id/editar': {
+      id: '/_auth/convertidos/$id/editar'
+      path: '/convertidos/$id/editar'
+      fullPath: '/convertidos/$id/editar'
+      preLoaderRoute: typeof AuthConvertidosIdEditarRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/convertidos/$id/jornada': {
@@ -754,11 +747,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthConvertidosIdJornadaRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/convertidos/$id/editar': {
-      id: '/_auth/convertidos/$id/editar'
-      path: '/convertidos/$id/editar'
-      fullPath: '/convertidos/$id/editar'
-      preLoaderRoute: typeof AuthConvertidosIdEditarRouteImport
+    '/_auth/membros/$id/': {
+      id: '/_auth/membros/$id/'
+      path: '/membros/$id'
+      fullPath: '/membros/$id/'
+      preLoaderRoute: typeof AuthMembrosIdIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/membros/$id/editar': {
+      id: '/_auth/membros/$id/editar'
+      path: '/membros/$id/editar'
+      fullPath: '/membros/$id/editar'
+      preLoaderRoute: typeof AuthMembrosIdEditarRouteImport
       parentRoute: typeof AuthRoute
     }
   }

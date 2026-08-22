@@ -40,7 +40,7 @@ export function CadastroPublicoPage() {
     cidade: "",
     como_conheceu: "",
     culto_conversao: "",
-    batizado: "",           // "sim" | "nao"
+    batizado: "", // "sim" | "nao"
     ja_frequentava_igreja: "", // "sim" | "nao"
     igreja_anterior: "",
     ja_fez_discipulado: "", // "sim" | "nao"
@@ -48,20 +48,21 @@ export function CadastroPublicoPage() {
     grupo_id: grupoInicial,
   });
 
-  function up<K extends keyof typeof form>(k: K, v: typeof form[K]) {
+  function up<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((p) => ({ ...p, [k]: v }));
   }
 
   const m = useMutation({
-    mutationFn: () => api.cadastroPublico(slug, {
-      ...form,
-      culto_conversao: form.culto_conversao || undefined,
-      batizado: form.batizado === "sim",
-      quer_batismo: false,
-      ja_frequentava_igreja: form.ja_frequentava_igreja === "sim",
-      ja_fez_discipulado: form.ja_fez_discipulado === "sim",
-      tem_filhos: false,
-    }),
+    mutationFn: () =>
+      api.cadastroPublico(slug, {
+        ...form,
+        culto_conversao: form.culto_conversao || undefined,
+        batizado: form.batizado === "sim",
+        quer_batismo: false,
+        ja_frequentava_igreja: form.ja_frequentava_igreja === "sim",
+        ja_fez_discipulado: form.ja_fez_discipulado === "sim",
+        tem_filhos: false,
+      }),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -97,7 +98,12 @@ export function CadastroPublicoPage() {
           </div>
           <p className="text-[10px] uppercase tracking-[0.4em] text-stone-500">Recebido</p>
           <h1 className="mt-3 font-serif text-4xl text-stone-900 leading-tight">
-            Bem-vindo(a),<br/><em className="font-[Instrument_Serif,serif] text-primary">{form.nome.split(" ")[0]}</em>.
+            Bem-vindo(a),
+            <br />
+            <em className="font-[Instrument_Serif,serif] text-primary">
+              {form.nome.split(" ")[0]}
+            </em>
+            .
           </h1>
           <p className="mt-4 font-[Instrument_Serif,serif] italic text-lg text-stone-600">
             Uma cadeira já foi posta no seu nome — em breve alguém desta casa entra em contato.
@@ -136,11 +142,10 @@ export function CadastroPublicoPage() {
     <div className="min-h-screen bg-stone-50">
       <header className="bg-stone-950 text-stone-100">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-stone-400">
-            {igreja.nome}
-          </p>
+          <p className="text-[10px] uppercase tracking-[0.4em] text-stone-400">{igreja.nome}</p>
           <h1 className="mt-3 font-serif text-4xl md:text-5xl leading-[1.05]">
-            Faça parte<br/>
+            Faça parte
+            <br />
             <em className="font-[Instrument_Serif,serif] text-primary">desta casa.</em>
           </h1>
           <p className="mt-4 font-[Instrument_Serif,serif] italic text-lg text-stone-300 max-w-md">
@@ -151,24 +156,53 @@ export function CadastroPublicoPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <form onSubmit={handleSubmit} className="space-y-14">
-
           {/* Capítulo I — Dados pessoais */}
-          <Chapter n="I" title="Seus dados" lede="O básico para achar você quando a próxima carta chegar.">
+          <Chapter
+            n="I"
+            title="Seus dados"
+            lede="O básico para achar você quando a próxima carta chegar."
+          >
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Nome completo *">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.nome} onChange={(e) => up("nome", e.target.value)} required />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                  value={form.nome}
+                  onChange={(e) => up("nome", e.target.value)}
+                  required
+                />
               </Field>
               <Field label="WhatsApp *">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.telefone} onChange={(e) => up("telefone", e.target.value)} placeholder="(88) 99999-9999" required />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                  value={form.telefone}
+                  onChange={(e) => up("telefone", e.target.value)}
+                  placeholder="(88) 99999-9999"
+                  required
+                />
               </Field>
               <Field label="E-mail">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" type="email" value={form.email} onChange={(e) => up("email", e.target.value)} />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => up("email", e.target.value)}
+                />
               </Field>
               <Field label="Data de nascimento *">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 h-11" type="date" value={form.data_nascimento} onChange={(e) => up("data_nascimento", e.target.value)} required />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 h-11"
+                  type="date"
+                  value={form.data_nascimento}
+                  onChange={(e) => up("data_nascimento", e.target.value)}
+                  required
+                />
               </Field>
               <Field label="Estado civil *">
-                <Select value={form.estado_civil} onValueChange={(v) => up("estado_civil", v)} required>
+                <Select
+                  value={form.estado_civil}
+                  onValueChange={(v) => up("estado_civil", v)}
+                  required
+                >
                   <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
@@ -199,23 +233,49 @@ export function CadastroPublicoPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <Field label="Endereço *">
-                  <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.endereco} onChange={(e) => up("endereco", e.target.value)} placeholder="Rua, número" required />
+                  <Input
+                    className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                    value={form.endereco}
+                    onChange={(e) => up("endereco", e.target.value)}
+                    placeholder="Rua, número"
+                    required
+                  />
                 </Field>
               </div>
               <Field label="Bairro *">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.bairro} onChange={(e) => up("bairro", e.target.value)} placeholder="Seu bairro" required />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                  value={form.bairro}
+                  onChange={(e) => up("bairro", e.target.value)}
+                  placeholder="Seu bairro"
+                  required
+                />
               </Field>
               <Field label="Cidade *">
-                <Input className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11" value={form.cidade} onChange={(e) => up("cidade", e.target.value)} placeholder="Sua cidade" required />
+                <Input
+                  className="rounded-none border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 h-11"
+                  value={form.cidade}
+                  onChange={(e) => up("cidade", e.target.value)}
+                  placeholder="Sua cidade"
+                  required
+                />
               </Field>
             </div>
           </Chapter>
 
           {/* Capítulo III — Sua história */}
-          <Chapter n="III" title="Sua história" lede="Nada aqui é prova — é conversa. Responda como se contasse a alguém que te espera.">
+          <Chapter
+            n="III"
+            title="Sua história"
+            lede="Nada aqui é prova — é conversa. Responda como se contasse a alguém que te espera."
+          >
             <div className="space-y-6">
               <Field label="Como conheceu nossa igreja? *">
-                <Select value={form.como_conheceu} onValueChange={(v) => up("como_conheceu", v)} required>
+                <Select
+                  value={form.como_conheceu}
+                  onValueChange={(v) => up("como_conheceu", v)}
+                  required
+                >
                   <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
@@ -231,7 +291,10 @@ export function CadastroPublicoPage() {
               </Field>
 
               <Field label="Em qual culto você entregou sua vida a Jesus?">
-                <Select value={form.culto_conversao} onValueChange={(v) => up("culto_conversao", v)}>
+                <Select
+                  value={form.culto_conversao}
+                  onValueChange={(v) => up("culto_conversao", v)}
+                >
                   <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
@@ -261,7 +324,11 @@ export function CadastroPublicoPage() {
                 </Field>
 
                 <Field label="Já fez discipulado? *">
-                  <Select value={form.ja_fez_discipulado} onValueChange={(v) => up("ja_fez_discipulado", v)} required>
+                  <Select
+                    value={form.ja_fez_discipulado}
+                    onValueChange={(v) => up("ja_fez_discipulado", v)}
+                    required
+                  >
                     <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                       <SelectValue placeholder="Selecionar..." />
                     </SelectTrigger>
@@ -274,7 +341,11 @@ export function CadastroPublicoPage() {
 
                 <div className="sm:col-span-2">
                   <Field label="Frequentava outra igreja? *">
-                    <Select value={form.ja_frequentava_igreja} onValueChange={(v) => up("ja_frequentava_igreja", v)} required>
+                    <Select
+                      value={form.ja_frequentava_igreja}
+                      onValueChange={(v) => up("ja_frequentava_igreja", v)}
+                      required
+                    >
                       <SelectTrigger className="rounded-none border border-stone-300 bg-white text-stone-900 focus:ring-0 focus:border-stone-700 h-11">
                         <SelectValue placeholder="Selecionar..." />
                       </SelectTrigger>
@@ -312,7 +383,12 @@ export function CadastroPublicoPage() {
           </Chapter>
 
           <div className="border-t border-stone-300 pt-6">
-            <Button type="submit" size="lg" className="w-full rounded-none bg-stone-950 hover:bg-stone-900 h-14 text-base tracking-wide" disabled={m.isPending}>
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full rounded-none bg-stone-950 hover:bg-stone-900 h-14 text-base tracking-wide"
+              disabled={m.isPending}
+            >
               {m.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               ENVIAR
             </Button>
@@ -326,7 +402,17 @@ export function CadastroPublicoPage() {
   );
 }
 
-function Chapter({ n, title, lede, children }: { n: string; title: string; lede?: string; children: React.ReactNode }) {
+function Chapter({
+  n,
+  title,
+  lede,
+  children,
+}: {
+  n: string;
+  title: string;
+  lede?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
       <header className="border-b border-stone-300 pb-4 mb-6">
@@ -336,9 +422,7 @@ function Chapter({ n, title, lede, children }: { n: string; title: string; lede?
           Capítulo
         </p>
         <h2 className="mt-2 font-serif text-3xl text-stone-900">{title}</h2>
-        {lede && (
-          <p className="mt-1 font-[Instrument_Serif,serif] italic text-stone-600">{lede}</p>
-        )}
+        {lede && <p className="mt-1 font-[Instrument_Serif,serif] italic text-stone-600">{lede}</p>}
       </header>
       {children}
     </section>
@@ -348,7 +432,9 @@ function Chapter({ n, title, lede, children }: { n: string; title: string; lede?
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-[10px] uppercase tracking-widest text-stone-600 font-semibold">{label}</Label>
+      <Label className="text-[10px] uppercase tracking-widest text-stone-600 font-semibold">
+        {label}
+      </Label>
       {children}
     </div>
   );

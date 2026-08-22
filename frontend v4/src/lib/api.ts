@@ -1,4 +1,8 @@
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3031/api";
+const configuredBaseUrl = import.meta.env.VITE_API_URL as string | undefined;
+if (import.meta.env.PROD && !configuredBaseUrl) {
+  throw new Error("VITE_API_URL precisa estar configurada no build de produção");
+}
+const BASE_URL = configuredBaseUrl ?? "http://localhost:3031/api";
 
 export class ApiError extends Error {
   status: number;
@@ -68,10 +72,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ senha_atual, senha_nova }),
     }),
-  esqueciSenha: (email: string) =>
+  esqueciSenha: (email: string, slug?: string) =>
     publicRequest("/autenticacao/esqueci-senha", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, ...(slug ? { slug } : {}) }),
     }),
   resetarSenha: (token: string, senha_nova: string) =>
     publicRequest("/autenticacao/resetar-senha", {
@@ -84,8 +88,7 @@ export const api = {
     request("/igrejas", { method: "POST", body: JSON.stringify(data) }),
   updateIgreja: (id: string, data: unknown) =>
     request(`/igrejas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteIgreja: (id: string) =>
-    request(`/igrejas/${id}`, { method: "DELETE" }),
+  deleteIgreja: (id: string) => request(`/igrejas/${id}`, { method: "DELETE" }),
   createAdminIgreja: (igrejaId: string, data: unknown) =>
     request(`/igrejas/${igrejaId}/admin`, {
       method: "POST",
@@ -109,15 +112,14 @@ export const api = {
 
   getConvertidos: () =>
     request("/convertidos").then((r: unknown) =>
-      Array.isArray(r) ? r : (r as { data: unknown[] }).data ?? [],
+      Array.isArray(r) ? r : ((r as { data: unknown[] }).data ?? []),
     ),
   getConvertido: (id: string) => request(`/convertidos/${id}`),
   createConvertido: (data: unknown) =>
     request("/convertidos", { method: "POST", body: JSON.stringify(data) }),
   updateConvertido: (id: string, data: unknown) =>
     request(`/convertidos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteConvertido: (id: string) =>
-    request(`/convertidos/${id}`, { method: "DELETE" }),
+  deleteConvertido: (id: string) => request(`/convertidos/${id}`, { method: "DELETE" }),
 
   getGrupos: () => request("/discipulado/grupos"),
   getGrupo: (id: string) => request(`/discipulado/grupos/${id}`),
@@ -144,22 +146,19 @@ export const api = {
     request("/discipuladores", { method: "POST", body: JSON.stringify(data) }),
   updateDiscipulador: (id: string, data: unknown) =>
     request(`/discipuladores/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteDiscipulador: (id: string) =>
-    request(`/discipuladores/${id}`, { method: "DELETE" }),
+  deleteDiscipulador: (id: string) => request(`/discipuladores/${id}`, { method: "DELETE" }),
 
   getModulos: () => request("/modulos"),
   createModulo: (data: unknown) =>
     request("/modulos", { method: "POST", body: JSON.stringify(data) }),
   updateModulo: (id: string, data: unknown) =>
     request(`/modulos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteModulo: (id: string) =>
-    request(`/modulos/${id}`, { method: "DELETE" }),
+  deleteModulo: (id: string) => request(`/modulos/${id}`, { method: "DELETE" }),
 
   getUsuarios: () => request("/auth/usuarios"),
   createUsuario: (data: unknown) =>
     request("/auth/usuarios", { method: "POST", body: JSON.stringify(data) }),
-  toggleUsuario: (id: string) =>
-    request(`/auth/usuarios/${id}/toggle`, { method: "PATCH" }),
+  toggleUsuario: (id: string) => request(`/auth/usuarios/${id}/toggle`, { method: "PATCH" }),
 
   getDashboardStats: () => request("/dashboard/stats"),
 
@@ -171,8 +170,7 @@ export const api = {
 
   // ===== Endpoints públicos (cadastro via QR) =====
   getIgrejaPublica: (slug: string) => publicRequest(`/publico/igrejas/${slug}`),
-  getGruposPublicos: (slug: string) =>
-    publicRequest(`/publico/igrejas/${slug}/grupos`),
+  getGruposPublicos: (slug: string) => publicRequest(`/publico/igrejas/${slug}/grupos`),
   cadastroPublico: (slug: string, data: unknown) =>
     publicRequest(`/publico/igrejas/${slug}/cadastro`, {
       method: "POST",
@@ -184,20 +182,15 @@ export const api = {
   getMembro: (id: string) => request(`/membros/${id}`),
   getMembrosStats: () => request("/membros/stats"),
   getMembrosMetricas: () => request("/membros/metricas"),
-  getMembrosSemContato: (dias: number = 60) =>
-    request(`/membros/sem-contato?dias=${dias}`),
+  getMembrosSemContato: (dias: number = 60) => request(`/membros/sem-contato?dias=${dias}`),
   createMembro: (data: unknown) =>
     request("/membros", { method: "POST", body: JSON.stringify(data) }),
   updateMembro: (id: string, data: unknown) =>
     request(`/membros/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteMembro: (id: string) => request(`/membros/${id}`, { method: "DELETE" }),
   viHoje: (id: string) => request(`/membros/${id}/vi-hoje`, { method: "PATCH" }),
-  enviarWhatsapp: (id: string) =>
-    request(`/membros/${id}/whatsapp`, { method: "POST" }),
-  addMembroMinisterio: (
-    membroId: string,
-    data: { ministerio_id: string; cargo?: string },
-  ) =>
+  enviarWhatsapp: (id: string) => request(`/membros/${id}/whatsapp`, { method: "POST" }),
+  addMembroMinisterio: (membroId: string, data: { ministerio_id: string; cargo?: string }) =>
     request(`/membros/${membroId}/ministerios`, {
       method: "POST",
       body: JSON.stringify(data),
@@ -214,11 +207,7 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  encerrarCargo: (
-    membroId: string,
-    cargoId: string,
-    data: { data_fim?: string },
-  ) =>
+  encerrarCargo: (membroId: string, cargoId: string, data: { data_fim?: string }) =>
     request(`/membros/${membroId}/cargos/${cargoId}`, {
       method: "PATCH",
       body: JSON.stringify(data),
@@ -234,8 +223,7 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(data),
     }),
-  deleteMinisterio: (id: string) =>
-    request(`/ministerios/${id}`, { method: "DELETE" }),
+  deleteMinisterio: (id: string) => request(`/ministerios/${id}`, { method: "DELETE" }),
 
   // ===== CADASTRO PÚBLICO DE MEMBRO =====
   getIgrejaCadastroMembro: (slug: string) =>
@@ -245,16 +233,14 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  importarMembros: (formData: FormData) =>
-    requestMultipart("/membros/importar", formData),
+  importarMembros: (formData: FormData) => requestMultipart("/membros/importar", formData),
 
   // Discipuladores — acesso
   criarAcessoDiscipulador: (id: string, data: { email: string; senha: string }) =>
     request(`/discipuladores/${id}/acesso`, { method: "POST", body: JSON.stringify(data) }),
   revogarAcessoDiscipulador: (id: string) =>
     request(`/discipuladores/${id}/acesso`, { method: "DELETE" }),
-  getConvertidosDiscipulador: (id: string) =>
-    request(`/discipuladores/${id}/convertidos`),
+  getConvertidosDiscipulador: (id: string) => request(`/discipuladores/${id}/convertidos`),
 
   // Convertidos — responsável
   atribuirResponsavel: (convertidoId: string, discipuladorId: string | null) =>
@@ -266,12 +252,14 @@ export const api = {
   // Membros — acesso ao sistema
   criarAcessoMembro: (id: string, data: { email: string; senha: string; perfil: string }) =>
     request(`/membros/${id}/acesso`, { method: "POST", body: JSON.stringify(data) }),
-  revogarAcessoMembro: (id: string) =>
-    request(`/membros/${id}/acesso`, { method: "DELETE" }),
+  revogarAcessoMembro: (id: string) => request(`/membros/${id}/acesso`, { method: "DELETE" }),
 
   // Usuários — trocar perfil
   alterarPerfilUsuario: (usuarioId: string, perfil: string) =>
-    request(`/auth/usuarios/${usuarioId}/perfil`, { method: "PATCH", body: JSON.stringify({ perfil }) }),
+    request(`/auth/usuarios/${usuarioId}/perfil`, {
+      method: "PATCH",
+      body: JSON.stringify({ perfil }),
+    }),
 };
 
 export type Perfil = "superadmin" | "admin" | "lider" | "pastor" | "discipulador";
@@ -319,25 +307,14 @@ export type Membro = {
   email?: string | null;
   data_nascimento?: string | null;
   genero?: "masculino" | "feminino" | "outro" | null;
-  estado_civil?:
-    | "solteiro"
-    | "casado"
-    | "divorciado"
-    | "viuvo"
-    | "uniao_estavel"
-    | null;
+  estado_civil?: "solteiro" | "casado" | "divorciado" | "viuvo" | "uniao_estavel" | null;
   profissao?: string | null;
   endereco?: string | null;
   bairro?: string | null;
   cidade?: string | null;
   estado?: string | null;
   data_entrada: string;
-  tipo_entrada?:
-    | "batismo"
-    | "transferencia"
-    | "aclamacao"
-    | "reconciliacao"
-    | null;
+  tipo_entrada?: "batismo" | "transferencia" | "aclamacao" | "reconciliacao" | null;
   data_batismo?: string | null;
   batizado: boolean;
   fez_discipulado: boolean;
@@ -418,6 +395,30 @@ export type MembrosStats = {
   por_ministerio: { ministerio: string; quantidade: number }[];
   sem_contato_60: number;
   sem_contato_90: number;
+};
+
+export type MembrosMetricas = {
+  kpis: {
+    ativos?: number;
+    batizados?: number;
+    fez_discipulado?: number;
+    inativos?: number;
+    transferidos?: number;
+    total?: number;
+  };
+  crescimento_mensal: { mes: string; entradas: number }[];
+  por_genero: { genero: string; quantidade: number }[];
+  por_estado_civil: { estado_civil: string; quantidade: number }[];
+  por_faixa_etaria: { faixa: string; quantidade: number }[];
+  por_ministerio: { ministerio: string; quantidade: number }[];
+  por_cidade: { cidade: string; quantidade: number }[];
+  sem_contato: { sem_contato_30?: number; sem_contato_60?: number; sem_contato_90?: number };
+  aniversariantes_mes: {
+    nome: string;
+    telefone?: string | null;
+    data_nascimento?: string | null;
+    idade?: number;
+  }[];
 };
 
 export type SolicitacaoIgreja = {

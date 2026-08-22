@@ -13,8 +13,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Ovile — Plataforma para igrejas" },
       {
         property: "og:description",
-        content:
-          "Membros, discipulado e ministérios em um só lugar. Grátis para começar.",
+        content: "Membros, discipulado e ministérios em um só lugar. Grátis para começar.",
       },
     ],
   }),

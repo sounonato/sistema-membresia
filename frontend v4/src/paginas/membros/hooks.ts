@@ -108,8 +108,7 @@ export function useAddMembroMinisterio(membroId: string) {
 export function useRemoveMembroMinisterio(membroId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (ministerioId: string) =>
-      api.removeMembroMinisterio(membroId, ministerioId),
+    mutationFn: (ministerioId: string) => api.removeMembroMinisterio(membroId, ministerioId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["membros", membroId] }),
   });
 }
@@ -117,11 +116,8 @@ export function useRemoveMembroMinisterio(membroId: string) {
 export function useAddCargo(membroId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: {
-      cargo: string;
-      data_posse?: string;
-      observacoes?: string;
-    }) => api.addCargo(membroId, data),
+    mutationFn: (data: { cargo: string; data_posse?: string; observacoes?: string }) =>
+      api.addCargo(membroId, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["membros", membroId] }),
   });
 }
@@ -129,13 +125,8 @@ export function useAddCargo(membroId: string) {
 export function useEncerrarCargo(membroId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      cargoId,
-      data,
-    }: {
-      cargoId: string;
-      data: { data_fim?: string };
-    }) => api.encerrarCargo(membroId, cargoId, data),
+    mutationFn: ({ cargoId, data }: { cargoId: string; data: { data_fim?: string } }) =>
+      api.encerrarCargo(membroId, cargoId, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["membros", membroId] }),
   });
 }

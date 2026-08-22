@@ -17,6 +17,7 @@ export type Convertido = {
   cidade?: string;
   data_conversao: string;
   como_conheceu?: string;
+  culto_conversao?: string;
   batizado?: boolean;
   quer_batizar?: boolean;
   frequentava_outra_igreja?: boolean;
@@ -25,6 +26,10 @@ export type Convertido = {
   observacoes?: string;
   status?: string;
   discipulador_id?: string | null;
+  created_at?: string;
+  data_cadastro?: string;
+  data_batismo?: string | null;
+  modulos_concluidos?: string[];
 };
 
 export function useConvertidos() {

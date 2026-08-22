@@ -86,9 +86,7 @@ export function CadastroMembroPublicoPage() {
             </div>
           )}
           <h1 className="font-serif text-3xl leading-tight">{igreja?.nome}</h1>
-          <p className="font-serif italic text-stone-600 mt-1">
-            Cadastre-se na nossa membresia
-          </p>
+          <p className="font-serif italic text-stone-600 mt-1">Cadastre-se na nossa membresia</p>
           {(igreja?.cidade || igreja?.estado) && (
             <p className="text-xs uppercase tracking-widest text-stone-500 mt-2">
               {[igreja?.cidade, igreja?.estado].filter(Boolean).join(" / ")}
@@ -101,21 +99,15 @@ export function CadastroMembroPublicoPage() {
             <CheckCircle2 className="h-16 w-16 text-amber-700 mx-auto" />
             <h2 className="font-serif text-3xl">Bem-vindo à membresia!</h2>
             <p className="text-stone-700">
-              Seu cadastro foi recebido. Em breve entraremos em contato por
-              telefone.
+              Seu cadastro foi recebido. Em breve entraremos em contato por telefone.
             </p>
             <p className="font-serif italic text-stone-500">
               Que Deus abençoe cada passo da sua jornada.
             </p>
           </div>
         ) : (
-          <form
-            onSubmit={onSubmit}
-            className="border border-stone-200 bg-white p-8 space-y-6"
-          >
-            <h2 className="text-[10px] tracking-widest uppercase text-stone-500">
-              Seus dados
-            </h2>
+          <form onSubmit={onSubmit} className="border border-stone-200 bg-white p-8 space-y-6">
+            <h2 className="text-[10px] tracking-widest uppercase text-stone-500">Seus dados</h2>
 
             <Field label="Nome">
               <Input

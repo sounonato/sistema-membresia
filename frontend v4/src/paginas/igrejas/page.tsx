@@ -7,24 +7,71 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Igreja, SolicitacaoIgreja } from "@/lib/api";
 import {
-  useIgrejas, useCreateIgreja, useUpdateIgreja, useDeleteIgreja, useCreateAdminIgreja, useUploadLogoIgreja,
-  useSolicitacoes, useAprovarSolicitacao, useRejeitarSolicitacao,
+  useIgrejas,
+  useCreateIgreja,
+  useUpdateIgreja,
+  useDeleteIgreja,
+  useCreateAdminIgreja,
+  useUploadLogoIgreja,
+  useSolicitacoes,
+  useAprovarSolicitacao,
+  useRejeitarSolicitacao,
 } from "./hooks";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 const ESTADOS_BR = [
-  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
-  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ];
 
 type FormState = {
@@ -38,8 +85,13 @@ type FormState = {
 };
 
 const emptyForm: FormState = {
-  nome: "", slug: "", cor_primaria: "#b45309", logo_url: "",
-  descricao: "", cidade: "", estado: "",
+  nome: "",
+  slug: "",
+  cor_primaria: "#b45309",
+  logo_url: "",
+  descricao: "",
+  cidade: "",
+  estado: "",
 };
 
 export function IgrejasPage() {
@@ -64,7 +116,11 @@ export function IgrejasPage() {
   const [adminFor, setAdminFor] = useState<Igreja | null>(null);
   const [adminForm, setAdminForm] = useState({ nome: "", email: "", senha: "" });
 
-  const [aprovacaoResult, setAprovacaoResult] = useState<{ igreja: Igreja; usuario: { nome: string; email: string }; senha_temporaria: string } | null>(null);
+  const [aprovacaoResult, setAprovacaoResult] = useState<{
+    igreja: Igreja;
+    usuario: { nome: string; email: string };
+    senha_temporaria: string;
+  } | null>(null);
   const [rejeitarOpen, setRejeitarOpen] = useState(false);
   const [rejeitarId, setRejeitarId] = useState<string | null>(null);
   const [motivoRejeicao, setMotivoRejeicao] = useState("");
@@ -108,16 +164,22 @@ export function IgrejasPage() {
         toast.success("Igreja atualizada");
       } else {
         const created = await create.mutateAsync(payload as { nome: string; slug: string });
-        if (logoFile && created?.id) await uploadLogo.mutateAsync({ id: created.id, file: logoFile });
+        if (logoFile && created?.id)
+          await uploadLogo.mutateAsync({ id: created.id, file: logoFile });
         toast.success("Igreja criada");
       }
       setOpen(false);
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro"); }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro");
+    }
   }
 
   function onPickLogo(f: File | null) {
     if (!f) return;
-    if (f.size > 2 * 1024 * 1024) { toast.error("Logo deve ter até 2MB"); return; }
+    if (f.size > 2 * 1024 * 1024) {
+      toast.error("Logo deve ter até 2MB");
+      return;
+    }
     setLogoFile(f);
     const reader = new FileReader();
     reader.onload = () => setLogoPreview(String(reader.result));
@@ -132,8 +194,12 @@ export function IgrejasPage() {
 
   async function excluir(ig: Igreja) {
     if (!window.confirm(`Excluir igreja "${ig.nome}"?`)) return;
-    try { await del.mutateAsync(ig.id); toast.success("Igreja excluída"); }
-    catch (e) { toast.error(e instanceof Error ? e.message : "Erro"); }
+    try {
+      await del.mutateAsync(ig.id);
+      toast.success("Igreja excluída");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro");
+    }
   }
 
   function openAdmin(ig: Igreja) {
@@ -147,7 +213,9 @@ export function IgrejasPage() {
       await createAdmin.mutateAsync({ igrejaId: adminFor.id, data: adminForm });
       toast.success("Admin criado");
       setAdminOpen(false);
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro"); }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro");
+    }
   }
 
   async function handleAprovar(sol: SolicitacaoIgreja) {
@@ -155,7 +223,9 @@ export function IgrejasPage() {
       const res = await aprovar.mutateAsync(sol.id);
       setAprovacaoResult(res);
       toast.success(`Igreja "${sol.nome}" aprovada`);
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro ao aprovar"); }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao aprovar");
+    }
   }
 
   async function handleRejeitar() {
@@ -165,7 +235,9 @@ export function IgrejasPage() {
       toast.success("Solicitação rejeitada");
       setRejeitarOpen(false);
       setMotivoRejeicao("");
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro ao rejeitar"); }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao rejeitar");
+    }
   }
 
   const pendentesCount = solicitacoes?.length ?? 0;
@@ -177,11 +249,14 @@ export function IgrejasPage() {
         eyebrow="Painel superadmin"
         title="Igrejas da rede"
         lede="Cada linha aqui é uma comunidade viva — com sua cor, sua praça e seu próprio cheiro de café no domingo."
-        actions={(
-          <Button className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800" onClick={openNova}>
+        actions={
+          <Button
+            className="rounded-none border border-foreground bg-stone-900 hover:bg-stone-800"
+            onClick={openNova}
+          >
             <Plus className="h-4 w-4" /> Nova igreja
           </Button>
-        )}
+        }
       />
 
       <Tabs defaultValue="igrejas">
@@ -189,7 +264,10 @@ export function IgrejasPage() {
           <TabsTrigger value="igrejas" className="rounded-none text-xs uppercase tracking-widest">
             Igrejas ativas
           </TabsTrigger>
-          <TabsTrigger value="solicitacoes" className="rounded-none text-xs uppercase tracking-widest relative">
+          <TabsTrigger
+            value="solicitacoes"
+            className="rounded-none text-xs uppercase tracking-widest relative"
+          >
             Solicitações pendentes
             {pendentesCount > 0 && (
               <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-[10px] text-white font-bold">
@@ -208,49 +286,93 @@ export function IgrejasPage() {
                   <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
               ) : !data || data.length === 0 ? (
-                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhuma igreja cadastrada ainda.</p>
+                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">
+                  Nenhuma igreja cadastrada ainda.
+                </p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border">
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Nº</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">Cor</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Igreja</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Slug</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Localização</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Status</TableHead>
-                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ações</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">
+                          Nº
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground w-10">
+                          Cor
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Igreja
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Slug
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Localização
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Status
+                        </TableHead>
+                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Ações
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {data.map((ig, i) => (
                         <TableRow key={ig.id} className="border-border hover:bg-muted">
-                          <TableCell className="font-serif italic text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</TableCell>
-                          <TableCell>
-                            <span className="inline-block h-5 w-5 rounded-full border border-border" style={{ backgroundColor: ig.cor_primaria ?? "#b45309" }} />
+                          <TableCell className="font-serif italic text-muted-foreground tabular-nums">
+                            {String(i + 1).padStart(2, "0")}
                           </TableCell>
-                          <TableCell className="font-serif text-lg text-foreground">{ig.nome}</TableCell>
-                          <TableCell><code className="text-xs text-muted-foreground">/{ig.slug}</code></TableCell>
+                          <TableCell>
+                            <span
+                              className="inline-block h-5 w-5 rounded-full border border-border"
+                              style={{ backgroundColor: ig.cor_primaria ?? "#b45309" }}
+                            />
+                          </TableCell>
+                          <TableCell className="font-serif text-lg text-foreground">
+                            {ig.nome}
+                          </TableCell>
+                          <TableCell>
+                            <code className="text-xs text-muted-foreground">/{ig.slug}</code>
+                          </TableCell>
                           <TableCell className="text-sm italic text-muted-foreground">
                             {[ig.cidade, ig.estado].filter(Boolean).join(", ") || "—"}
                           </TableCell>
                           <TableCell>
-                            <span className={ig.ativa === false
-                              ? "text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5"
-                              : "text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5"}>
+                            <span
+                              className={
+                                ig.ativa === false
+                                  ? "text-[10px] uppercase tracking-widest text-muted-foreground border-b border-stone-400 pb-0.5"
+                                  : "text-[10px] uppercase tracking-widest text-emerald-700 border-b border-emerald-600 pb-0.5"
+                              }
+                            >
                               {ig.ativa === false ? "inativa" : "ativa"}
                             </span>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-1">
-                              <Button size="sm" variant="ghost" onClick={() => openAdmin(ig)} title="Criar admin">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openAdmin(ig)}
+                                title="Criar admin"
+                              >
                                 <UserPlus className="h-4 w-4" />
                               </Button>
-                              <Button size="sm" variant="ghost" onClick={() => openEditar(ig)} title="Editar">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openEditar(ig)}
+                                title="Editar"
+                              >
                                 <Pencil className="h-4 w-4" />
                               </Button>
-                              <Button size="sm" variant="ghost" onClick={() => excluir(ig)} title="Excluir">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => excluir(ig)}
+                                title="Excluir"
+                              >
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             </div>
@@ -274,36 +396,67 @@ export function IgrejasPage() {
                   <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
               ) : !solicitacoes || solicitacoes.length === 0 ? (
-                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">Nenhuma solicitação pendente.</p>
+                <p className="text-center py-10 text-sm text-muted-foreground italic font-serif">
+                  Nenhuma solicitação pendente.
+                </p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-border">
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Igreja</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Slug</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Responsável</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Contato</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Plano</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">Data</TableHead>
-                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">Ação</TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Igreja
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Slug
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Responsável
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Contato
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Plano
+                        </TableHead>
+                        <TableHead className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Data
+                        </TableHead>
+                        <TableHead className="text-right text-[10px] uppercase tracking-widest text-muted-foreground">
+                          Ação
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {solicitacoes.map((sol) => (
                         <TableRow key={sol.id} className="border-border hover:bg-muted">
-                          <TableCell className="font-serif text-base text-foreground">{sol.nome}</TableCell>
-                          <TableCell><code className="text-xs text-muted-foreground">/{sol.slug}</code></TableCell>
+                          <TableCell className="font-serif text-base text-foreground">
+                            {sol.nome}
+                          </TableCell>
+                          <TableCell>
+                            <code className="text-xs text-muted-foreground">/{sol.slug}</code>
+                          </TableCell>
                           <TableCell className="text-sm">
                             <div>{sol.responsavel_nome}</div>
-                            {sol.cargo_responsavel && <div className="text-xs text-muted-foreground">{sol.cargo_responsavel}</div>}
+                            {sol.cargo_responsavel && (
+                              <div className="text-xs text-muted-foreground">
+                                {sol.cargo_responsavel}
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             <div>{sol.responsavel_email}</div>
-                            {sol.responsavel_telefone && <div className="text-xs text-muted-foreground">{sol.responsavel_telefone}</div>}
+                            {sol.responsavel_telefone && (
+                              <div className="text-xs text-muted-foreground">
+                                {sol.responsavel_telefone}
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-[10px] uppercase tracking-wide rounded-none">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] uppercase tracking-wide rounded-none"
+                            >
                               {sol.plano}
                             </Badge>
                           </TableCell>
@@ -327,7 +480,11 @@ export function IgrejasPage() {
                                 variant="ghost"
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                 title="Rejeitar"
-                                onClick={() => { setRejeitarId(sol.id); setMotivoRejeicao(""); setRejeitarOpen(true); }}
+                                onClick={() => {
+                                  setRejeitarId(sol.id);
+                                  setMotivoRejeicao("");
+                                  setRejeitarOpen(true);
+                                }}
                               >
                                 <XCircle className="h-4 w-4" />
                               </Button>
@@ -359,7 +516,10 @@ export function IgrejasPage() {
             <TabsContent value="dados" className="space-y-3 pt-3">
               <div className="space-y-1.5">
                 <Label>Nome</Label>
-                <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+                <Input
+                  value={form.nome}
+                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Slug</Label>
@@ -369,7 +529,9 @@ export function IgrejasPage() {
                   placeholder="nazareno-centro"
                   autoCapitalize="none"
                 />
-                <p className="text-xs text-muted-foreground">Identificador único usado na URL pública e login.</p>
+                <p className="text-xs text-muted-foreground">
+                  Identificador único usado na URL pública e login.
+                </p>
               </div>
             </TabsContent>
             <TabsContent value="branding" className="space-y-4 pt-3">
@@ -401,9 +563,15 @@ export function IgrejasPage() {
                 <Label>Logo</Label>
                 <div className="flex items-center gap-3">
                   {logoPreview ? (
-                    <img src={logoPreview} alt="Logo" className="h-16 w-16 rounded-md object-contain border border-border bg-card" />
+                    <img
+                      src={logoPreview}
+                      alt="Logo"
+                      className="h-16 w-16 rounded-md object-contain border border-border bg-card"
+                    />
                   ) : (
-                    <div className="h-16 w-16 rounded-md border border-dashed border-border grid place-content-center text-xs text-muted-foreground">sem logo</div>
+                    <div className="h-16 w-16 rounded-md border border-dashed border-border grid place-content-center text-xs text-muted-foreground">
+                      sem logo
+                    </div>
                   )}
                   <div className="flex flex-col gap-1">
                     <input
@@ -413,7 +581,12 @@ export function IgrejasPage() {
                       className="hidden"
                       onChange={(e) => onPickLogo(e.target.files?.[0] ?? null)}
                     />
-                    <Button type="button" size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => fileRef.current?.click()}
+                    >
                       <Upload className="h-4 w-4" /> Enviar logo
                     </Button>
                     {logoPreview && (
@@ -437,15 +610,25 @@ export function IgrejasPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Cidade</Label>
-                  <Input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} />
+                  <Input
+                    value={form.cidade}
+                    onChange={(e) => setForm({ ...form, cidade: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Estado</Label>
-                  <Select value={form.estado} onValueChange={(v) => setForm({ ...form, estado: v })}>
-                    <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
+                  <Select
+                    value={form.estado}
+                    onValueChange={(v) => setForm({ ...form, estado: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="UF" />
+                    </SelectTrigger>
                     <SelectContent>
                       {ESTADOS_BR.map((uf) => (
-                        <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                        <SelectItem key={uf} value={uf}>
+                          {uf}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -454,9 +637,16 @@ export function IgrejasPage() {
             </TabsContent>
           </Tabs>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button onClick={salvar} disabled={create.isPending || update.isPending || uploadLogo.isPending}>
-              {(create.isPending || update.isPending || uploadLogo.isPending) && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={salvar}
+              disabled={create.isPending || update.isPending || uploadLogo.isPending}
+            >
+              {(create.isPending || update.isPending || uploadLogo.isPending) && (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              )}
               {editing ? "Salvar" : "Criar"}
             </Button>
           </DialogFooter>
@@ -473,19 +663,32 @@ export function IgrejasPage() {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label>Nome</Label>
-              <Input value={adminForm.nome} onChange={(e) => setAdminForm({ ...adminForm, nome: e.target.value })} />
+              <Input
+                value={adminForm.nome}
+                onChange={(e) => setAdminForm({ ...adminForm, nome: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>E-mail</Label>
-              <Input type="email" value={adminForm.email} onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })} />
+              <Input
+                type="email"
+                value={adminForm.email}
+                onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Senha</Label>
-              <Input type="password" value={adminForm.senha} onChange={(e) => setAdminForm({ ...adminForm, senha: e.target.value })} />
+              <Input
+                type="password"
+                value={adminForm.senha}
+                onChange={(e) => setAdminForm({ ...adminForm, senha: e.target.value })}
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAdminOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setAdminOpen(false)}>
+              Cancelar
+            </Button>
             <Button onClick={salvarAdmin} disabled={createAdmin.isPending}>
               {createAdmin.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Criar Admin
@@ -503,24 +706,34 @@ export function IgrejasPage() {
           {aprovacaoResult && (
             <div className="space-y-4 text-sm">
               <p className="text-muted-foreground">
-                A igreja <strong className="font-serif text-foreground">{aprovacaoResult.igreja.nome}</strong> foi criada com sucesso.
+                A igreja{" "}
+                <strong className="font-serif text-foreground">
+                  {aprovacaoResult.igreja.nome}
+                </strong>{" "}
+                foi criada com sucesso.
               </p>
               <div className="border border-border p-4 space-y-2 bg-muted">
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Acesso do admin</p>
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+                  Acesso do admin
+                </p>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">E-mail</span>
                   <code className="text-foreground">{aprovacaoResult.usuario.email}</code>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Senha temporária</span>
-                  <code className="text-primary font-bold tracking-widest">{aprovacaoResult.senha_temporaria}</code>
+                  <code className="text-primary font-bold tracking-widest">
+                    {aprovacaoResult.senha_temporaria}
+                  </code>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Acesso</span>
                   <code className="text-muted-foreground">/{aprovacaoResult.igreja.slug}</code>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">Anote ou copie a senha temporária — ela não será exibida novamente.</p>
+              <p className="text-xs text-muted-foreground">
+                Anote ou copie a senha temporária — ela não será exibida novamente.
+              </p>
             </div>
           )}
           <DialogFooter>
@@ -536,7 +749,9 @@ export function IgrejasPage() {
             <DialogTitle className="font-serif text-red-700">Rejeitar solicitação</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Informe opcionalmente o motivo da rejeição.</p>
+            <p className="text-sm text-muted-foreground">
+              Informe opcionalmente o motivo da rejeição.
+            </p>
             <Textarea
               rows={3}
               value={motivoRejeicao}
@@ -545,7 +760,9 @@ export function IgrejasPage() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejeitarOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setRejeitarOpen(false)}>
+              Cancelar
+            </Button>
             <Button variant="destructive" onClick={handleRejeitar} disabled={rejeitar.isPending}>
               {rejeitar.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Rejeitar

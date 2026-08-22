@@ -8,17 +8,8 @@ const checkPerfil = (perfisPermitidos) => {
   return async (req, res, next) => {
     const { usuarioPerfil, usuarioId, igrejaId } = req;
 
-    // 1. Se for superadmin, ele tem acesso livre a todas as rotas (bypass de perfil)
-    if (usuarioPerfil === 'superadmin') {
-      return next();
-    }
-
-    // 2. Se o perfil do usuário não estiver na lista de perfis permitidos
+    // O superadmin só acessa rotas que o declararam explicitamente.
     if (!perfisPermitidos.includes(usuarioPerfil)) {
-      // Se for pastor, ele pode ter acesso apenas leitura (GET) em rotas de visualização
-      if (usuarioPerfil === 'pastor' && req.method === 'GET') {
-        return next();
-      }
       return res.status(403).json({ error: 'Acesso negado: perfil não autorizado' });
     }
 

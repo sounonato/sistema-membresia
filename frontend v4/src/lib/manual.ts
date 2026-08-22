@@ -186,10 +186,7 @@ export function buscarSecoes(q: string): SecaoComContexto[] {
   return listarSecoes()
     .map((s) => {
       const haystack = `${s.titulo} ${s.conteudo} ${(s.tags ?? []).join(" ")}`.toLowerCase();
-      const score = palavras.reduce(
-        (acc, p) => acc + (haystack.includes(p) ? 1 : 0),
-        0,
-      );
+      const score = palavras.reduce((acc, p) => acc + (haystack.includes(p) ? 1 : 0), 0);
       return { s, score };
     })
     .filter((x) => x.score > 0)

@@ -10,7 +10,7 @@ const router = express.Router();
 
 // POST /api/autenticacao/login
 router.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, senha, slug } = req.body;
 
   if (!email || !senha) {
     return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
@@ -20,15 +20,23 @@ router.post('/login', async (req, res) => {
     let usuario;
     let igrejaNome = null;
 
-    // Busca o usuário pelo email — funciona para qualquer igreja ou superadmin
+    // Sem slug, só aceitamos uma correspondência inequívoca (ou superadmin).
+    // Isso evita autenticar na igreja errada quando o mesmo e-mail existe em tenants distintos.
+    const filtros = slug
+      ? `AND LOWER(i.slug) = LOWER($2) AND i.ativa = true`
+      : `AND (u.igreja_id IS NULL OR u.igreja_id IN (SELECT id FROM igrejas WHERE ativa = true))`;
     const resultado = await db.query(
-      `SELECT u.*, i.nome as igreja_nome, i.slug as igreja_slug
+      `SELECT u.*, i.nome as igreja_nome, i.slug as igreja_slug,
+              i.cor_primaria as igreja_cor, i.logo_url as igreja_logo
        FROM usuarios u
        LEFT JOIN igrejas i ON u.igreja_id = i.id
-       WHERE u.email = $1
-       LIMIT 1`,
-      [email]
+       WHERE LOWER(TRIM(u.email)) = LOWER(TRIM($1)) ${filtros}
+       ORDER BY u.igreja_id NULLS FIRST`,
+      slug ? [email, slug] : [email]
     );
+    if (!slug && resultado.rows.length > 1) {
+      return res.status(400).json({ error: 'Informe o slug da igreja para este e-mail' });
+    }
     usuario = resultado.rows[0];
     if (usuario) igrejaNome = usuario.igreja_nome;
 
@@ -66,7 +74,9 @@ router.post('/login', async (req, res) => {
         perfil: usuario.perfil,
         igreja_id: usuario.igreja_id,
         igreja_nome: igrejaNome,
-        igreja_slug: usuario.igreja_slug ?? null
+        igreja_slug: usuario.igreja_slug ?? null,
+        igreja_cor: usuario.igreja_cor ?? null,
+        igreja_logo: usuario.igreja_logo ?? null
       }
     });
   } catch (err) {
@@ -308,15 +318,21 @@ router.post('/trocar-senha', autenticar, async (req, res) => {
 
 // POST /api/autenticacao/esqueci-senha
 router.post('/esqueci-senha', async (req, res) => {
-  const { email } = req.body;
+  const { email, slug } = req.body;
 
   if (!email) {
     return res.status(400).json({ error: 'E-mail é obrigatório' });
   }
 
   try {
-    const resultado = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-    const usuario = resultado.rows[0];
+    const resultado = await db.query(
+      `SELECT u.* FROM usuarios u
+       LEFT JOIN igrejas i ON i.id = u.igreja_id
+       WHERE LOWER(TRIM(u.email)) = LOWER(TRIM($1))
+         AND ($2::text IS NULL OR (LOWER(i.slug) = LOWER($2) AND i.ativa = true))`,
+      [email, slug || null]
+    );
+    const usuario = resultado.rows.length === 1 ? resultado.rows[0] : null;
 
     // Se não encontrar, retornar 200 mesmo assim para não vazar a existência do e-mail
     if (!usuario) {
@@ -359,28 +375,34 @@ router.post('/resetar-senha', async (req, res) => {
   }
 
   try {
-    const tokenRes = await db.query(
-      'SELECT * FROM tokens_reset_senha WHERE token = $1 AND usado = false AND expires_at > now()',
-      [token]
-    );
-
-    if (tokenRes.rows.length === 0) {
-      return res.status(400).json({ error: 'Token inválido ou expirado' });
-    }
-
-    const tokenRegistro = tokenRes.rows[0];
     const senhaHash = await bcrypt.hash(senha_nova, 10);
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const tokenRes = await client.query(
+        `UPDATE tokens_reset_senha
+         SET usado = true
+         WHERE token = $1 AND usado = false AND expires_at > now()
+         RETURNING usuario_id`,
+        [token]
+      );
 
-    // Atualiza a senha e marca o token como usado
-    await db.query(
-      'UPDATE usuarios SET senha_hash = $1, deve_trocar_senha = false WHERE id = $2',
-      [senhaHash, tokenRegistro.usuario_id]
-    );
+      if (tokenRes.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: 'Token inválido ou expirado' });
+      }
 
-    await db.query(
-      'UPDATE tokens_reset_senha SET usado = true WHERE id = $1',
-      [tokenRegistro.id]
-    );
+      await client.query(
+        'UPDATE usuarios SET senha_hash = $1, deve_trocar_senha = false WHERE id = $2',
+        [senhaHash, tokenRes.rows[0].usuario_id]
+      );
+      await client.query('COMMIT');
+    } catch (transactionErr) {
+      await client.query('ROLLBACK');
+      throw transactionErr;
+    } finally {
+      client.release();
+    }
 
     return res.json({ ok: true });
   } catch (err) {

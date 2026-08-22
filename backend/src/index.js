@@ -30,7 +30,7 @@ const allowedOrigins = process.env.CORS_ORIGINS
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.some(o => origin === o || origin.endsWith('.pages.dev') || origin.endsWith('.railway.app'))) {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     callback(new Error('CORS não permitido'));
@@ -43,7 +43,16 @@ app.use(express.json());
 
 // Rota de verificação de saúde da API
 app.get('/health', (req, res) => {
-  return res.json({ status: 'OK', timestamp: new Date() });
+  return res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/ready', async (req, res) => {
+  try {
+    await require('./conexao').query('SELECT 1');
+    return res.json({ status: 'ready', timestamp: new Date().toISOString() });
+  } catch (err) {
+    return res.status(503).json({ status: 'not_ready' });
+  }
 });
 
 // Registro de Rotas com prefixo /api
@@ -57,9 +66,19 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const publicLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: 'Muitas solicitações. Tente novamente em 1 minuto.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Aplicar antes da rota de autenticação:
 app.use('/api/autenticacao/login', loginLimiter);
 app.use('/api/auth/login', loginLimiter);
+app.use('/api/publico', publicLimiter);
+app.use('/api/portal', publicLimiter);
 
 app.use('/api/auth', autenticacaoRotas);
 app.use('/api/autenticacao', autenticacaoRotas);
@@ -87,6 +106,9 @@ require('./jobs/followupWhatsapp');
 // Middleware para tratamento de erros genéricos
 app.use((err, req, res, next) => {
   console.error('Erro não tratado:', err);
+  if (err && err.message === 'CORS não permitido') {
+    return res.status(403).json({ error: 'Origem não permitida' });
+  }
   return res.status(500).json({ error: 'Ocorreu um erro interno no servidor' });
 });
 
@@ -99,14 +121,36 @@ async function runMigrations() {
   const files = fs.readdirSync(dir)
     .filter(f => f.endsWith('.sql') && /^\d/.test(f))
     .sort();
-  for (const file of files) {
-    try {
-      const sql = fs.readFileSync(path.join(dir, file), 'utf8');
-      await db.query(sql);
-      console.log(`Migration OK: ${file}`);
-    } catch (err) {
-      console.error(`Migration WARN (${file}):`, err.message);
+  const client = await db.pool.connect();
+  try {
+    await client.query('SELECT pg_advisory_lock(hashtext($1))', ['sistema-membresia:migrations']);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        filename TEXT PRIMARY KEY,
+        applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
+    for (const file of files) {
+      await client.query('BEGIN');
+      try {
+        const aplicada = await client.query('SELECT 1 FROM schema_migrations WHERE filename = $1', [file]);
+        if (aplicada.rows.length > 0) {
+          await client.query('COMMIT');
+          continue;
+        }
+        const sql = fs.readFileSync(path.join(dir, file), 'utf8');
+        await client.query(sql);
+        await client.query('INSERT INTO schema_migrations (filename) VALUES ($1)', [file]);
+        await client.query('COMMIT');
+        console.log(`Migration OK: ${file}`);
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw new Error(`Migration FAILED (${file}): ${err.message}`);
+      }
     }
+  } finally {
+    await client.query('SELECT pg_advisory_unlock(hashtext($1))', ['sistema-membresia:migrations']).catch(() => {});
+    client.release();
   }
 }
 
@@ -117,7 +161,5 @@ runMigrations().then(() => {
   });
 }).catch(err => {
   console.error('Erro nas migrations:', err);
-  app.listen(PORT, () => {
-    console.log(`Servidor rodando com sucesso na porta ${PORT}`);
-  });
+  process.exitCode = 1;
 });

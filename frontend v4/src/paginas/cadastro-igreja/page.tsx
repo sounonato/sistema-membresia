@@ -15,8 +15,33 @@ import {
 import { solicitarCadastroIgreja } from "@/lib/api-publico";
 
 const UFS = [
-  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
-  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ];
 
 function slugify(v: string) {
@@ -34,8 +59,7 @@ function maskPhone(v: string) {
   const d = v.replace(/\D/g, "").slice(0, 11);
   if (d.length <= 2) return d;
   if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-  if (d.length <= 10)
-    return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
@@ -66,8 +90,7 @@ export function CadastroIgrejaPage() {
     const e: Record<string, string> = {};
     if (!nome.trim()) e.nome = "Informe o nome da igreja.";
     if (!slug.trim()) e.slug = "Informe o slug de acesso.";
-    else if (!/^[a-z0-9-]+$/.test(slug))
-      e.slug = "Use apenas letras minúsculas, números e hífen.";
+    else if (!/^[a-z0-9-]+$/.test(slug)) e.slug = "Use apenas letras minúsculas, números e hífen.";
     setErros(e);
     return Object.keys(e).length === 0;
   }
@@ -76,8 +99,7 @@ export function CadastroIgrejaPage() {
     const e: Record<string, string> = {};
     if (!respNome.trim()) e.respNome = "Informe seu nome.";
     if (!respEmail.trim()) e.respEmail = "Informe seu e-mail.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(respEmail))
-      e.respEmail = "E-mail inválido.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(respEmail)) e.respEmail = "E-mail inválido.";
     if (!aceite) e.aceite = "É preciso aceitar os termos de uso.";
     setErros(e);
     return Object.keys(e).length === 0;
@@ -136,12 +158,8 @@ export function CadastroIgrejaPage() {
         {/* Progresso */}
         <div className="mb-10">
           <div className="flex items-center justify-between text-xs uppercase tracking-widest text-stone-500 mb-3">
-            <span className={etapa === 1 ? "text-amber-700" : ""}>
-              01 · Igreja
-            </span>
-            <span className={etapa === 2 ? "text-amber-700" : ""}>
-              02 · Responsável
-            </span>
+            <span className={etapa === 1 ? "text-amber-700" : ""}>01 · Igreja</span>
+            <span className={etapa === 2 ? "text-amber-700" : ""}>02 · Responsável</span>
           </div>
           <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
             <div
@@ -190,19 +208,14 @@ export function CadastroIgrejaPage() {
                 />
                 <p className="text-xs text-stone-500 mt-2">
                   Slug de acesso:{" "}
-                  <span className="font-mono text-stone-800">
-                    {slug || "sua-igreja"}
-                  </span>
+                  <span className="font-mono text-stone-800">{slug || "sua-igreja"}</span>
                 </p>
               </Campo>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
                   <Campo label="Cidade">
-                    <Input
-                      value={cidade}
-                      onChange={(e) => setCidade(e.target.value)}
-                    />
+                    <Input value={cidade} onChange={(e) => setCidade(e.target.value)} />
                   </Campo>
                 </div>
                 <Campo label="Estado">
@@ -237,9 +250,7 @@ export function CadastroIgrejaPage() {
                           : "border-stone-200 hover:border-stone-400"
                       }`}
                     >
-                      <p className="font-serif text-lg">
-                        {p === "basico" ? "Básico" : "Pro"}
-                      </p>
+                      <p className="font-serif text-lg">{p === "basico" ? "Básico" : "Pro"}</p>
                       <p className="text-xs text-stone-500 mt-1">
                         {p === "basico"
                           ? "Até 100 membros · 3 usuários"
@@ -323,9 +334,7 @@ export function CadastroIgrejaPage() {
                   e com o tratamento dos dados informados para análise do cadastro.
                 </span>
               </label>
-              {erros.aceite && (
-                <p className="text-sm text-red-600 -mt-3">{erros.aceite}</p>
-              )}
+              {erros.aceite && <p className="text-sm text-red-600 -mt-3">{erros.aceite}</p>}
 
               {erro && (
                 <div className="border border-red-200 bg-red-50 text-red-800 text-sm rounded-md p-3">

@@ -14,6 +14,7 @@ import { Loader2, MessageSquare, AlertCircle, ArrowRight, Cake, Users } from "lu
 import { Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useMembrosMetricas } from "./hooks";
+import type { MembrosMetricas } from "@/lib/api";
 
 const GENDER_OPACITIES: Record<string, string> = {
   feminino: "1.0",
@@ -66,7 +67,17 @@ export function MembrosMetricasPage() {
     );
   }
 
-  const metricas = data ?? {};
+  const metricas: MembrosMetricas = data ?? {
+    kpis: {},
+    crescimento_mensal: [],
+    por_genero: [],
+    por_estado_civil: [],
+    por_faixa_etaria: [],
+    por_ministerio: [],
+    por_cidade: [],
+    sem_contato: {},
+    aniversariantes_mes: [],
+  };
   const kpis = metricas.kpis ?? {};
   const crescimento = metricas.crescimento_mensal ?? [];
   const genero = metricas.por_genero ?? [];
@@ -78,14 +89,29 @@ export function MembrosMetricasPage() {
   const aniversariantes = metricas.aniversariantes_mes ?? [];
 
   // Total de cidades para cálculo da porcentagem
-  const totalCidadesMembros = cidades.reduce((acc: number, c: any) => acc + c.quantidade, 0);
+  const totalCidadesMembros = cidades.reduce((acc, c) => acc + c.quantidade, 0);
 
   const kpisCards = [
     { n: "01", label: "Membros Ativos", value: kpis.ativos ?? 0, note: "Frequência e comunhão" },
     { n: "02", label: "Batizados", value: kpis.batizados ?? 0, note: "Testemunho público" },
-    { n: "03", label: "Curso Membresia", value: kpis.fez_discipulado ?? 0, note: "Discipulado concluído" },
-    { n: "04", label: "Sem Contato (60d+)", value: semContato.sem_contato_60 ?? 0, note: "Acompanhamento urgente" },
-    { n: "05", label: "Membros Inativos", value: kpis.inativos ?? 0, note: "Afastados/Não frequentes" },
+    {
+      n: "03",
+      label: "Curso Membresia",
+      value: kpis.fez_discipulado ?? 0,
+      note: "Discipulado concluído",
+    },
+    {
+      n: "04",
+      label: "Sem Contato (60d+)",
+      value: semContato.sem_contato_60 ?? 0,
+      note: "Acompanhamento urgente",
+    },
+    {
+      n: "05",
+      label: "Membros Inativos",
+      value: kpis.inativos ?? 0,
+      note: "Afastados/Não frequentes",
+    },
     { n: "06", label: "Transferidos", value: kpis.transferidos ?? 0, note: "Outras congregações" },
   ];
 
@@ -120,7 +146,9 @@ export function MembrosMetricasPage() {
               <p className="font-serif text-[clamp(2rem,4vw,3.5rem)] leading-none tabular-nums text-foreground font-light">
                 {k.value}
               </p>
-              <p className="mt-4 text-xs text-foreground font-semibold uppercase tracking-wider">{k.label}</p>
+              <p className="mt-4 text-xs text-foreground font-semibold uppercase tracking-wider">
+                {k.label}
+              </p>
               <p className="text-[11px] text-muted-foreground mt-1">{k.note}</p>
             </div>
           ))}
@@ -151,12 +179,7 @@ export function MembrosMetricasPage() {
                 tickLine={false}
                 axisLine={{ stroke: "#e7e5e4" }}
               />
-              <YAxis
-                stroke="#78716c"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-              />
+              <YAxis stroke="#78716c" fontSize={11} tickLine={false} axisLine={false} />
               <Tooltip
                 cursor={{ fill: "var(--color-muted, rgba(180,83,9,0.06))" }}
                 contentStyle={{
@@ -168,7 +191,13 @@ export function MembrosMetricasPage() {
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="entradas" fill="var(--color-primary)" radius={[0, 0, 0, 0]} maxBarSize={48} name="Entradas" />
+              <Bar
+                dataKey="entradas"
+                fill="var(--color-primary)"
+                radius={[0, 0, 0, 0]}
+                maxBarSize={48}
+                name="Entradas"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -185,7 +214,9 @@ export function MembrosMetricasPage() {
           </div>
           <div className="h-64 flex flex-col items-center justify-center">
             {genero.length === 0 ? (
-              <p className="text-sm italic font-serif text-muted-foreground">Sem dados registrados.</p>
+              <p className="text-sm italic font-serif text-muted-foreground">
+                Sem dados registrados.
+              </p>
             ) : (
               <div className="w-full h-full flex flex-col sm:flex-row items-center justify-around">
                 <div className="w-48 h-48">
@@ -201,11 +232,14 @@ export function MembrosMetricasPage() {
                         dataKey="quantidade"
                         nameKey="genero"
                       >
-                        {genero.map((entry: any, index: number) => (
+                        {genero.map((entry, index) => (
                           <Cell
                             key={`cell-${index}`}
                             fill="var(--color-primary)"
-                            fillOpacity={GENDER_OPACITIES[entry.genero as keyof typeof GENDER_OPACITIES] ?? "0.5"}
+                            fillOpacity={
+                              GENDER_OPACITIES[entry.genero as keyof typeof GENDER_OPACITIES] ??
+                              "0.5"
+                            }
                           />
                         ))}
                       </Pie>
@@ -224,15 +258,21 @@ export function MembrosMetricasPage() {
                   </ResponsiveContainer>
                 </div>
                 <div className="space-y-2 mt-4 sm:mt-0">
-                  {genero.map((item: any) => (
-                    <div key={item.genero} className="flex items-center gap-3 text-sm text-foreground">
+                  {genero.map((item) => (
+                    <div
+                      key={item.genero}
+                      className="flex items-center gap-3 text-sm text-foreground"
+                    >
                       <div
                         className="w-3 h-3 bg-primary"
                         style={{
-                          opacity: GENDER_OPACITIES[item.genero as keyof typeof GENDER_OPACITIES] ?? "0.5",
+                          opacity:
+                            GENDER_OPACITIES[item.genero as keyof typeof GENDER_OPACITIES] ?? "0.5",
                         }}
                       />
-                      <span className="font-medium text-foreground">{formatGender(item.genero)}:</span>
+                      <span className="font-medium text-foreground">
+                        {formatGender(item.genero)}:
+                      </span>
                       <span className="tabular-nums font-semibold">{item.quantidade}</span>
                     </div>
                   ))}
@@ -251,7 +291,9 @@ export function MembrosMetricasPage() {
           </div>
           <div className="h-64">
             {estadoCivil.length === 0 ? (
-              <p className="text-sm italic font-serif text-muted-foreground text-center py-20">Sem dados registrados.</p>
+              <p className="text-sm italic font-serif text-muted-foreground text-center py-20">
+                Sem dados registrados.
+              </p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -260,7 +302,13 @@ export function MembrosMetricasPage() {
                   margin={{ top: 10, right: 10, left: 30, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e7e5e4" />
-                  <XAxis type="number" stroke="#78716c" fontSize={11} tickLine={false} axisLine={false} />
+                  <XAxis
+                    type="number"
+                    stroke="#78716c"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis
                     dataKey="estado_civil"
                     type="category"
@@ -301,7 +349,9 @@ export function MembrosMetricasPage() {
         </div>
         <div className="h-80">
           {faixaEtaria.length === 0 ? (
-            <p className="text-sm italic font-serif text-muted-foreground text-center py-24">Sem dados registrados.</p>
+            <p className="text-sm italic font-serif text-muted-foreground text-center py-24">
+              Sem dados registrados.
+            </p>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={faixaEtaria} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
@@ -327,11 +377,15 @@ export function MembrosMetricasPage() {
                   formatter={(val: number) => [val, "Membros"]}
                 />
                 <Bar dataKey="quantidade" radius={[0, 0, 0, 0]} maxBarSize={48}>
-                  {faixaEtaria.map((entry: any, index: number) => (
+                  {faixaEtaria.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill="var(--color-primary)"
-                      fillOpacity={FAIXA_ETARIA_OPACITIES[entry.faixa as keyof typeof FAIXA_ETARIA_OPACITIES] ?? "0.5"}
+                      fillOpacity={
+                        FAIXA_ETARIA_OPACITIES[
+                          entry.faixa as keyof typeof FAIXA_ETARIA_OPACITIES
+                        ] ?? "0.5"
+                      }
                     />
                   ))}
                 </Bar>
@@ -352,7 +406,9 @@ export function MembrosMetricasPage() {
           </div>
           <div className="h-72">
             {ministerios.length === 0 ? (
-              <p className="text-sm italic font-serif text-muted-foreground text-center py-24">Sem ministérios cadastrados.</p>
+              <p className="text-sm italic font-serif text-muted-foreground text-center py-24">
+                Sem ministérios cadastrados.
+              </p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -361,7 +417,13 @@ export function MembrosMetricasPage() {
                   margin={{ top: 10, right: 10, left: 40, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e7e5e4" />
-                  <XAxis type="number" stroke="#78716c" fontSize={11} tickLine={false} axisLine={false} />
+                  <XAxis
+                    type="number"
+                    stroke="#78716c"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis
                     dataKey="ministerio"
                     type="category"
@@ -398,16 +460,22 @@ export function MembrosMetricasPage() {
           </div>
           <div className="h-72 overflow-y-auto space-y-4 pr-2">
             {cidades.length === 0 ? (
-              <p className="text-sm italic font-serif text-muted-foreground text-center py-24">Sem dados geográficos.</p>
+              <p className="text-sm italic font-serif text-muted-foreground text-center py-24">
+                Sem dados geográficos.
+              </p>
             ) : (
-              cidades.map((item: any, i: number) => {
-                const percentage = totalCidadesMembros > 0 ? (item.quantidade / totalCidadesMembros) * 100 : 0;
+              cidades.map((item) => {
+                const percentage =
+                  totalCidadesMembros > 0 ? (item.quantidade / totalCidadesMembros) * 100 : 0;
                 return (
                   <div key={item.cidade} className="space-y-1">
                     <div className="flex justify-between text-sm text-foreground font-medium">
                       <span>{item.cidade}</span>
                       <span className="tabular-nums font-semibold text-foreground">
-                        {item.quantidade} <span className="text-xs font-normal text-muted-foreground">({Math.round(percentage)}%)</span>
+                        {item.quantidade}{" "}
+                        <span className="text-xs font-normal text-muted-foreground">
+                          ({Math.round(percentage)}%)
+                        </span>
                       </span>
                     </div>
                     <div className="h-2 w-full bg-muted rounded-none overflow-hidden">
@@ -443,14 +511,22 @@ export function MembrosMetricasPage() {
               <table className="w-full text-sm text-left">
                 <thead>
                   <tr className="border-b border-border bg-muted">
-                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-16">Dia</th>
-                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Idade</th>
-                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-48">Contato</th>
+                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-16">
+                      Dia
+                    </th>
+                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                      Nome
+                    </th>
+                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">
+                      Idade
+                    </th>
+                    <th className="px-6 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-48">
+                      Contato
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {aniversariantes.map((m: any, index: number) => {
+                  {aniversariantes.map((m, index) => {
                     const dia = m.data_nascimento ? new Date(m.data_nascimento).getDate() : "—";
                     return (
                       <tr key={index} className="hover:bg-muted/50">
@@ -458,7 +534,9 @@ export function MembrosMetricasPage() {
                           {dia}
                         </td>
                         <td className="px-6 py-4 font-medium text-foreground">{m.nome}</td>
-                        <td className="px-6 py-4 tabular-nums text-muted-foreground">{m.idade} anos</td>
+                        <td className="px-6 py-4 tabular-nums text-muted-foreground">
+                          {m.idade} anos
+                        </td>
                         <td className="px-6 py-4">
                           {m.telefone ? (
                             <a
@@ -488,7 +566,9 @@ export function MembrosMetricasPage() {
         <div className="flex items-start gap-4 mb-6">
           <AlertCircle className="h-6 w-6 text-primary mt-1 shrink-0" />
           <div>
-            <h3 className="font-serif text-xl text-foreground">Alerta de Acompanhamento Pastoral</h3>
+            <h3 className="font-serif text-xl text-foreground">
+              Alerta de Acompanhamento Pastoral
+            </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Membros ativos que não recebem contato ou registro de visita no período selecionado.
             </p>
@@ -497,9 +577,24 @@ export function MembrosMetricasPage() {
 
         <div className="grid sm:grid-cols-3 gap-4">
           {[
-            { dias: 30, value: semContato.sem_contato_30 ?? 0, title: "Há 30+ dias", color: "border-yellow-500/30 hover:border-yellow-500" },
-            { dias: 60, value: semContato.sem_contato_60 ?? 0, title: "Há 60+ dias", color: "border-orange-500/30 hover:border-orange-500" },
-            { dias: 90, value: semContato.sem_contato_90 ?? 0, title: "Há 90+ dias", color: "border-red-500/30 hover:border-red-500" },
+            {
+              dias: 30,
+              value: semContato.sem_contato_30 ?? 0,
+              title: "Há 30+ dias",
+              color: "border-yellow-500/30 hover:border-yellow-500",
+            },
+            {
+              dias: 60,
+              value: semContato.sem_contato_60 ?? 0,
+              title: "Há 60+ dias",
+              color: "border-orange-500/30 hover:border-orange-500",
+            },
+            {
+              dias: 90,
+              value: semContato.sem_contato_90 ?? 0,
+              title: "Há 90+ dias",
+              color: "border-red-500/30 hover:border-red-500",
+            },
           ].map((card) => (
             <Link
               key={card.dias}
@@ -508,7 +603,9 @@ export function MembrosMetricasPage() {
               className={`p-5 bg-card border ${card.color} flex flex-col justify-between transition-colors`}
             >
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">{card.title}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {card.title}
+                </p>
                 <p className="font-serif text-3xl font-light text-foreground mt-2 tabular-nums">
                   {card.value}
                 </p>

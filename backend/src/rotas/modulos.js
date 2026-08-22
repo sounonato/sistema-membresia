@@ -10,7 +10,7 @@ router.use(autenticar);
 router.use(identificarTenant);
 
 // GET /api/modulos - Listar módulos de discipulado
-router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/', checkPerfil(['admin', 'lider']), async (req, res) => {
   try {
     let queryText = 'SELECT * FROM modulos_discipulado';
     const params = [];
@@ -31,7 +31,7 @@ router.get('/', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async
 });
 
 // GET /api/modulos/:id - Detalhes do módulo
-router.get('/:id', checkPerfil(['admin', 'lider', 'pastor', 'discipulador']), async (req, res) => {
+router.get('/:id', checkPerfil(['admin', 'lider']), async (req, res) => {
   const { id } = req.params;
 
   try {

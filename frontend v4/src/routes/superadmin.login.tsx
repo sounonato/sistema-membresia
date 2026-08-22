@@ -47,13 +47,17 @@ function SuperadminLogin() {
             </div>
             <div>
               <p className="font-serif text-xl text-white">Ovile</p>
-              <p className="text-xs text-stone-500 tracking-widest uppercase mt-1">Painel Superadmin</p>
+              <p className="text-xs text-stone-500 tracking-widest uppercase mt-1">
+                Painel Superadmin
+              </p>
             </div>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-stone-300">E-mail</Label>
+              <Label htmlFor="email" className="text-stone-300">
+                E-mail
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -66,7 +70,9 @@ function SuperadminLogin() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="senha" className="text-stone-300">Senha</Label>
+              <Label htmlFor="senha" className="text-stone-300">
+                Senha
+              </Label>
               <Input
                 id="senha"
                 type="password"

@@ -3,7 +3,6 @@ import { api } from "@/lib/api";
 
 export function useImportarMembros() {
   return useMutation({
-    mutationFn: (formData: FormData) =>
-      api.importarMembros(formData),
+    mutationFn: (formData: FormData) => api.importarMembros(formData),
   });
 }

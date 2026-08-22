@@ -39,13 +39,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   if (status === 401) return null;
 
-  return (
-    <ErrorPage
-      code={status}
-      detail={status >= 500 ? error.message : undefined}
-      showBack
-    />
-  );
+  return <ErrorPage code={status} detail={status >= 500 ? error.message : undefined} showBack />;
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -54,9 +48,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Ovile — Plataforma de Gestão para Igrejas" },
-      { name: "description", content: "Gestão de membresia, discipulado e convertidos para igrejas. Powered by Ovile." },
+      {
+        name: "description",
+        content: "Gestão de membresia, discipulado e convertidos para igrejas. Powered by Ovile.",
+      },
       { property: "og:title", content: "Ovile — Plataforma de Gestão para Igrejas" },
-      { property: "og:description", content: "Gestão de membresia, discipulado e convertidos para igrejas. Powered by Ovile." },
+      {
+        property: "og:description",
+        content: "Gestão de membresia, discipulado e convertidos para igrejas. Powered by Ovile.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

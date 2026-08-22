@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FileSpreadsheet, FileText, Loader2 } from "lucide-react";
-import { useSearch, useNavigate } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -12,8 +12,19 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { type Convertido } from "../convertidos/hooks";
+import { type Grupo } from "../discipulado/hooks";
+import { type Modulo } from "../modulos/hooks";
+import { type Membro, type MembrosMetricas } from "@/lib/api";
 
 type Row = Record<string, string | number | null | undefined>;
+type MembrosPage = {
+  data: Membro[];
+  total: number;
+  pagina: number;
+  paginas: number;
+  por_pagina: number;
+};
 
 function fmtDate(d?: string | null) {
   if (!d) return "";
@@ -72,54 +83,51 @@ export function RelatoriosPage() {
   const [diasSemContato, setDiasSemContato] = useState(60);
 
   const search = useSearch({ from: "/_auth/relatorios" }) as { tab?: string };
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(search.tab || "convertidos");
 
   useEffect(() => {
     if (search.tab && search.tab !== activeTab) {
       setActiveTab(search.tab);
     }
-  }, [search.tab]);
+  }, [search.tab, activeTab]);
 
-  const convertidos = useQuery<any[]>({
+  const convertidos = useQuery<Convertido[]>({
     queryKey: ["convertidos"],
     queryFn: () => api.getConvertidos(),
   });
-  const modulos = useQuery<any[]>({
+  const modulos = useQuery<Modulo[]>({
     queryKey: ["modulos"],
     queryFn: () => api.getModulos(),
   });
-  const grupos = useQuery<any[]>({
+  const grupos = useQuery<Grupo[]>({
     queryKey: ["grupos"],
     queryFn: () => api.getGrupos(),
   });
 
   // Queries para relatórios de membros
-  const membrosQuery = useQuery<any>({
+  const membrosQuery = useQuery<MembrosPage>({
     queryKey: ["membros-relatorio"],
     queryFn: () => api.getMembros("?status=ativo&por_pagina=1000"),
     enabled: activeTab === "membros",
   });
-  const metricasQuery = useQuery<any>({
+  const metricasQuery = useQuery<MembrosMetricas>({
     queryKey: ["membros-metricas-relatorio"],
     queryFn: () => api.getMembrosMetricas(),
     enabled: activeTab === "aniversariantes-membros" || activeTab === "por-ministerio",
   });
-  const semContatoQuery = useQuery<any[]>({
+  const semContatoQuery = useQuery<Membro[]>({
     queryKey: ["membros-sem-contato", diasSemContato],
     queryFn: () => api.getMembrosSemContato(diasSemContato),
     enabled: activeTab === "sem-contato",
   });
 
-  const lista = convertidos.data ?? [];
+  const lista = useMemo(() => convertidos.data ?? [], [convertidos.data]);
 
   // Convertidos por período
   const convertidosFiltrados = useMemo<Row[]>(
     () =>
       lista
-        .filter((c) =>
-          dentroPeriodo(c.data_conversao ?? c.created_at, ini, fim),
-        )
+        .filter((c) => dentroPeriodo(c.data_conversao ?? c.created_at, ini, fim))
         .map((c) => ({
           Nome: c.nome,
           Telefone: c.telefone ?? "",
@@ -142,15 +150,15 @@ export function RelatoriosPage() {
         return !isNaN(d.getTime()) && d.getMonth() === mes;
       })
       .sort((a, b) => {
-        const da = new Date(a.data_nascimento).getDate();
-        const db = new Date(b.data_nascimento).getDate();
+        const da = new Date(a.data_nascimento ?? "").getDate();
+        const db = new Date(b.data_nascimento ?? "").getDate();
         return da - db;
       })
       .map((c) => ({
-        Dia: new Date(c.data_nascimento).getDate(),
+        Dia: new Date(c.data_nascimento ?? "").getDate(),
         Nome: c.nome,
         Telefone: c.telefone ?? "",
-        Idade: new Date().getFullYear() - new Date(c.data_nascimento).getFullYear(),
+        Idade: new Date().getFullYear() - new Date(c.data_nascimento ?? "").getFullYear(),
       }));
   }, [lista]);
 
@@ -158,7 +166,7 @@ export function RelatoriosPage() {
   const decisoesBatismos = useMemo<Row[]>(() => {
     const decisoes = lista.filter((c) => dentroPeriodo(c.data_conversao, ini, fim)).length;
     const batismos = lista.filter(
-      (c) => c.batizado && dentroPeriodo((c as any).data_batismo, ini, fim),
+      (c) => c.batizado && dentroPeriodo(c.data_batismo, ini, fim),
     ).length;
     const querBatizar = lista.filter((c) => !c.batizado && c.quer_batizar).length;
     return [
@@ -171,9 +179,9 @@ export function RelatoriosPage() {
   // Progresso por módulo (resumo)
   const progressoModulos = useMemo<Row[]>(() => {
     const mods = modulos.data ?? [];
-    return mods.map((m: any) => {
-      const concluidos = lista.filter((c: any) =>
-        Array.isArray(c.modulos_concluidos) && c.modulos_concluidos.includes(m.id),
+    return mods.map((m) => {
+      const concluidos = lista.filter(
+        (c) => Array.isArray(c.modulos_concluidos) && c.modulos_concluidos.includes(m.id),
       ).length;
       return {
         Módulo: m.nome,
@@ -187,10 +195,10 @@ export function RelatoriosPage() {
   // Resumo por grupo
   const resumoGrupos = useMemo<Row[]>(() => {
     const gs = grupos.data ?? [];
-    return gs.map((g: any) => ({
+    return gs.map((g) => ({
       Grupo: g.nome,
-      Discipulador: g.discipulador?.nome ?? g.discipulador_nome ?? "—",
-      Membros: Array.isArray(g.membros) ? g.membros.length : g.total_membros ?? 0,
+      "Discipulador(a)": g.discipulador_nome ?? g.discipulador ?? "—",
+      Membros: Array.isArray(g.membros) ? g.membros.length : (g.qtd_membros ?? 0),
     }));
   }, [grupos.data]);
 
@@ -198,10 +206,10 @@ export function RelatoriosPage() {
   const membrosFiltrados = useMemo<Row[]>(() => {
     const list = membrosQuery.data?.data ?? [];
     return list
-      .filter((m: any) => dentroPeriodo(m.data_entrada, ini, fim))
-      .map((m: any) => {
+      .filter((m) => dentroPeriodo(m.data_entrada, ini, fim))
+      .map((m) => {
         const minList = Array.isArray(m.ministerios)
-          ? m.ministerios.map((x: any) => x.nome).join(", ")
+          ? m.ministerios.map((x) => x.ministerio_nome).join(", ")
           : "";
         return {
           Nome: m.nome,
@@ -226,7 +234,7 @@ export function RelatoriosPage() {
   // Aniversariantes de membros
   const aniversariantesMembros = useMemo<Row[]>(() => {
     const list = metricasQuery.data?.aniversariantes_mes ?? [];
-    return list.map((m: any) => {
+    return list.map((m) => {
       const dia = m.data_nascimento ? new Date(m.data_nascimento).getDate() : "—";
       return {
         Dia: dia,
@@ -240,7 +248,7 @@ export function RelatoriosPage() {
   // Membros sem contato
   const semContatoFiltrados = useMemo<Row[]>(() => {
     const list = semContatoQuery.data ?? [];
-    return list.map((m: any) => ({
+    return list.map((m) => ({
       Nome: m.nome,
       Telefone: m.telefone ?? "",
       "Último Contato": fmtDate(m.ultimo_contato),
@@ -251,7 +259,7 @@ export function RelatoriosPage() {
   // Membros por ministério
   const ministeriosMembros = useMemo<Row[]>(() => {
     const list = metricasQuery.data?.por_ministerio ?? [];
-    return list.map((m: any) => ({
+    return list.map((m) => ({
       Ministério: m.ministerio,
       "Total de Membros": m.quantidade,
     }));
@@ -276,14 +284,24 @@ export function RelatoriosPage() {
 
       <div className="flex flex-wrap items-end gap-6 pb-6 mb-8 border-b border-border/70">
         <div>
-          <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Início</Label>
-          <Input type="date" value={ini} onChange={(e) => setIni(e.target.value)}
-            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
+          <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Início
+          </Label>
+          <Input
+            type="date"
+            value={ini}
+            onChange={(e) => setIni(e.target.value)}
+            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44"
+          />
         </div>
         <div>
           <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Fim</Label>
-          <Input type="date" value={fim} onChange={(e) => setFim(e.target.value)}
-            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44" />
+          <Input
+            type="date"
+            value={fim}
+            onChange={(e) => setFim(e.target.value)}
+            className="mt-1 rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-primary bg-transparent h-9 w-44"
+          />
         </div>
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground ml-auto max-w-xs italic font-serif normal-case tracking-normal text-sm">
           Filtros aplicam-se aos relatórios com período.
@@ -294,7 +312,6 @@ export function RelatoriosPage() {
         value={activeTab}
         onValueChange={(val) => {
           setActiveTab(val);
-          navigate({ search: { tab: val } as any });
         }}
       >
         <TabsList className="rounded-none bg-transparent border-b border-border p-0 h-auto gap-6 flex-wrap justify-start">
@@ -309,7 +326,11 @@ export function RelatoriosPage() {
             ["sem-contato", "Sem Contato"],
             ["por-ministerio", "Por Ministério"],
           ].map(([v, l]) => (
-            <TabsTrigger key={v} value={v} className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none">
+            <TabsTrigger
+              key={v}
+              value={v}
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none"
+            >
               {l}
             </TabsTrigger>
           ))}
@@ -378,7 +399,9 @@ export function RelatoriosPage() {
         </TabsContent>
         <TabsContent value="sem-contato" className="mt-6">
           <div className="bg-card border border-border p-6 mb-6 rounded-none flex items-center gap-4 max-w-sm">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">Período sem contato:</Label>
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">
+              Período sem contato:
+            </Label>
             <select
               value={diasSemContato}
               onChange={(e) => setDiasSemContato(Number(e.target.value))}
@@ -468,7 +491,10 @@ function RelatorioTabela({
               <thead>
                 <tr className="border-b border-border">
                   {colunas.map((c) => (
-                    <th key={c} className="text-left px-3 py-2 text-[10px] uppercase tracking-widest text-muted-foreground font-normal">
+                    <th
+                      key={c}
+                      className="text-left px-3 py-2 text-[10px] uppercase tracking-widest text-muted-foreground font-normal"
+                    >
                       {c}
                     </th>
                   ))}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { useSearch, useNavigate } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { Send, Loader2, BookText, MessagesSquare, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -21,20 +21,19 @@ const SUGESTOES = [
 ];
 
 type Msg = { role: "user" | "assistant"; content: string };
+type ManualSearch = { secao?: string; tab?: string };
+type ChatResponse = string | { resposta?: string; answer?: string; content?: string };
 
 export function ManualPage() {
-  const search = useSearch({ strict: false }) as { secao?: string; tab?: string };
-  const navigate = useNavigate();
+  const search = useSearch({ strict: false }) as ManualSearch;
   const initialTab = search.secao ? "conteudo" : (search.tab as string) || "conteudo";
   const [tab, setTab] = useState<string>(initialTab);
-  const [secaoAtiva, setSecaoAtiva] = useState<string>(
-    search.secao ?? listarSecoes()[0]?.id ?? "",
-  );
+  const [secaoAtiva, setSecaoAtiva] = useState<string>(search.secao ?? listarSecoes()[0]?.id ?? "");
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     if (search.secao && search.secao !== secaoAtiva) setSecaoAtiva(search.secao);
-  }, [search.secao]);
+  }, [search.secao, secaoAtiva]);
 
   const secao = useMemo(() => buscarSecaoPorId(secaoAtiva), [secaoAtiva]);
 
@@ -52,12 +51,23 @@ export function ManualPage() {
         lede="Um livro aberto ao lado da mesa: leia devagar, ou pergunte alto — alguém sempre responde."
       />
 
-      <Tabs value={tab} onValueChange={(v) => { setTab(v); navigate({ search: { ...search, tab: v } as any }); }}>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => {
+          setTab(v);
+        }}
+      >
         <TabsList className="rounded-none bg-transparent border-b border-border p-0 h-auto gap-6">
-          <TabsTrigger value="conteudo" className="rounded-none gap-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none">
+          <TabsTrigger
+            value="conteudo"
+            className="rounded-none gap-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none"
+          >
             <BookText className="h-4 w-4" /> Conteúdo
           </TabsTrigger>
-          <TabsTrigger value="chat" className="rounded-none gap-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none">
+          <TabsTrigger
+            value="chat"
+            className="rounded-none gap-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary px-0 pb-2 text-[11px] uppercase tracking-widest shadow-none"
+          >
             <MessagesSquare className="h-4 w-4" /> Chat IA
           </TabsTrigger>
         </TabsList>
@@ -82,14 +92,21 @@ export function ManualPage() {
                   {filtrado.map((s) => (
                     <button
                       key={s.id}
-                      onClick={() => { setSecaoAtiva(s.id); setFiltro(""); }}
+                      onClick={() => {
+                        setSecaoAtiva(s.id);
+                        setFiltro("");
+                      }}
                       className={cn(
                         "block w-full text-left py-2 text-sm border-l-2 pl-3 -ml-3 transition-colors",
-                        secaoAtiva === s.id ? "border-primary text-primary" : "border-transparent hover:border-stone-400",
+                        secaoAtiva === s.id
+                          ? "border-primary text-primary"
+                          : "border-transparent hover:border-stone-400",
                       )}
                     >
                       <p className="font-serif">{s.titulo}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate mt-0.5">{s.capituloTitulo}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate mt-0.5">
+                        {s.capituloTitulo}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -98,7 +115,9 @@ export function ManualPage() {
                   {MANUAL.map((p, pi) => (
                     <div key={p.id}>
                       <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 mb-2">
-                        <span className="font-serif italic text-primary tabular-nums">{String(pi + 1).padStart(2, "0")}</span>
+                        <span className="font-serif italic text-primary tabular-nums">
+                          {String(pi + 1).padStart(2, "0")}
+                        </span>
                         <span className="h-px flex-1 bg-stone-200" />
                         {p.titulo}
                       </p>
@@ -142,7 +161,10 @@ export function ManualPage() {
                   {secao.tags && (
                     <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border not-prose">
                       {secao.tags.map((t) => (
-                        <span key={t} className="text-[10px] uppercase tracking-widest text-muted-foreground border border-border px-2 py-0.5">
+                        <span
+                          key={t}
+                          className="text-[10px] uppercase tracking-widest text-muted-foreground border border-border px-2 py-0.5"
+                        >
                           #{t}
                         </span>
                       ))}
@@ -150,14 +172,21 @@ export function ManualPage() {
                   )}
                 </article>
               ) : (
-                <p className="text-sm italic font-serif text-muted-foreground">Selecione uma seção no sumário.</p>
+                <p className="text-sm italic font-serif text-muted-foreground">
+                  Selecione uma seção no sumário.
+                </p>
               )}
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="chat" className="mt-6">
-          <ChatManual onAbrirSecao={(id) => { setSecaoAtiva(id); setTab("conteudo"); }} />
+          <ChatManual
+            onAbrirSecao={(id) => {
+              setSecaoAtiva(id);
+              setTab("conteudo");
+            }}
+          />
         </TabsContent>
       </Tabs>
     </div>
@@ -170,7 +199,9 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, loading]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs, loading]);
 
   async function enviar(pergunta: string) {
     if (!pergunta.trim() || loading) return;
@@ -187,8 +218,11 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
       const res = await api.chatManual(userMsg.content, historico).catch(() => null);
       let resposta: string;
       if (res) {
+        const payload = res as ChatResponse;
         resposta = String(
-          typeof res === "string" ? res : (res as any)?.resposta ?? (res as any)?.answer ?? (res as any)?.content ?? "",
+          typeof payload === "string"
+            ? payload
+            : (payload.resposta ?? payload.answer ?? payload.content ?? ""),
         );
       } else if (referencias.length > 0) {
         // Fallback offline: usa trechos do manual local
@@ -211,21 +245,31 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
     }
   }
 
-  function onSubmit(e: FormEvent) { e.preventDefault(); enviar(texto); }
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    enviar(texto);
+  }
 
   return (
     <div className="bg-card border border-border flex flex-col h-[calc(100vh-18rem)] overflow-hidden">
       <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-4">
         {msgs.length === 0 && (
           <div className="text-center py-16">
-            <p className="font-serif italic text-2xl text-muted-foreground">"Pergunte, e vos será respondido."</p>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4">— comece com uma dúvida abaixo —</p>
+            <p className="font-serif italic text-2xl text-muted-foreground">
+              "Pergunte, e vos será respondido."
+            </p>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4">
+              — comece com uma dúvida abaixo —
+            </p>
           </div>
         )}
         {msgs.map((m, i) => {
           const refs = m.role === "assistant" ? buscarSecoes(m.content) : [];
           return (
-            <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+            <div
+              key={i}
+              className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+            >
               <div
                 className={cn(
                   "max-w-[80%] px-5 py-3 text-sm whitespace-pre-wrap",
@@ -284,7 +328,11 @@ function ChatManual({ onAbrirSecao }: { onAbrirSecao: (id: string) => void }) {
             disabled={loading}
             className="rounded-none border-0 border-b border-border bg-transparent focus-visible:ring-0 focus-visible:border-primary"
           />
-          <Button type="submit" disabled={loading || !texto.trim()} className="rounded-none bg-stone-900 hover:bg-stone-800">
+          <Button
+            type="submit"
+            disabled={loading || !texto.trim()}
+            className="rounded-none bg-stone-900 hover:bg-stone-800"
+          >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </form>

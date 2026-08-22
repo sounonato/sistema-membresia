@@ -7,7 +7,8 @@ export type DashboardStats = {
   batizados?: number;
   aguardando_discipulado?: number;
   por_mes?: { mes: string; total: number }[];
-  por_genero?: { genero: string; total: number }[];
+  por_genero?: { genero: string; total: number; quantidade?: number }[];
+  por_faixa_etaria?: { faixa: string; total: number; quantidade?: number; nomes?: string[] }[];
 };
 
 export function useDashboardStats() {

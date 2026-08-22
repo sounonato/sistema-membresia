@@ -218,9 +218,7 @@ export function MembroForm({
           <Field label="Tipo de entrada" n="b.">
             <Select
               value={form.tipo_entrada ?? ""}
-              onValueChange={(v) =>
-                set("tipo_entrada", (v || null) as Membro["tipo_entrada"])
-              }
+              onValueChange={(v) => set("tipo_entrada", (v || null) as Membro["tipo_entrada"])}
             >
               <SelectTrigger className={selectTriggerClass}>
                 <SelectValue placeholder="Selecione" />
@@ -409,15 +407,7 @@ export function MembroForm({
   );
 }
 
-function Field({
-  label,
-  n,
-  children,
-}: {
-  label: string;
-  n: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, n, children }: { label: string; n: string; children: React.ReactNode }) {
   return (
     <div>
       <Label className="flex items-baseline gap-3 text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-1">

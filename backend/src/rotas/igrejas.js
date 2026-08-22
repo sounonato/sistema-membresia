@@ -31,7 +31,8 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const extsPermitidas = ['.jpg', '.jpeg', '.png', '.webp'];
     const ext = path.extname(file.originalname).toLowerCase();
-    if (!extsPermitidas.includes(ext)) {
+    const mimePermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!extsPermitidas.includes(ext) || !mimePermitidos.includes(file.mimetype)) {
       return cb(new Error('Apenas imagens (jpg, jpeg, png, webp) são permitidas'));
     }
     cb(null, true);
@@ -76,7 +77,19 @@ router.post('/', async (req, res) => {
       [nome, slugSanitizado, plano || 'gratuito', ativa === undefined ? true : ativa]
     );
 
-    return res.status(201).json(resultado.rows[0]);
+    const novaIgreja = resultado.rows[0];
+
+    // Criar os módulos padrão de discipulado
+    await db.query(
+      `INSERT INTO modulos_discipulado (igreja_id, nome, descricao, total_aulas, ordem) VALUES
+       ($1, 'Discipulado Fundamentos', 'Fundamentos essenciais da caminhada cristã', 9, 1),
+       ($1, 'Discipulado Recomeço', 'Um novo começo na caminhada com Cristo', 4, 2),
+       ($1, 'Discipulado de Outro Mundo', 'Vivendo os valores e princípios do Reino', 5, 3)
+       ON CONFLICT DO NOTHING`,
+      [novaIgreja.id]
+    );
+
+    return res.status(201).json(novaIgreja);
   } catch (err) {
     console.error('Erro ao criar igreja:', err);
     return res.status(500).json({ error: 'Erro interno ao criar igreja' });
